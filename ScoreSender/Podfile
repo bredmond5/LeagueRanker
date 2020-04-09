@@ -1,0 +1,21 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '11'
+
+target 'ScoreSender' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+  inherit! :search_paths
+
+  # Pods for ScoreSender
+  pod 'Firebase/Analytics'
+
+  target 'ScoreSenderTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'ScoreSenderUITests' do
+    # Pods for testing
+  end
+
+end
