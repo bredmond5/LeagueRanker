@@ -1,0 +1,6 @@
+framework module Pods_ScoreSender_ScoreSenderUITests {
+  umbrella header "Pods-ScoreSender-ScoreSenderUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
