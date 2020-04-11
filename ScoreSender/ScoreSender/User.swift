@@ -7,14 +7,17 @@
 //
 
 import Foundation
+import SwiftUI
 
 class User {
     
-    var uid: String
-    var displayName: String?
+    let uid: UUID
+    var displayName: String
+    var image: UIImage?
     
-    init(uid: String, displayName: String?) {
+    init(uid: UUID, displayName: String, image: UIImage?) {
         self.uid = uid
         self.displayName = displayName
+        self.image = image
     }
 }
