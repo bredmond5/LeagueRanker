@@ -9,6 +9,8 @@ target 'ScoreSender' do
   # Pods for ScoreSender
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Database'
 
   target 'ScoreSenderTests' do
     inherit! :search_paths

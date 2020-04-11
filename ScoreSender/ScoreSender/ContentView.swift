@@ -4,17 +4,16 @@
 //
 //  Created by Brice Redmond on 4/7/20.
 //  Copyright © 2020 Brice Redmond. All rights reserved.
-//
+//  Credit to Brian Voong
 
 import SwiftUI
 
 struct ContentView: View {
  
-    @State var people: [Person] = [
-        .init(firstName: "Steve",
-              lastName: "Jobs", image: #imageLiteral(resourceName: "jobs"), ranking: 1, score: 1250),
-        .init(firstName: "Tim", lastName: "Cook", image: #imageLiteral(resourceName: "cook"), ranking: 2, score: 1024),
-        .init(firstName: "Jony", lastName: "Ive", image: #imageLiteral(resourceName: "ive"), ranking: 3, score: 900)
+    @State var people: [Player] = [
+        .init(displayName: "Steve Jobs", image: #imageLiteral(resourceName: "jobs"), ranking: 1, score: 1250),
+        .init(displayName: "Tim Cook", image: #imageLiteral(resourceName: "cook"), ranking: 2, score: 1024),
+        .init(displayName: "Jony Ive", image: #imageLiteral(resourceName: "ive"), ranking: 3, score: 900)
     ]
     
     @State var isPresentingAddModal = false
@@ -22,8 +21,8 @@ struct ContentView: View {
     
    var body: some View {
         NavigationView {
-            List(people) { person in
-                PersonRow(person: person, didOpenGames: { p in
+            List(people) { Player in
+                PlayerRow(Player: Player, didOpenGames: { p in
                     print("Opening games!")
                 })
             }.navigationBarTitle("Rankings")
@@ -310,17 +309,17 @@ struct GameForm: View {
 
 
 
-struct PersonRow: View {
+struct PlayerRow: View {
     
-    var person: Person
-    var didOpenGames: (Person) -> ()
+    var Player: Player
+    var didOpenGames: (Player) -> ()
     
     var body: some View {
         HStack {
             Text(
-                String(person.ranking))
+                String(Player.ranking))
                 .font(.system(size: 20))
-            Image(uiImage: person.image)
+            Image(uiImage: Player.image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 60, height: 60)
@@ -331,16 +330,16 @@ struct PersonRow: View {
                 .cornerRadius(60)
             
             VStack (alignment: .leading) {
-                Text("\(person.firstName) \(person.lastName)")
+                Text("\(Player.displayName)")
                     .fontWeight(.bold)
-                Text(String(person.score))
+                Text(String(Player.score))
                     .fontWeight(.light)
             }.layoutPriority(1)
             
             Spacer()
             
             Button(action: {
-                self.didOpenGames(self.person)
+                self.didOpenGames(self.Player)
             }, label: {
                 Text("See Games")
                     .foregroundColor(.white)

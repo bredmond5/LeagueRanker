@@ -1,5 +1,5 @@
 //
-//  Person.swift
+//  Player.swift
 //  ScoreSender
 //
 //  Created by Brice Redmond on 4/9/20.
@@ -9,11 +9,11 @@
 import Foundation
 import SwiftUI
 
-struct Person: Identifiable {
+struct Player: Identifiable {
     let id = UUID()
-    let firstName: String
-    let lastName: String
+    let displayName: String
     let image: UIImage
     let ranking: Int
-    let score: Int
+    var score: Int
+    var playerGames: [PlayerGame] = []
 }
