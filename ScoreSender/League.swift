@@ -23,7 +23,7 @@ class League {
         
     func createPlayers() {
         for user in users {
-            players.append(Player(displayName: user.displayName, image: (user.image ?? UIImage(named: "jobs"))!, ranking: 0, score: 1000))
+            players.append(Player(displayName: user.displayName, image: (user.image ?? UIImage(named: "jobs")!)!, ranking: 0, score: 1000))
         }
     }
     
