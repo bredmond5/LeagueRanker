@@ -108,7 +108,6 @@ def calculate_scores():
 
     games = get_games()
     get_amount_of_games_per_person(games)
-
     n_iters = 1001
 
     for i in range(0, n_iters):            
