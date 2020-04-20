@@ -56,7 +56,7 @@ def calculate_scores(player_scores):
     print("Calculating scores...")
 
     games = get_games()
-    n_iters = 1
+    n_iters = 10000
     for _ in range(0, n_iters):            
         for game in games:
             change_player_scores(game.split())
