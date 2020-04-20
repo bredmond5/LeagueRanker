@@ -37,8 +37,9 @@ def add_scores(filename):
 
     while s := input("Enter the game, q or names: ").upper().rstrip():
         if s == 'Q':
-            exit(0)
             f.close()
+            exit(0)
+
         if s == 'NAMES':
             print(Constants.VALID_PLAYERS)
         else:
