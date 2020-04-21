@@ -25,6 +25,8 @@ def get_rating_differential(game):
 def add_game_score(game):
     rating_differential, team_1_won = get_rating_differential(game)
 
+    # Get all of the players values
+    # p_s[0][0] = player 1 score, p_s[0][1] = player 1 amt of games played, p_s[0][2] = player 1 game scores this iteration.
     p_s = []        
     p_s.append(player_scores[game[0]])
     p_s.append(player_scores[game[1]])
@@ -34,9 +36,16 @@ def add_game_score(game):
     team_1_average_score = (p_s[0][0] + p_s[1][0]) / 2
     team_2_average_score = (p_s[2][0] + p_s[3][0]) / 2
 
+    if(rating_differential == 600): 
+        if((team_1_won and team_1_average_score - team_2_average_score > 600) or (not team_1_won and team_2_average_score - team_1_average_score > 600)):
+            print("-------------BLOWOUT ELILIGIBLE--------------")
+            
+
+    # Set the initial game score to the other teams average score
     team_1_game_score = team_2_average_score
     team_2_game_score = team_1_average_score
 
+    # Winning team adds the rating differential, losing team subtracts the rating differential
     if team_1_won:
         team_1_game_score += rating_differential
         team_2_game_score -= rating_differential
@@ -44,6 +53,10 @@ def add_game_score(game):
     else:
         team_1_game_score -= rating_differential
         team_2_game_score += rating_differential
+
+    # Now the goal is to make it so that each player changes in accordance with their partner. First we find the total change that these 
+    # game scores would create per team. Then we add a game so that each player's amt of change should be proportional to how many games
+    # they have played vs how many games their partner has played. 
 
     total_scores = []
     # Multiply the player score before * amt of games - 1 to account for this game not being in the average
@@ -62,18 +75,20 @@ def add_game_score(game):
     # print("player changes for 1 and 2: ", player_changes[0], player_changes[1])
     
     # Get the average changes between the players
-    avg_change_1 = (player_changes[0] + player_changes[1])/2
-    avg_change_2 = (player_changes[2] + player_changes[3])/2
+    total_change_1 = player_changes[0] + player_changes[1]
+    total_games_1 = p_s[0][1] + p_s[1][1]
+    total_change_2 = player_changes[2] + player_changes[3]
+    total_games_2 = p_s[2][1] + p_s[3][1]
 
     # Score to add = old_score + average change between you and teammate multiplied by games played minus the total_score without the game
     # print("player 1: ", (p_s[0][0] + avg_change_1) * p_s[0][1] - total_scores[0])
     # print("player 2: ", (p_s[1][0] + avg_change_1) * p_s[1][1] - total_scores[1])
 
-    player_scores[game[0]][2].append((p_s[0][0] + avg_change_1) * p_s[0][1] - total_scores[0])      
-    player_scores[game[1]][2].append((p_s[1][0] + avg_change_1) * p_s[1][1] - total_scores[1])
+    player_scores[game[0]][2].append((p_s[0][0] + total_change_1 * (total_games_1 - p_s[0][1])/total_games_1) * p_s[0][1] - total_scores[0])      
+    player_scores[game[1]][2].append((p_s[1][0] + total_change_1 * (total_games_1 - p_s[1][1])/total_games_1) * p_s[1][1] - total_scores[1])
 
-    player_scores[game[4]][2].append((p_s[2][0] + avg_change_2) * p_s[2][1] - total_scores[2])
-    player_scores[game[5]][2].append((p_s[3][0] + avg_change_2) * p_s[3][1] - total_scores[3])
+    player_scores[game[4]][2].append((p_s[2][0] + total_change_2 * (total_games_2 - p_s[2][1])/total_games_2) * p_s[2][1] - total_scores[2])
+    player_scores[game[5]][2].append((p_s[3][0] + total_change_2 * (total_games_2 - p_s[3][1])/total_games_2) * p_s[3][1] - total_scores[3])
 
 
 def get_games():
@@ -101,6 +116,7 @@ def run_algo(games):
         if(player_scores[player][1] > 0):
             average = np.mean(player_scores[player][2])
         item[0] = average
+        print(player, player_scores[player][2])
         item[2] = []
 
 def calculate_scores():
@@ -108,9 +124,10 @@ def calculate_scores():
 
     games = get_games()
     get_amount_of_games_per_person(games)
-    n_iters = 1001
+    n_iters = 1000
 
-    for i in range(0, n_iters):            
+    for i in range(0, n_iters):         
+        print("---------ITERATION ", i, "-----------")   
         run_algo(games)
             
 def show_scores(player_scores):
@@ -121,12 +138,12 @@ def show_scores(player_scores):
     for key in player_scores:
         if player_scores[key][1] >= 1: 
             print(Constants.VALID_PLAYERS[key], ":", player_scores[key][0])
-            sum += player_scores[key][0]
-            num_sum += 1
+            sum += player_scores[key][0] * player_scores[key][1]
+            num_sum += player_scores[key][1]
         else:
             print(Constants.VALID_PLAYERS[key], ":", 0)
         
-    print("Average score: ", sum / num_sum)
+    print("Average score of game: ", sum / num_sum)
 
 calculate_scores()
 show_scores(player_scores)
