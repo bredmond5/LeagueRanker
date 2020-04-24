@@ -2,9 +2,15 @@
 
 For creating your own leagues
 
+## Firebase
+
 [TODO list with authentication on Firebase](https://medium.com/flawless-app-stories/how-to-build-a-firebase-app-with-swiftui-5919d2d8a396)
 
+## USAU Algorithm Stuff
+
 [USAU algorithm](https://play.usaultimate.org/teams/events/rankings/)
+
+## Trueskill Rankings
 
 [Trueskill Algorithm Paper](http://www.moserware.com/2010/03/computing-your-skill.html)
 
@@ -13,6 +19,8 @@ For creating your own leagues
 [Trueskill Wiki](https://en.wikipedia.org/wiki/TrueSkill)
 
 [Trueskill Patent](http://appft1.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=/netahtml/PTO/srchnum.html&r=1&f=G&l=50&s1=20090227313.PGNR.)
+
+## Elo Rankings
 
 [Reddit article on using Trueskill](https://www.reddit.com/r/gamedev/comments/1627qp/can_the_trueskill_algorithm_be_used_by_us_indie/)
 
