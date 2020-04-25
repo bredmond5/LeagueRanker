@@ -22,6 +22,8 @@ For creating your own leagues
 
 [Reddit article on using Trueskill](https://www.reddit.com/r/gamedev/comments/1627qp/can_the_trueskill_algorithm_be_used_by_us_indie/)
 
+[Wang Lin Paper](http://jmlr.csail.mit.edu/papers/volume12/weng11a/weng11a.pdf)
+
 ## Elo Rankings
 
 [How to Elo Ranking with Example](https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/)
