@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>10579102182-g4mblvc3jccmcvs801m4chm4r1k4sqtn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.10579102182-g4mblvc3jccmcvs801m4chm4r1k4sqtn</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCw3Axk5FtlWEn5vAzAv3R8gEg0o6Ikx-0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>10579102182</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.briceredmond.ScoreSender</string>
+	<key>PROJECT_ID</key>
+	<string>leaguerankingsdeploy</string>
+	<key>STORAGE_BUCKET</key>
+	<string>leaguerankingsdeploy.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:10579102182:ios:d405525d6de7c71d382e27</string>
+	<key>DATABASE_URL</key>
+	<string>https://leaguerankingsdeploy.firebaseio.com</string>
+</dict>
+</plist>
