@@ -9,7 +9,7 @@
 import SwiftUI
 
 enum ActiveSheet {
-   case first, second
+   case first, second, third
 }
 
 struct LeaguesScroller : View {
@@ -46,6 +46,11 @@ struct LeaguesScroller : View {
                             self.activeSheet = .second
                             
                         },
+//                        .default(Text("Invite to League")) {
+//                               self.isPresentingModal.toggle()
+//                               self.activeSheet = .third
+//                               
+//                        },
                         .cancel()
                     ])
                 }.sheet(isPresented: $isPresentingModal, content: {
@@ -54,12 +59,14 @@ struct LeaguesScroller : View {
                             self.session.uploadLeague(leagueName: leagueName, leagueImage: leagueImage, displayName: displayName, playerImage: playerImage)
 
                         }, userLeagueNames: self.session.getUserLeagueNames())
-                    }else{
+                    }else if self.activeSheet == .second {
                         JoinLeague(isPresented: self.$isPresentingModal, user: self.session.session!, didAddLeague : { leagueID, leagueName, username, creatorPhoneNumber, image  in
                             self.session.joinLeague(leagueID: leagueID, leagueName: leagueName, displayName: username, phoneNumber: creatorPhoneNumber, image: image)
                             //self.session.addLeague(name: n, image: i)
 //                            self.session.uploadLeague(league: League(users: [self.session.session!], games: nil, name: n, image: i))
                         })
+                    } else {
+                        
                     }
                 }).buttonStyle(PlainButtonStyle())
             

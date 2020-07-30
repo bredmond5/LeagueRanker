@@ -1,15 +1,15 @@
 //
-//  JoinLeague.swift
+//  InviteToLeague.swift
 //  ScoreSender
 //
-//  Created by Brice Redmond on 5/14/20.
+//  Created by Brice Redmond on 7/21/20.
 //  Copyright © 2020 Brice Redmond. All rights reserved.
 //
 
 import SwiftUI
 import FirebaseDatabase
 
-struct JoinLeague: View {
+struct InviteToLeague: View {
     @Binding var isPresented: Bool
     var user: User
 

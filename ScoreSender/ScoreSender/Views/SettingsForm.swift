@@ -12,8 +12,8 @@ struct SettingsForm: View {
     @EnvironmentObject var session: FirebaseSession
     
     @State var isShowingImagePicker = false
-    @State var username: String = ""
-    @State var currentUsername: String
+//    @State var username: String = ""
+//    @State var currentUsername: String
         
     @State var showingAlert = false
     
@@ -26,38 +26,38 @@ struct SettingsForm: View {
                   .fontWeight(.heavy)
                   .font(.system(size: 18))
                    Divider()
-            Text("Username: " + currentUsername)
+            Text("Name: " + (session.session?.displayName ?? ""))
                        .fontWeight(.heavy)
                        .font(.system(size: 18))
             Divider()
             
-            HStack (spacing: 16) {
-                TextField("Change Username", text: $username) {
-                    UIApplication.shared.endEditing()
-                }
-                    .padding(.all, 12)
-                    .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
-                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
+//            HStack (spacing: 16) {
+//                TextField("Change Name", text: $username) {
+//                    UIApplication.shared.endEditing()
+//                }
+//                    .padding(.all, 12)
+//                    .overlay(
+//                    RoundedRectangle(cornerRadius: 4)
+//                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
+//                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
                             
                 
-                Button(action: {
-                    if !self.username.isEmpty {
-                        self.currentUsername = self.username
-                        self.session.changeUser(displayName: self.username, image: nil)
-                    }
-                }, label: {
-                    Text("Change")
-                         .foregroundColor(.white)
-                           .padding(.vertical, 8)
-                           .padding(.horizontal, 12)
-                             .background(Color.green)
-                           .cornerRadius(4)
-                    
-                })
-                .frame(width: 90, alignment: .leading)
-            }
+//                Button(action: {
+//                    if !self.username.isEmpty {
+//                        self.currentUsername = self.username
+//                        self.session.changeUser(displayName: self.username, image: nil)
+//                    }
+//                }, label: {
+//                    Text("Change")
+//                         .foregroundColor(.white)
+//                           .padding(.vertical, 8)
+//                           .padding(.horizontal, 12)
+//                             .background(Color.green)
+//                           .cornerRadius(4)
+//
+//                })
+//                .frame(width: 90, alignment: .leading)
+//            }
             
             HStack {
                Spacer()

@@ -31,76 +31,84 @@ class FirebaseSession: ObservableObject {
     
     var storageRef = Storage.storage().reference()
     
-     func login(withPhoneNumber finalPhone: String) {
+    func login(withPhoneNumber finalPhone: String, resignRequired: @escaping (Error) -> ()) {
             PhoneAuthProvider.provider().verifyPhoneNumber(finalPhone, uiDelegate: nil) { (verificationID, error) in
                   if let error = error {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
+                    resignRequired(error)
+                    print(error.localizedDescription)
                     return
                   }
                 UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
-                self.myAlerts.showTextInputPrompt(title: "Enter code sent to iPhone", message: "", callback: { userPressedOk, code in
+                self.myAlerts.showTextInputPrompt(placeholder: "654321", title: "Enter code sent to iPhone", message: "", callback: { userPressedOk, code in
                     if userPressedOk {
-                        self.finishLogin(withCode: code)
+                        self.finishLogin(withCode: code, resignRequired: { error in
+                            resignRequired(error)
+                        })
                     }
                 })
             }
         }
         
-        func finishLogin(withCode verificationCode: String) {
-            let verificationID = UserDefaults.standard.string(forKey: "authVerificationID")
-            let isMFAEnabled = true
-                        
-            let credential = PhoneAuthProvider.provider().credential(
-                withVerificationID: verificationID!,
-            verificationCode: verificationCode)
-                        
-            Auth.auth().signIn(with: credential) { (authResult, error) in
-              if let error = error {
-                let authError = error as NSError
-                if (isMFAEnabled && authError.code == AuthErrorCode.secondFactorRequired.rawValue) {
-                  // The user is a multi-factor user. Second factor challenge is required.
-                  let resolver = authError.userInfo[AuthErrorUserInfoMultiFactorResolverKey] as! MultiFactorResolver
-                  var displayNameString = ""
-                  for tmpFactorInfo in (resolver.hints) {
-                    displayNameString += tmpFactorInfo.displayName ?? ""
-                    displayNameString += " "
-                  }
-                    self.myAlerts.showTextInputPrompt(title: "Select factor to sign in\n\(displayNameString)", message: "", callback: { userPressedOk, displayName in
-                        
-                    var selectedHint: PhoneMultiFactorInfo?
-                    for tmpFactorInfo in resolver.hints {
-                      if (displayName == tmpFactorInfo.displayName) {
-                        selectedHint = tmpFactorInfo as? PhoneMultiFactorInfo
-                      }
-                    }
-                    PhoneAuthProvider.provider().verifyPhoneNumber(with: selectedHint!, uiDelegate: nil, multiFactorSession: resolver.session) { verificationID, error in
-                      if let error = error {
-                        self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
-                      } else {
-                        self.myAlerts.showTextInputPrompt(title: "Verification code for \(selectedHint?.displayName ?? "")", message: "", callback: { userPressedOK, verificationCode in
-                          let credential: PhoneAuthCredential? = PhoneAuthProvider.provider().credential(withVerificationID: verificationID!, verificationCode: verificationCode)
-                          let assertion: MultiFactorAssertion? = PhoneMultiFactorGenerator.assertion(with: credential!)
-                          resolver.resolveSignIn(with: assertion!) { authResult, error in
-                            if let error = error {
-                              self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
-                            } else {
-    //                          callingView.navigationController?.popViewController(animated: true)
-                            }
-                          }
-                        })
-                      }
-                    }
-                  })
-                } else {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
-                  return
-                }
-                // ...
-                return
+    func finishLogin(withCode verificationCode: String, resignRequired: @escaping (Error) -> ()) {
+        let verificationID = UserDefaults.standard.string(forKey: "authVerificationID")
+        let isMFAEnabled = true
+                    
+        let credential = PhoneAuthProvider.provider().credential(
+            withVerificationID: verificationID!,
+        verificationCode: verificationCode)
+                    
+        Auth.auth().signIn(with: credential) { (authResult, error) in
+          if let error = error {
+            let authError = error as NSError
+            if (isMFAEnabled && authError.code == AuthErrorCode.secondFactorRequired.rawValue) {
+              // The user is a multi-factor user. Second factor challenge is required.
+              let resolver = authError.userInfo[AuthErrorUserInfoMultiFactorResolverKey] as! MultiFactorResolver
+              var displayNameString = ""
+              for tmpFactorInfo in (resolver.hints) {
+                displayNameString += tmpFactorInfo.displayName ?? ""
+                displayNameString += " "
               }
+                self.myAlerts.showTextInputPrompt(placeholder: "", title: "Select factor to sign in\n\(displayNameString)", message: "", callback: { userPressedOk, displayName in
+                    
+                var selectedHint: PhoneMultiFactorInfo?
+                for tmpFactorInfo in resolver.hints {
+                  if (displayName == tmpFactorInfo.displayName) {
+                    selectedHint = tmpFactorInfo as? PhoneMultiFactorInfo
+                  }
+                }
+                PhoneAuthProvider.provider().verifyPhoneNumber(with: selectedHint!, uiDelegate: nil, multiFactorSession: resolver.session) { verificationID, error in
+                  if let error = error {
+//                    self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
+                    resignRequired(error)
+                  } else {
+                    self.myAlerts.showTextInputPrompt(placeholder: "", title: "Verification code for \(selectedHint?.displayName ?? "")", message: "", callback: { userPressedOK, verificationCode in
+                      let credential: PhoneAuthCredential? = PhoneAuthProvider.provider().credential(withVerificationID: verificationID!, verificationCode: verificationCode)
+                      let assertion: MultiFactorAssertion? = PhoneMultiFactorGenerator.assertion(with: credential!)
+                      resolver.resolveSignIn(with: assertion!) { authResult, error in
+                        if let error = error {
+                          //self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
+                            resignRequired(error)
+                        } else {
+//                          callingView.navigationController?.popViewController(animated: true)
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            } else {
+                //self.myAlerts.showMessagePrompt(title: "Error", message: error.localizedDescription, callback: {})
+                resignRequired(error)
+              return
             }
-
+            // ...
+            return
+          }
         }
+        
+        
+
+    }
     
     //MARK: Functions
     func listen() {
@@ -119,7 +127,7 @@ class FirebaseSession: ObservableObject {
     }
     
     func makeUser(_ user: FirebaseAuth.User) {
-        self.session = User(uid: user.uid, displayName: user.displayName ?? "user1234", phoneNumber: user.phoneNumber, image: UIImage(), leagueNames: [])
+        self.session = User(uid: user.uid, displayName: user.displayName, phoneNumber: user.phoneNumber, image: UIImage(), leagueNames: [])
         
         if(user.photoURL != nil) {
             let r = storageRef.child(self.session!.phoneNumber! + ".jpg")
@@ -150,7 +158,6 @@ class FirebaseSession: ObservableObject {
                 } else {
                     self.session!.displayName = displayName
                     self.ref.child("displayName").setValue(displayName)
-                    self.myAlerts.showMessagePrompt(title: "Alert", message: "Reload the app to see your display name change in your leagues", callback: {})
                 }
             }
         }
@@ -199,20 +206,17 @@ class FirebaseSession: ObservableObject {
             let enumerator = snapshot.children
             while let rest = enumerator.nextObject() as? DataSnapshot {
                 if rest.key != "displayName" && rest.key != "uid" && rest.key != "ownedLeagues" {
-                    self.getLeague(name: rest.value as! String , path: rest.key, callingFunction: "get leagues")
+                    self.getLeague(name: rest.value as! String , path: rest.key)
                 
                 }
             }
         })
     }
     
-    func getLeague(name: String, path: String, callingFunction: String) {
-        print("getLeague called by " + callingFunction)
+    func getLeague(name: String, path: String) {
         let locRef = Database.database().reference(withPath: path)
         locRef.observeSingleEvent(of: DataEventType.value) { (locSnapshot) in
-            print("opening league: " + path)
-            if let league = League(snapshot: locSnapshot, id: path, callingFunction: "getLeague") {
-                print("nonnull league")
+            if let league = League(snapshot: locSnapshot, id: path) {
                 self.session?.leagueNames.append(name)
                 self.leagues.append(league)
                 self.curLeague = self.leagues[0]
@@ -232,8 +236,9 @@ class FirebaseSession: ObservableObject {
     }
     
     func uploadLeague(leagueName: String, leagueImage: UIImage, displayName: String, playerImage: UIImage) {
+        let creatorRealName = session!.displayName!
         
-        let league = League(name: leagueName, image: leagueImage, creatorPhone: self.session!.phoneNumber!, creatorDisplayName: displayName, creatorImage: playerImage)
+        let league = League(leagueName: leagueName, image: leagueImage, creatorPhone: self.session!.phoneNumber!, creatorDisplayName: displayName, creatorRealName: creatorRealName, creatorImage: playerImage)
         
         let leagueRef: DatabaseReference = Database.database().reference().child("\(league.id)")
         leagueRef.setValue(league.toAnyObject())
@@ -257,13 +262,14 @@ class FirebaseSession: ObservableObject {
     
     func joinLeague(leagueID: String, leagueName: String, displayName: String, phoneNumber: String, image: UIImage)
     {
+        let realName = session!.displayName!
         let rating = GameInfo.DefaultGameInfo.DefaultRating
-        let addition = ["displayName": displayName, "mu": rating.Mean, "sigma": rating.StandardDeviation] as [String : Any]
+        let addition = ["realName": realName, "displayName": displayName, "mu": rating.Mean, "sigma": rating.StandardDeviation] as [String : Any]
         Database.database().reference(withPath: leagueID).updateChildValues(["/players/\(self.session!.phoneNumber!)": addition])
         Database.database().reference(withPath: self.session!.phoneNumber!).updateChildValues(["\(leagueID)": leagueName])
         let playerImageRef = storageRef.child("\(leagueID)\(self.session!.phoneNumber!).jpg")
         StorageService.uploadImage(image, at: playerImageRef, completion: {_ in
-            self.getLeague(name: leagueName, path: leagueID, callingFunction: "join league")
+            self.getLeague(name: leagueName, path: leagueID)
         })
     }
 
@@ -272,44 +278,98 @@ class FirebaseSession: ObservableObject {
         self.curLeague = league
     }
     
+    func uploadGames(games: [[Game]]) {
+        let displayNameToPhoneNumber = self.curLeague.displayNameToPhoneNumber
+        let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
+        
+        for i in 0..<games.count {
+            let playerNames = games[i][0].team1 + games[i][0].team2 // the players will be the same for each
+            for j in 0..<games[i].count {
+                if let playerPhone = displayNameToPhoneNumber[playerNames[i]] {
+                    leagueRef.child("\(playerPhone)/games/\(games[i][j].date)").setValue(games[i][j].toAnyObject())
+                }
+            }
+        }
+//            leagueRef.child("\(displayNameToPhoneNumber[games[i].team1[0]]!)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
+//            leagueRef.child("\(displayNameToPhoneNumber[games[i].team1[1]]!)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
+//            leagueRef.child("\(displayNameToPhoneNumber[games[i].team2[0]]!)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
+//            leagueRef.child("\(displayNameToPhoneNumber[games[i].team2[1]]!)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
+//            uploadGame(forPlayer: displayNameToPhoneNumber[games[i].team1[0]]!, game: games[i], leagueRef: leagueRef, newRating: newRatings[i][0])
+//            uploadGame(forPlayer: displayNameToPhoneNumber[games[i].team1[1]]!, game: games[i], leagueRef: leagueRef, newRating: newRatings[i][1])
+//            uploadGame(forPlayer: displayNameToPhoneNumber[games[i].team2[0]]!, game: games[i], leagueRef: leagueRef, newRating: newRatings[i][2])
+//            uploadGame(forPlayer: displayNameToPhoneNumber[games[i].team2[1]]!, game: games[i], leagueRef: leagueRef, newRating: newRatings[i][3])
+        //force swift to reload the page
+        let temp = curLeague
+        curLeague = League()
+        curLeague = temp
+    }
+    
     func uploadGame(game: Game, newRatings: [Rating]) {
         let displayNameToPhoneNumber = self.curLeague.displayNameToPhoneNumber
         let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
+        
         uploadGame(forPlayer: displayNameToPhoneNumber[game.team1[0]]!, game: game, leagueRef: leagueRef, newRating: newRatings[0])
+        changePlayerRating(leagueRef: leagueRef, newRating: newRatings[0], playerPhone: displayNameToPhoneNumber[game.team1[0]]!)
+        
         uploadGame(forPlayer: displayNameToPhoneNumber[game.team1[1]]!, game: game, leagueRef: leagueRef, newRating: newRatings[1])
+        changePlayerRating(leagueRef: leagueRef, newRating: newRatings[1], playerPhone: displayNameToPhoneNumber[game.team1[1]]!)
+        
         uploadGame(forPlayer: displayNameToPhoneNumber[game.team2[0]]!, game: game, leagueRef: leagueRef, newRating: newRatings[2])
+        changePlayerRating(leagueRef: leagueRef, newRating: newRatings[2], playerPhone: displayNameToPhoneNumber[game.team2[0]]!)
+        
         uploadGame(forPlayer: displayNameToPhoneNumber[game.team2[1]]!, game: game, leagueRef: leagueRef, newRating: newRatings[3])
+        changePlayerRating(leagueRef: leagueRef, newRating: newRatings[3], playerPhone: displayNameToPhoneNumber[game.team2[1]]!)
+        
+        //force swift to reload the page
+        curLeague.rankPlayers()
+        let temp = curLeague
+        curLeague = League()
+        curLeague = temp
+    }
+    
+    func uploadCorrectGame(forPlayer playerPhone: String, game: Game, leagueRef: DatabaseReference, newRating: Rating)
+    {
+        
     }
     
     func uploadGame(forPlayer playerPhone: String, game: Game, leagueRef: DatabaseReference, newRating: Rating) {
         //let playerDisplayName = curLeague.players[playerPhone]!.displayName
         let oldPlayerMean = curLeague.players[playerPhone]!.rating.Mean
-        var gameToAdd: Game
-//        if game.team2.contains(playerDisplayName) {
-//            if Int(game.scores[1])! < Int(game.scores[0])! {
-//                gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, key: "", gameScore: -game.gameScore, date: game.date)
-//                leagueRef.child("\(playerPhone)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
-//            }else{
-//                gameToAdd = game
-//                leagueRef.child("\(playerPhone)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
-//            }
-//
-//        } else {
-//            if Int(game.scores[1])! > Int(game.scores[0])! {
-//                gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, key: "", gameScore: -game.gameScore, date: game.date)
-//                leagueRef.child("\(playerPhone)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
-//            }else{
-//                gameToAdd = game
-//                leagueRef.child("\(playerPhone)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
-//            }
-//        }
-        gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, key: "", gameScore: newRating.Mean - oldPlayerMean, date: game.date)
+        let oldPlayerSigma = curLeague.players[playerPhone]!.rating.StandardDeviation
+        let gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, key: "", gameScore: newRating.Mean - oldPlayerMean, sigmaChange: newRating.StandardDeviation - oldPlayerSigma, date: game.date)
         leagueRef.child("\(playerPhone)/games/\(gameToAdd.date)").setValue(gameToAdd.toAnyObject())
+        
+        curLeague.addPlayerGame(forPlayerPhone: playerPhone, playerGame: gameToAdd, newRating: newRating)
+    }
+    
+    func changePlayerRating(leagueRef: DatabaseReference, newRating: Rating, playerPhone: String) {
         leagueRef.child("\(playerPhone)/mu").setValue(newRating.Mean)
         leagueRef.child("\(playerPhone)/sigma").setValue(newRating.StandardDeviation)
+    }
+    
+    func deleteGame(fromLeague league: League, game: Game, fromPlayer player: PlayerForm) {
+        let gamesToUpload = league.deleteGame(forDate: game.date, forPlayer: player)
         
-        curLeague.players[playerPhone]?.playerGames.append(gameToAdd)
-        curLeague.players[playerPhone]?.rating = newRating
-        curLeague.sortPlayers()
+        let displayNameToPhone = league.displayNameToPhoneNumber
+        let playerDict = league.players
+        
+//        var newRatingsArr: [[Rating]] = []
+//        var gamesToUpload: [Game] = []
+//        for (_, value) in allGamesAfterDate.sorted(by: { $0.0 > $1.0 }) {
+//            let newRatings = Functions.getNewRatings(players: value.team1 + value.team2, scores: value.scores, ratings: [playerDict[displayNameToPhone[value.team1[0]]!]!.rating, playerDict[displayNameToPhone[value.team1[1]]!]!.rating, playerDict[displayNameToPhone[value.team2[0]]!]!.rating, playerDict[displayNameToPhone[value.team2[1]]!]!.rating])
+//            newRatingsArr.append(newRatings)
+//            gamesToUpload.append(value)
+//        }
+        
+        //actually remove the game from the four players on firebase. The deletion of the game from the players locally was done in the league
+        for playerName in game.team1 + game.team2 {
+            var leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players/\(displayNameToPhone[playerName]!)/games/\(game.date)")
+            leagueRef.removeValue()
+            leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
+            let playerPhone = displayNameToPhone[playerName]!
+            changePlayerRating(leagueRef: leagueRef, newRating: curLeague.players[playerPhone]!.rating, playerPhone: playerPhone)
+        }
+        
+        uploadGames(games: gamesToUpload)
     }
 }

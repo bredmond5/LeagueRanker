@@ -17,21 +17,24 @@ struct Game: Identifiable {
     let ref: DatabaseReference?
     let date: String
     let gameScore: Double
+    let sigmaChange: Double
     
-    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000))) {
+    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, sigmaChange: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000))) {
         self.ref = nil
         self.team1 = team1
         self.team2 = team2
         self.scores = scores
         self.id = date
         self.gameScore = gameScore
+        self.sigmaChange = sigmaChange
         self.date = date
     }
     
     init?(snapshot: DataSnapshot, date: String) {
         guard
             let value = snapshot.value as? [String: AnyObject],
-            let gameScore = value["gameScore"] as? String
+            let gameScore = value["gameScore"] as? Double,
+            let sigmaChange = value["sigmaChange"] as? Double
             else {
                 print("Failed in game snapshot initializer")
                 return nil
@@ -60,7 +63,8 @@ struct Game: Identifiable {
         self.team2 = team2
         self.scores = scores
         self.date = date
-        self.gameScore = Double(gameScore)!
+        self.gameScore = gameScore
+        self.sigmaChange = sigmaChange
     }
     
     func toAnyObject() -> Any {
@@ -71,6 +75,7 @@ struct Game: Identifiable {
         gameDict[scores[0]] = team1Arr as AnyObject
         gameDict[scores[1]] = team2Arr as AnyObject
         gameDict["gameScore"] = gameScore as AnyObject
+        gameDict["sigmaChange"] = sigmaChange as AnyObject
         
         return gameDict
     }

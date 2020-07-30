@@ -12,7 +12,12 @@ import FirebaseDatabase
 import FirebaseStorage
 
 
-class PlayerForm: Identifiable, ObservableObject, Comparable {
+class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(phoneNumber) //phonenumber will be unique
+        hasher.combine(displayName)
+    }
+    
     static func < (lhs: PlayerForm, rhs: PlayerForm) -> Bool {
         return lhs.rating.Mean > rhs.rating.Mean
     }
@@ -25,11 +30,12 @@ class PlayerForm: Identifiable, ObservableObject, Comparable {
     @Published var displayName: String
     @Published var image: UIImage
     var rank: Int // id is their ranking
-    var rating: Rating
-    var playerGames: [Game] = []
+    @Published var rating: Rating
+    @Published var playerGames: [Game] = []
     var id: UUID
+    var realName: String
     
-    init(phoneNumber: String, displayName: String, image: UIImage = UIImage(), rank: Int, rating: Rating, playerGames: [Game] = []) {
+    init(phoneNumber: String, displayName: String, image: UIImage = UIImage(), rank: Int, rating: Rating, playerGames: [Game] = [], realName: String) {
         id = UUID()
         self.phoneNumber = phoneNumber
         self.displayName = displayName
@@ -37,6 +43,7 @@ class PlayerForm: Identifiable, ObservableObject, Comparable {
         self.rank = rank
         self.rating = rating
         self.playerGames = playerGames
+        self.realName = realName
     }
     
 //    func toAnyObject() -> Any {

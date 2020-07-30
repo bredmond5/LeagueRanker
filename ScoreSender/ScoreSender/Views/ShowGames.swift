@@ -8,14 +8,28 @@
 
 import SwiftUI
 
-
 struct ShowGames: View {
+    @EnvironmentObject var session: FirebaseSession
     var player: PlayerForm
     
     var body: some View {
         VStack {
             List (player.playerGames) { game in
-                GameRow(game: game, playerName: self.player.displayName)
+                if self.session.curLeague.creatorPhone == self.session.session?.phoneNumber {
+                    Button(action: {
+                            MyAlerts().showCancelOkMessage(title: "Are you sure you want to delete this game?", message: "There is no going back", callback: { userPressedOk in
+                                if userPressedOk {
+                                    self.session.deleteGame(fromLeague: self.session.curLeague, game: game, fromPlayer: self.player)
+    //                                self.player.playerGames.removeAll(where: {$0.id == game.id})
+                                }
+                            })
+                            
+                    }, label: {
+                        GameRow(game: game, playerName: self.player.displayName)
+                    })
+                }else{
+                    GameRow(game: game, playerName: self.player.displayName)
+                }
             }
         }
     }

@@ -110,6 +110,8 @@
 		425597C024400537001FD893 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597BF24400537001FD893 /* Game.swift */; };
 		425597C124400537001FD893 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597BF24400537001FD893 /* Game.swift */; };
 		425597C224400537001FD893 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597BF24400537001FD893 /* Game.swift */; };
+		42652A7324D1113500AB7E1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296E38A243D71D60058B451 /* ContentView.swift */; };
+		42652A7424D1113600AB7E1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296E38A243D71D60058B451 /* ContentView.swift */; };
 		4278DBC2246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC3246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC4246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
@@ -140,6 +142,12 @@
 		429DFFC724C6550400FF07E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429DFFC324C6550400FF07E8 /* GoogleService-Info.plist */; };
 		429DFFC824C6550400FF07E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429DFFC324C6550400FF07E8 /* GoogleService-Info.plist */; };
 		429DFFC924C6550400FF07E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 429DFFC324C6550400FF07E8 /* GoogleService-Info.plist */; };
+		429DFFCB24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */; };
+		429DFFCC24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */; };
+		429DFFCD24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */; };
+		429DFFCF24C7B1B000FF07E8 /* InviteToLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */; };
+		429DFFD024C7B1B000FF07E8 /* InviteToLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */; };
+		429DFFD124C7B1B000FF07E8 /* InviteToLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */; };
 		42A3315024AD686B00B78B57 /* MyAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3314F24AD686B00B78B57 /* MyAlerts.swift */; };
 		42A3315124AD686B00B78B57 /* MyAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3314F24AD686B00B78B57 /* MyAlerts.swift */; };
 		42A3315224AD686B00B78B57 /* MyAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3314F24AD686B00B78B57 /* MyAlerts.swift */; };
@@ -241,6 +249,8 @@
 		429AD90524B0ED8500E67A39 /* DisplayNameAndPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameAndPhoto.swift; sourceTree = "<group>"; };
 		429DFFC124C6550400FF07E8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		429DFFC324C6550400FF07E8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteToLeague.swift; sourceTree = "<group>"; };
 		42A3314F24AD686B00B78B57 /* MyAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAlerts.swift; sourceTree = "<group>"; };
 		42A3315324AD959000B78B57 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteTextField.swift; sourceTree = "<group>"; };
@@ -310,8 +320,10 @@
 				42DC6BB62487516700A4D42C /* ShowGames.swift */,
 				4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */,
 				422D0833246A5CED00D605C4 /* LoginView.swift */,
+				429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */,
 				42F3260F246CA2DB005C6E71 /* NewLeague.swift */,
 				4278DBC9246E1D5D004DB8B0 /* JoinLeague.swift */,
+				429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */,
 				422D0824246A59A700D605C4 /* PlayerRow.swift */,
 				429AD90524B0ED8500E67A39 /* DisplayNameAndPhoto.swift */,
 				42166DE0246F1EBD00C65CE6 /* StorageService.swift */,
@@ -756,6 +768,7 @@
 				422F48D924C39664002C434F /* GaussianDistribution.swift in Sources */,
 				422F48DA24C39664002C434F /* PairwiseComparison.swift in Sources */,
 				422D0819246A594500D605C4 /* SettingsForm.swift in Sources */,
+				429DFFCB24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */,
 				422D0821246A598000D605C4 /* GameForm.swift in Sources */,
 				422F48D324C39664002C434F /* PlayersRange.swift in Sources */,
 				422F48DC24C39664002C434F /* TeamsRange.swift in Sources */,
@@ -783,6 +796,7 @@
 				422F48DB24C39664002C434F /* SkillCalculator.swift in Sources */,
 				422F48D124C39664002C434F /* Rating.swift in Sources */,
 				4278DBC2246E19A5004DB8B0 /* CurLeague.swift in Sources */,
+				429DFFCF24C7B1B000FF07E8 /* InviteToLeague.swift in Sources */,
 				4278DBCA246E1D5D004DB8B0 /* JoinLeague.swift in Sources */,
 				422F48D824C39664002C434F /* TruncatedGaussianCorrectionFunctions.swift in Sources */,
 				422F48D224C39664002C434F /* TrueSkillCalculator.swift in Sources */,
@@ -806,12 +820,14 @@
 				42F3260D246C92DA005C6E71 /* SpanningLabel.swift in Sources */,
 				422D0835246A5CED00D605C4 /* LoginView.swift in Sources */,
 				425597C124400537001FD893 /* Game.swift in Sources */,
+				42652A7324D1113500AB7E1C /* ContentView.swift in Sources */,
 				42A3315924AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */,
 				422D081A246A594500D605C4 /* SettingsForm.swift in Sources */,
 				422F48DE24C39664002C434F /* TwoTeamTrueskillCalculator.swift in Sources */,
 				422F48EB24C39664002C434F /* GaussianDistribution.swift in Sources */,
 				422F48EC24C39664002C434F /* PairwiseComparison.swift in Sources */,
 				425597B3243FFCFD001FD893 /* Functions.swift in Sources */,
+				429DFFCC24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */,
 				422D0822246A598000D605C4 /* GameForm.swift in Sources */,
 				422F48E524C39664002C434F /* PlayersRange.swift in Sources */,
 				422F48EE24C39664002C434F /* TeamsRange.swift in Sources */,
@@ -839,6 +855,7 @@
 				422F48ED24C39664002C434F /* SkillCalculator.swift in Sources */,
 				422F48E324C39664002C434F /* Rating.swift in Sources */,
 				422D0826246A59A700D605C4 /* PlayerRow.swift in Sources */,
+				429DFFD024C7B1B000FF07E8 /* InviteToLeague.swift in Sources */,
 				4278DBC3246E19A5004DB8B0 /* CurLeague.swift in Sources */,
 				422F48EA24C39664002C434F /* TruncatedGaussianCorrectionFunctions.swift in Sources */,
 				422F48E424C39664002C434F /* TrueSkillCalculator.swift in Sources */,
@@ -862,12 +879,14 @@
 				42F3260E246C92DA005C6E71 /* SpanningLabel.swift in Sources */,
 				422D0836246A5CED00D605C4 /* LoginView.swift in Sources */,
 				425597C224400537001FD893 /* Game.swift in Sources */,
+				42652A7424D1113600AB7E1C /* ContentView.swift in Sources */,
 				42A3315A24AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */,
 				422D081B246A594500D605C4 /* SettingsForm.swift in Sources */,
 				422F48F024C39665002C434F /* TwoTeamTrueskillCalculator.swift in Sources */,
 				422F48FD24C39665002C434F /* GaussianDistribution.swift in Sources */,
 				422F48FE24C39665002C434F /* PairwiseComparison.swift in Sources */,
 				425597B4243FFCFD001FD893 /* Functions.swift in Sources */,
+				429DFFCD24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */,
 				422D0823246A598000D605C4 /* GameForm.swift in Sources */,
 				422F48F724C39665002C434F /* PlayersRange.swift in Sources */,
 				422F490024C39665002C434F /* TeamsRange.swift in Sources */,
@@ -895,6 +914,7 @@
 				422F48FF24C39665002C434F /* SkillCalculator.swift in Sources */,
 				422F48F524C39665002C434F /* Rating.swift in Sources */,
 				422D0827246A59A700D605C4 /* PlayerRow.swift in Sources */,
+				429DFFD124C7B1B000FF07E8 /* InviteToLeague.swift in Sources */,
 				4278DBC4246E19A5004DB8B0 /* CurLeague.swift in Sources */,
 				422F48FC24C39665002C434F /* TruncatedGaussianCorrectionFunctions.swift in Sources */,
 				422F48F624C39665002C434F /* TrueSkillCalculator.swift in Sources */,
@@ -1096,7 +1116,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4XFJ93AK5X;
 				INFOPLIST_FILE = ScoreSenderTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1119,7 +1139,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4XFJ93AK5X;
 				INFOPLIST_FILE = ScoreSenderTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1141,6 +1161,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4XFJ93AK5X;
 				INFOPLIST_FILE = ScoreSenderUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1161,6 +1182,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4XFJ93AK5X;
 				INFOPLIST_FILE = ScoreSenderUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

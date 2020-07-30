@@ -20,7 +20,7 @@ struct CurLeague: View {
             LeaguesScroller()
             Divider()
             
-            List(self.session.curLeague.returnPlayers().sorted()) { player in
+            List(self.session.curLeague.sortedPlayers) { player in
                 NavigationLink(destination: ShowGames(player: player).navigationBarTitle(player.displayName + "'s games"))
                 {
                     PlayerRow(player: player)
@@ -30,7 +30,7 @@ struct CurLeague: View {
             
         }.navigationBarTitle(self.session.curLeague.name)
             .navigationBarItems(
-                leading: NavigationLink(destination: SettingsForm(currentUsername: session.session?.displayName ?? "user1234").navigationBarTitle("Settings")) {
+                leading: NavigationLink(destination: SettingsForm().navigationBarTitle("Settings")) {
                         Text("Settings")
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -80,6 +80,20 @@ struct CurLeague: View {
                             .cornerRadius(4)
                         }
                     }
-            }
-        )}
+                }
+        )
+            .onAppear(perform: getDisplayName)
+        }
+
+    func getDisplayName() {
+        if self.session.session?.displayName == nil  {
+            MyAlerts().showTextInputPromptNoCancel(placeholder: "John", title: "Success!", message: "Enter your real first name", keyboardType: UIKeyboardType.default, callback: { displayName in
+                if(displayName == "") {
+                    self.getDisplayName()
+                }else{
+                    self.session.changeUser(displayName: displayName, image: nil)
+                }
+            })
+        }
+    }
 }

@@ -10,20 +10,66 @@ import SwiftUI
 
 class MyAlerts {
     public func showMessagePrompt(title: String, message: String, callback: @escaping () -> Void) {
-           let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        showAlert(alert: MyAlerts.getShowMessagePrompt(title: title, message: message, callback: callback))
+    }
+    
+    public static func getShowMessagePrompt(title: String, message: String, callback: @escaping () -> Void) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            callback()
+        })
+        
+        return alert
+    }
+    
+    public func showCancelOkMessage(title: String, message: String, callback: @escaping (Bool) -> Void) {
+        
+        showAlert(alert: MyAlerts.getCancelOkMessage(title: title, message: message, callback: callback))
+    }
+    
+    public static func getCancelOkMessage(title: String, message: String, callback: @escaping (Bool) -> Void) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in
+            callback(true)
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
+            callback(false)
+        })
+        
+        return alert
+        
+    }
+    
+    public func showTextInputPromptNoCancel(placeholder: String, title: String, message: String, keyboardType: UIKeyboardType, callback: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                
+        alert.addTextField() { textField in
+            textField.placeholder = placeholder
+            textField.text = ""
+            textField.keyboardType = keyboardType
+        }
+        
+        let action = UIAlertAction(title: "Enter", style: .default) { _ in
+            let firstTextField = alert.textFields![0] as UITextField
+            let text = firstTextField.text
+            callback(text!)
+        }
+        
+        action.isEnabled = (alert.textFields![0] as UITextField).text! == ""
+        
+        alert.addAction(action)
+        
+        showAlert(alert: alert)
+    }
            
-           alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-               callback()
-           })
-           
-           showAlert(alert: alert)
-       }
-           
-       public func showTextInputPrompt(title: String, message: String, callback: @escaping (Bool, String) -> Void) {
+    public func showTextInputPrompt(placeholder: String, title: String, message: String, callback: @escaping (Bool, String) -> Void) {
            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                    
            alert.addTextField() { textField in
-               textField.placeholder = "654321"
+               textField.placeholder = placeholder
                textField.text = ""
                textField.keyboardType = .numberPad
            }

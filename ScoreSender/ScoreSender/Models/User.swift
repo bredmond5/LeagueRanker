@@ -12,7 +12,7 @@ class User: Identifiable {
     
     var uid: String
     var phoneNumber: String?
-    var displayName: String?
+    @Published var displayName: String? // this will be the users real name
     @State var image: UIImage
     var leagueNames: [String]
     

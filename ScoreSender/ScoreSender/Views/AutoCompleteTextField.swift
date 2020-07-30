@@ -4,24 +4,22 @@ import SwiftUI
  struct AutoCompleteTextFieldSwiftUI: UIViewRepresentable, AutoCompleteTextFieldDelegate {
     @EnvironmentObject var session: FirebaseSession
     @Binding var text: String
-    let playerNumber: Int
+    let placeholder: String
     typealias UIViewType = UITextField
+    var datasource: [String: String]
     
     var textfield: AutoCompleteTextField = {
         let textfield = AutoCompleteTextField()
         textfield.tintColor = UIColor.gray
         textfield.boldTextColor = UIColor.black
         textfield.lightTextColor = UIColor.gray
+        textfield.autocapitalizationType = UITextAutocapitalizationType.none
         return textfield
     }()
         
     mutating func provideDatasource() {
-        let players = session.curLeague.returnPlayers()
-        var datasource: [String] = []
-        for player in players {
-            datasource.append(player.displayName)
-        }
         textfield.datasource = datasource
+        
     }
     
     mutating func returned(with selection: String) {
@@ -36,7 +34,7 @@ import SwiftUI
         let tf = textfield
         tf.autocompleteDelegate = self
 //        tf.placeholder = "Player \(playerNumber)"
-        tf.placeholder = "Username"
+        tf.placeholder = placeholder
         return tf
     }
     
@@ -63,7 +61,7 @@ import SwiftUI
     
     typealias UIViewType = UITextField
     
-     var datasource: [String]?
+    var datasource: [String: String]?
      
      var autocompleteDelegate: AutoCompleteTextFieldDelegate?
      
@@ -114,7 +112,7 @@ import SwiftUI
      
      private func updateText(_ string: String, in textField: UITextField) {
          textField.textColor = self.lightTextColor
-         self.currInput += string
+        self.currInput += string
          textField.text = self.currInput
      }
      
@@ -136,16 +134,18 @@ import SwiftUI
             return
             
         }
-         
-         let allOptions = datasource.filter({ $0.hasPrefix(self.currInput) })
-         let exactMatch = allOptions.filter() { $0 == self.currInput }
-         let fullName = exactMatch.count > 0 ? exactMatch.first! : allOptions.first ?? self.currInput
-         if let range = fullName.range(of: self.currInput) {
-            let nsRange = NSRange(String(fullName.suffix(from: range.upperBound)))
-             let attribute = NSMutableAttributedString.init(string: fullName as String)
-            attribute.addAttribute(NSAttributedString.Key.foregroundColor, value: self.boldTextColor, range: nsRange ?? NSRange())
-             textField.attributedText = attribute
-         }
+                 
+        let allOptions = datasource.keys.filter({ $0.hasPrefix(self.currInput) })
+        let exactMatch = allOptions.filter() { $0 == self.currInput }
+        let fullName = exactMatch.count > 0 ? exactMatch.first! : allOptions.first ?? self.currInput
+        if let val = datasource[fullName] {
+             if let range = fullName.range(of: self.currInput) {
+                 let nsRange = NSRange(String(val.suffix(from: range.upperBound)))
+                 let attribute = NSMutableAttributedString.init(string: val as String)
+                 attribute.addAttribute(NSAttributedString.Key.foregroundColor, value: self.boldTextColor, range: nsRange ?? NSRange())
+                 textField.attributedText = attribute
+             }
+        }
     }
      
      private func updateCursorPosition(in textField: UITextField) {
@@ -165,7 +165,7 @@ import SwiftUI
      }
      
      func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-         self.autocompleteDelegate?.returned(with: textField.text!)
+        self.autocompleteDelegate?.returned(with: textField.text!)
          self.isReturned = true
          self.endEditing(true)
          return true

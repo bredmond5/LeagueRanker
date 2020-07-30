@@ -20,6 +20,8 @@ struct DisplayNameAndPhoto: View {
     
     let callback: (Bool) -> ()
     
+    let maxCharacterDisplayName = 11
+    
     var body: some View {
         
         VStack (alignment: .leading, spacing: 16) {
@@ -83,11 +85,15 @@ struct DisplayNameAndPhoto: View {
     
     func addButton() {
         if username != "" {
-            if usedUsernames.contains(username) {
-                MyAlerts().showMessagePrompt(title: "Error", message: "Someone in this league already has the username \(username)", callback: {})
-            }else{
-                self.callback(false)
-                self.isPresented = false
+            if username.count > maxCharacterDisplayName {
+                MyAlerts().showMessagePrompt(title: "Error", message: "Usernames must be less than \(maxCharacterDisplayName) characters", callback: {})
+            } else {
+                if usedUsernames.contains(username) {
+                    MyAlerts().showMessagePrompt(title: "Error", message: "Someone in this league already has the username \(username)", callback: {})
+                }else{
+                    self.callback(false)
+                    self.isPresented = false
+                }
             }
         }
     }
