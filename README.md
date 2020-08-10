@@ -1,4 +1,4 @@
-# LeagueRanker
+# LeagueStats
 
 For creating your own leagues
 
