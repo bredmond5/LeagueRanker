@@ -1,3 +1,10 @@
+//
+//  FirebaseSession.swift
+//  TODO
+//
+//  Created by Sebastian Esser on 9/18/19.
+//  Copyright © 2019 Sebastian Esser. All rights reserved.
+//
 import SwiftUI
 import Firebase
 import FirebaseAuth

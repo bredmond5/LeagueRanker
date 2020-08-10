@@ -16,9 +16,15 @@
 		42166DE1246F1EBD00C65CE6 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42166DE0246F1EBD00C65CE6 /* StorageService.swift */; };
 		42166DE2246F1EBD00C65CE6 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42166DE0246F1EBD00C65CE6 /* StorageService.swift */; };
 		42166DE3246F1EBD00C65CE6 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42166DE0246F1EBD00C65CE6 /* StorageService.swift */; };
-		422D0819246A594500D605C4 /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsForm.swift */; };
-		422D081A246A594500D605C4 /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsForm.swift */; };
-		422D081B246A594500D605C4 /* SettingsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsForm.swift */; };
+		42279F0324D5F24A00532CA8 /* TextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */; };
+		42279F0424D5F24A00532CA8 /* TextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */; };
+		42279F0524D5F24A00532CA8 /* TextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */; };
+		42279F0724D5FB3500532CA8 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0624D5FB3500532CA8 /* CustomTextField.swift */; };
+		42279F0824D5FB3500532CA8 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0624D5FB3500532CA8 /* CustomTextField.swift */; };
+		42279F0924D5FB3500532CA8 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42279F0624D5FB3500532CA8 /* CustomTextField.swift */; };
+		422D0819246A594500D605C4 /* SettingsFormOverall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsFormOverall.swift */; };
+		422D081A246A594500D605C4 /* SettingsFormOverall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsFormOverall.swift */; };
+		422D081B246A594500D605C4 /* SettingsFormOverall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D0818246A594500D605C4 /* SettingsFormOverall.swift */; };
 		422D081D246A596300D605C4 /* HybridImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D081C246A596300D605C4 /* HybridImagePickerController.swift */; };
 		422D081E246A596300D605C4 /* HybridImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D081C246A596300D605C4 /* HybridImagePickerController.swift */; };
 		422D081F246A596300D605C4 /* HybridImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422D081C246A596300D605C4 /* HybridImagePickerController.swift */; };
@@ -100,6 +106,21 @@
 		423ABAF1248ABF560059FE23 /* ContentViewPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */; };
 		423ABAF2248ABF560059FE23 /* ContentViewPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */; };
 		423ABAF3248ABF560059FE23 /* ContentViewPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */; };
+		4241F20A24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */; };
+		4241F20B24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */; };
+		4241F20C24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */; };
+		4241F20E24D3486000B59174 /* LeagueRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20D24D3486000B59174 /* LeagueRow.swift */; };
+		4241F20F24D3486000B59174 /* LeagueRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20D24D3486000B59174 /* LeagueRow.swift */; };
+		4241F21024D3486000B59174 /* LeagueRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F20D24D3486000B59174 /* LeagueRow.swift */; };
+		4241F21224D34B8B00B59174 /* AddLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21124D34B8B00B59174 /* AddLeague.swift */; };
+		4241F21324D34B8B00B59174 /* AddLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21124D34B8B00B59174 /* AddLeague.swift */; };
+		4241F21424D34B8B00B59174 /* AddLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21124D34B8B00B59174 /* AddLeague.swift */; };
+		4241F21624D34BFB00B59174 /* ActiveSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21524D34BFB00B59174 /* ActiveSheet.swift */; };
+		4241F21724D34BFB00B59174 /* ActiveSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21524D34BFB00B59174 /* ActiveSheet.swift */; };
+		4241F21824D34BFB00B59174 /* ActiveSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21524D34BFB00B59174 /* ActiveSheet.swift */; };
+		4241F21A24D34D0000B59174 /* SettingsFormLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21924D34D0000B59174 /* SettingsFormLeague.swift */; };
+		4241F21B24D34D0000B59174 /* SettingsFormLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21924D34D0000B59174 /* SettingsFormLeague.swift */; };
+		4241F21C24D34D0100B59174 /* SettingsFormLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4241F21924D34D0000B59174 /* SettingsFormLeague.swift */; };
 		425597B2243FFCFD001FD893 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597B1243FFCFD001FD893 /* Functions.swift */; };
 		425597B3243FFCFD001FD893 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597B1243FFCFD001FD893 /* Functions.swift */; };
 		425597B4243FFCFD001FD893 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597B1243FFCFD001FD893 /* Functions.swift */; };
@@ -112,6 +133,9 @@
 		425597C224400537001FD893 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425597BF24400537001FD893 /* Game.swift */; };
 		42652A7324D1113500AB7E1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296E38A243D71D60058B451 /* ContentView.swift */; };
 		42652A7424D1113600AB7E1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296E38A243D71D60058B451 /* ContentView.swift */; };
+		426BDA2E24D8655800B9C16C /* KeyboardExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426BDA2D24D8655800B9C16C /* KeyboardExtensions.swift */; };
+		426BDA2F24D8655800B9C16C /* KeyboardExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426BDA2D24D8655800B9C16C /* KeyboardExtensions.swift */; };
+		426BDA3024D8655800B9C16C /* KeyboardExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426BDA2D24D8655800B9C16C /* KeyboardExtensions.swift */; };
 		4278DBC2246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC3246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC4246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
@@ -157,6 +181,9 @@
 		42A3315824AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */; };
 		42A3315924AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */; };
 		42A3315A24AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */; };
+		42CE160824D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */; };
+		42CE160924D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */; };
+		42CE160A24D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */; };
 		42DC6BB72487516700A4D42C /* ShowGames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DC6BB62487516700A4D42C /* ShowGames.swift */; };
 		42DC6BB82487516700A4D42C /* ShowGames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DC6BB62487516700A4D42C /* ShowGames.swift */; };
 		42DC6BB92487516700A4D42C /* ShowGames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DC6BB62487516700A4D42C /* ShowGames.swift */; };
@@ -198,7 +225,9 @@
 		4213EA752485EDE7004750D1 /* ScoreSender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScoreSender.entitlements; sourceTree = "<group>"; };
 		4213EA762485EDE7004750D1 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		42166DE0246F1EBD00C65CE6 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StorageService.swift; path = ScoreSender/Views/StorageService.swift; sourceTree = SOURCE_ROOT; };
-		422D0818246A594500D605C4 /* SettingsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsForm.swift; sourceTree = "<group>"; };
+		42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldAlert.swift; sourceTree = "<group>"; };
+		42279F0624D5FB3500532CA8 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
+		422D0818246A594500D605C4 /* SettingsFormOverall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFormOverall.swift; sourceTree = "<group>"; };
 		422D081C246A596300D605C4 /* HybridImagePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridImagePickerController.swift; sourceTree = "<group>"; };
 		422D0820246A598000D605C4 /* GameForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameForm.swift; sourceTree = "<group>"; };
 		422D0824246A59A700D605C4 /* PlayerRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRow.swift; sourceTree = "<group>"; };
@@ -224,10 +253,16 @@
 		422F490124C3983D002C434F /* GameInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameInfo.swift; path = ../../../Skills/TrueskillSwift/GameInfo.swift; sourceTree = "<group>"; };
 		423ABAEC248ABF280059FE23 /* FirebaseSessionPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSessionPhone.swift; sourceTree = "<group>"; };
 		423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewPhone.swift; sourceTree = "<group>"; };
+		4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaguesScrollerVertical.swift; sourceTree = "<group>"; };
+		4241F20D24D3486000B59174 /* LeagueRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeagueRow.swift; sourceTree = "<group>"; };
+		4241F21124D34B8B00B59174 /* AddLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLeague.swift; sourceTree = "<group>"; };
+		4241F21524D34BFB00B59174 /* ActiveSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveSheet.swift; sourceTree = "<group>"; };
+		4241F21924D34D0000B59174 /* SettingsFormLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFormLeague.swift; sourceTree = "<group>"; };
 		425597B1243FFCFD001FD893 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		425597B52440038F001FD893 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		425597BB2440051A001FD893 /* PlayerForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerForm.swift; sourceTree = "<group>"; };
 		425597BF24400537001FD893 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		426BDA2D24D8655800B9C16C /* KeyboardExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardExtensions.swift; sourceTree = "<group>"; };
 		4278DBC1246E19A5004DB8B0 /* CurLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurLeague.swift; sourceTree = "<group>"; };
 		4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaguesScroller.swift; sourceTree = "<group>"; };
 		4278DBC9246E1D5D004DB8B0 /* JoinLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinLeague.swift; sourceTree = "<group>"; };
@@ -254,6 +289,7 @@
 		42A3314F24AD686B00B78B57 /* MyAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAlerts.swift; sourceTree = "<group>"; };
 		42A3315324AD959000B78B57 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCompleteTextField.swift; sourceTree = "<group>"; };
+		42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompleteTextFieldCoordinator.swift; sourceTree = "<group>"; };
 		42DC6BB62487516700A4D42C /* ShowGames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowGames.swift; sourceTree = "<group>"; };
 		42F3260B246C92DA005C6E71 /* SpanningLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanningLabel.swift; sourceTree = "<group>"; };
 		42F3260F246CA2DB005C6E71 /* NewLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLeague.swift; sourceTree = "<group>"; };
@@ -312,25 +348,33 @@
 		422D0817246A591800D605C4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4241F21524D34BFB00B59174 /* ActiveSheet.swift */,
+				429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */,
+				4241F21124D34B8B00B59174 /* AddLeague.swift */,
+				42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */,
+				42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */,
+				42279F0624D5FB3500532CA8 /* CustomTextField.swift */,
 				4296E38A243D71D60058B451 /* ContentView.swift */,
 				4278DBC1246E19A5004DB8B0 /* CurLeague.swift */,
-				422D0820246A598000D605C4 /* GameForm.swift */,
-				422D0818246A594500D605C4 /* SettingsForm.swift */,
-				422D081C246A596300D605C4 /* HybridImagePickerController.swift */,
-				42DC6BB62487516700A4D42C /* ShowGames.swift */,
-				4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */,
-				422D0833246A5CED00D605C4 /* LoginView.swift */,
-				429DFFCA24C78C7E00FF07E8 /* ActivityIndicator.swift */,
-				42F3260F246CA2DB005C6E71 /* NewLeague.swift */,
-				4278DBC9246E1D5D004DB8B0 /* JoinLeague.swift */,
-				429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */,
-				422D0824246A59A700D605C4 /* PlayerRow.swift */,
 				429AD90524B0ED8500E67A39 /* DisplayNameAndPhoto.swift */,
-				42166DE0246F1EBD00C65CE6 /* StorageService.swift */,
-				42F3260B246C92DA005C6E71 /* SpanningLabel.swift */,
-				4207ECB2246A68740079AFA7 /* SignUp.swift */,
+				422D0820246A598000D605C4 /* GameForm.swift */,
+				426BDA2D24D8655800B9C16C /* KeyboardExtensions.swift */,
+				422D081C246A596300D605C4 /* HybridImagePickerController.swift */,
+				429DFFCE24C7B1B000FF07E8 /* InviteToLeague.swift */,
+				4278DBC9246E1D5D004DB8B0 /* JoinLeague.swift */,
+				4241F20D24D3486000B59174 /* LeagueRow.swift */,
+				4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */,
+				422D0833246A5CED00D605C4 /* LoginView.swift */,
+				42F3260F246CA2DB005C6E71 /* NewLeague.swift */,
+				422D0824246A59A700D605C4 /* PlayerRow.swift */,
 				42A3315324AD959000B78B57 /* SearchBar.swift */,
-				42A3315724AD97ED00B78B57 /* AutoCompleteTextField.swift */,
+				4241F21924D34D0000B59174 /* SettingsFormLeague.swift */,
+				422D0818246A594500D605C4 /* SettingsFormOverall.swift */,
+				42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */,
+				42DC6BB62487516700A4D42C /* ShowGames.swift */,
+				4207ECB2246A68740079AFA7 /* SignUp.swift */,
+				42F3260B246C92DA005C6E71 /* SpanningLabel.swift */,
+				42166DE0246F1EBD00C65CE6 /* StorageService.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -459,6 +503,7 @@
 		42FA7BDC24A4011C0029A6B0 /* OldCode */ = {
 			isa = PBXGroup;
 			children = (
+				4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */,
 				423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */,
 				423ABAEC248ABF280059FE23 /* FirebaseSessionPhone.swift */,
 				42948B6324A67B2000B37B25 /* RandomFunctions.swift */,
@@ -755,8 +800,11 @@
 				42948B5C24A436F600B37B25 /* Constants.swift in Sources */,
 				422F48D424C39664002C434F /* TwoPlayerTrueSkillCalculator.swift in Sources */,
 				4296E387243D71D60058B451 /* AppDelegate.swift in Sources */,
+				426BDA2E24D8655800B9C16C /* KeyboardExtensions.swift in Sources */,
+				42CE160824D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */,
 				5777D3A62442795500215B91 /* League.swift in Sources */,
 				422F48D024C39664002C434F /* Range.swift in Sources */,
+				4241F20E24D3486000B59174 /* LeagueRow.swift in Sources */,
 				4296E389243D71D60058B451 /* SceneDelegate.swift in Sources */,
 				429AD90624B0ED8500E67A39 /* DisplayNameAndPhoto.swift in Sources */,
 				42F3260C246C92DA005C6E71 /* SpanningLabel.swift in Sources */,
@@ -767,10 +815,11 @@
 				422F48CC24C39664002C434F /* TwoTeamTrueskillCalculator.swift in Sources */,
 				422F48D924C39664002C434F /* GaussianDistribution.swift in Sources */,
 				422F48DA24C39664002C434F /* PairwiseComparison.swift in Sources */,
-				422D0819246A594500D605C4 /* SettingsForm.swift in Sources */,
+				422D0819246A594500D605C4 /* SettingsFormOverall.swift in Sources */,
 				429DFFCB24C78C7E00FF07E8 /* ActivityIndicator.swift in Sources */,
 				422D0821246A598000D605C4 /* GameForm.swift in Sources */,
 				422F48D324C39664002C434F /* PlayersRange.swift in Sources */,
+				4241F21224D34B8B00B59174 /* AddLeague.swift in Sources */,
 				422F48DC24C39664002C434F /* TeamsRange.swift in Sources */,
 				42166DE1246F1EBD00C65CE6 /* StorageService.swift in Sources */,
 				42DC6BB72487516700A4D42C /* ShowGames.swift in Sources */,
@@ -778,11 +827,13 @@
 				425597B62440038F001FD893 /* User.swift in Sources */,
 				422D0825246A59A700D605C4 /* PlayerRow.swift in Sources */,
 				5777D39E244276DD00215B91 /* FirebaseSession.swift in Sources */,
+				42279F0324D5F24A00532CA8 /* TextFieldAlert.swift in Sources */,
 				422D081D246A596300D605C4 /* HybridImagePickerController.swift in Sources */,
 				42A3315024AD686B00B78B57 /* MyAlerts.swift in Sources */,
 				4207ECB3246A68740079AFA7 /* SignUp.swift in Sources */,
 				422F490224C3983D002C434F /* GameInfo.swift in Sources */,
 				42F32610246CA2DB005C6E71 /* NewLeague.swift in Sources */,
+				42279F0724D5FB3500532CA8 /* CustomTextField.swift in Sources */,
 				422F48CF24C39664002C434F /* Team.swift in Sources */,
 				422F48CB24C39664002C434F /* FactorGraphTrueskillCalculator.swift in Sources */,
 				423ABAF1248ABF560059FE23 /* ContentViewPhone.swift in Sources */,
@@ -791,7 +842,9 @@
 				422F48CE24C39664002C434F /* DrawMargin.swift in Sources */,
 				4278DBC6246E19BA004DB8B0 /* LeaguesScroller.swift in Sources */,
 				425597B2243FFCFD001FD893 /* Functions.swift in Sources */,
+				4241F21624D34BFB00B59174 /* ActiveSheet.swift in Sources */,
 				422F48D524C39664002C434F /* RankSorter.swift in Sources */,
+				4241F21A24D34D0000B59174 /* SettingsFormLeague.swift in Sources */,
 				422F48D624C39664002C434F /* TrueskillFactorGraph.swift in Sources */,
 				422F48DB24C39664002C434F /* SkillCalculator.swift in Sources */,
 				422F48D124C39664002C434F /* Rating.swift in Sources */,
@@ -802,6 +855,7 @@
 				422F48D224C39664002C434F /* TrueSkillCalculator.swift in Sources */,
 				423ABAED248ABF280059FE23 /* FirebaseSessionPhone.swift in Sources */,
 				422F48D724C39664002C434F /* Player.swift in Sources */,
+				4241F20A24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */,
 				425597C024400537001FD893 /* Game.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -811,10 +865,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				42948B5D24A436F600B37B25 /* Constants.swift in Sources */,
+				4241F21724D34BFB00B59174 /* ActiveSheet.swift in Sources */,
 				422F48E624C39664002C434F /* TwoPlayerTrueSkillCalculator.swift in Sources */,
 				422D081E246A596300D605C4 /* HybridImagePickerController.swift in Sources */,
+				42CE160924D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */,
 				422D0830246A5BF700D605C4 /* SceneDelegate.swift in Sources */,
 				422F48E224C39664002C434F /* Range.swift in Sources */,
+				4241F20F24D3486000B59174 /* LeagueRow.swift in Sources */,
 				4296E39E243D71D70058B451 /* ScoreSenderTests.swift in Sources */,
 				429AD90724B0ED8500E67A39 /* DisplayNameAndPhoto.swift in Sources */,
 				42F3260D246C92DA005C6E71 /* SpanningLabel.swift in Sources */,
@@ -822,7 +879,7 @@
 				425597C124400537001FD893 /* Game.swift in Sources */,
 				42652A7324D1113500AB7E1C /* ContentView.swift in Sources */,
 				42A3315924AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */,
-				422D081A246A594500D605C4 /* SettingsForm.swift in Sources */,
+				422D081A246A594500D605C4 /* SettingsFormOverall.swift in Sources */,
 				422F48DE24C39664002C434F /* TwoTeamTrueskillCalculator.swift in Sources */,
 				422F48EB24C39664002C434F /* GaussianDistribution.swift in Sources */,
 				422F48EC24C39664002C434F /* PairwiseComparison.swift in Sources */,
@@ -834,9 +891,11 @@
 				42166DE2246F1EBD00C65CE6 /* StorageService.swift in Sources */,
 				42DC6BB82487516700A4D42C /* ShowGames.swift in Sources */,
 				422F48DF24C39664002C434F /* Person.swift in Sources */,
+				4241F21B24D34D0000B59174 /* SettingsFormLeague.swift in Sources */,
 				425597BD2440051A001FD893 /* PlayerForm.swift in Sources */,
 				5777D3A72442795500215B91 /* League.swift in Sources */,
 				422D082F246A5BF700D605C4 /* AppDelegate.swift in Sources */,
+				4241F20B24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */,
 				422D082D246A5BCD00D605C4 /* User.swift in Sources */,
 				42A3315124AD686B00B78B57 /* MyAlerts.swift in Sources */,
 				5777D39F244276DD00215B91 /* FirebaseSession.swift in Sources */,
@@ -846,7 +905,9 @@
 				422F48DD24C39664002C434F /* FactorGraphTrueskillCalculator.swift in Sources */,
 				423ABAF2248ABF560059FE23 /* ContentViewPhone.swift in Sources */,
 				42948B6524A67B2000B37B25 /* RandomFunctions.swift in Sources */,
+				426BDA2F24D8655800B9C16C /* KeyboardExtensions.swift in Sources */,
 				42A3315524AD959000B78B57 /* SearchBar.swift in Sources */,
+				42279F0824D5FB3500532CA8 /* CustomTextField.swift in Sources */,
 				422F48E024C39664002C434F /* DrawMargin.swift in Sources */,
 				42F32611246CA2DB005C6E71 /* NewLeague.swift in Sources */,
 				4278DBC7246E19BA004DB8B0 /* LeaguesScroller.swift in Sources */,
@@ -860,7 +921,9 @@
 				422F48EA24C39664002C434F /* TruncatedGaussianCorrectionFunctions.swift in Sources */,
 				422F48E424C39664002C434F /* TrueSkillCalculator.swift in Sources */,
 				423ABAEE248ABF280059FE23 /* FirebaseSessionPhone.swift in Sources */,
+				42279F0424D5F24A00532CA8 /* TextFieldAlert.swift in Sources */,
 				422F48E924C39664002C434F /* Player.swift in Sources */,
+				4241F21324D34B8B00B59174 /* AddLeague.swift in Sources */,
 				4278DBCB246E1D5D004DB8B0 /* JoinLeague.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -870,10 +933,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				42948B5E24A436F600B37B25 /* Constants.swift in Sources */,
+				4241F21824D34BFB00B59174 /* ActiveSheet.swift in Sources */,
 				422F48F824C39665002C434F /* TwoPlayerTrueSkillCalculator.swift in Sources */,
 				422D081F246A596300D605C4 /* HybridImagePickerController.swift in Sources */,
+				42CE160A24D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */,
 				422D0832246A5BF700D605C4 /* SceneDelegate.swift in Sources */,
 				422F48F424C39665002C434F /* Range.swift in Sources */,
+				4241F21024D3486000B59174 /* LeagueRow.swift in Sources */,
 				4296E3A9243D71D70058B451 /* ScoreSenderUITests.swift in Sources */,
 				429AD90824B0ED8500E67A39 /* DisplayNameAndPhoto.swift in Sources */,
 				42F3260E246C92DA005C6E71 /* SpanningLabel.swift in Sources */,
@@ -881,7 +947,7 @@
 				425597C224400537001FD893 /* Game.swift in Sources */,
 				42652A7424D1113600AB7E1C /* ContentView.swift in Sources */,
 				42A3315A24AD97ED00B78B57 /* AutoCompleteTextField.swift in Sources */,
-				422D081B246A594500D605C4 /* SettingsForm.swift in Sources */,
+				422D081B246A594500D605C4 /* SettingsFormOverall.swift in Sources */,
 				422F48F024C39665002C434F /* TwoTeamTrueskillCalculator.swift in Sources */,
 				422F48FD24C39665002C434F /* GaussianDistribution.swift in Sources */,
 				422F48FE24C39665002C434F /* PairwiseComparison.swift in Sources */,
@@ -893,9 +959,11 @@
 				42166DE3246F1EBD00C65CE6 /* StorageService.swift in Sources */,
 				42DC6BB92487516700A4D42C /* ShowGames.swift in Sources */,
 				422F48F124C39665002C434F /* Person.swift in Sources */,
+				4241F21C24D34D0100B59174 /* SettingsFormLeague.swift in Sources */,
 				425597BE2440051A001FD893 /* PlayerForm.swift in Sources */,
 				5777D3A82442795500215B91 /* League.swift in Sources */,
 				422D0831246A5BF700D605C4 /* AppDelegate.swift in Sources */,
+				4241F20C24D347FC00B59174 /* LeaguesScrollerVertical.swift in Sources */,
 				422D082E246A5BCE00D605C4 /* User.swift in Sources */,
 				42A3315224AD686B00B78B57 /* MyAlerts.swift in Sources */,
 				5777D3A0244276DD00215B91 /* FirebaseSession.swift in Sources */,
@@ -905,7 +973,9 @@
 				422F48EF24C39665002C434F /* FactorGraphTrueskillCalculator.swift in Sources */,
 				423ABAF3248ABF560059FE23 /* ContentViewPhone.swift in Sources */,
 				42948B6624A67B2000B37B25 /* RandomFunctions.swift in Sources */,
+				426BDA3024D8655800B9C16C /* KeyboardExtensions.swift in Sources */,
 				42A3315624AD959000B78B57 /* SearchBar.swift in Sources */,
+				42279F0924D5FB3500532CA8 /* CustomTextField.swift in Sources */,
 				422F48F224C39665002C434F /* DrawMargin.swift in Sources */,
 				42F32612246CA2DB005C6E71 /* NewLeague.swift in Sources */,
 				4278DBC8246E19BA004DB8B0 /* LeaguesScroller.swift in Sources */,
@@ -919,7 +989,9 @@
 				422F48FC24C39665002C434F /* TruncatedGaussianCorrectionFunctions.swift in Sources */,
 				422F48F624C39665002C434F /* TrueSkillCalculator.swift in Sources */,
 				423ABAEF248ABF280059FE23 /* FirebaseSessionPhone.swift in Sources */,
+				42279F0524D5F24A00532CA8 /* TextFieldAlert.swift in Sources */,
 				422F48FB24C39665002C434F /* Player.swift in Sources */,
+				4241F21424D34B8B00B59174 /* AddLeague.swift in Sources */,
 				4278DBCC246E1D5D004DB8B0 /* JoinLeague.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

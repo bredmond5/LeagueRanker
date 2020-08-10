@@ -18,7 +18,7 @@ class League: Identifiable, ObservableObject {
     
     var displayNameToPhoneNumber: [String : String] = [:]
     var name: String
-    var leagueImage: UIImage?
+    @Published var leagueImage: UIImage?
     var creatorPhone: String // phone number of creator
     
     //Default init for before the real leagues have been downloaded
@@ -157,6 +157,8 @@ class League: Identifiable, ObservableObject {
                 player.playerGames.append(Game(team1: teams[0], team2: teams[1], scores: scores, gameScore: gameScore, sigmaChange: sigmaChange, date: each.key as! String))
             }
         }
+        
+        player.playerGames.sort(by: {$0.date > $1.date})
     }
     
     func getImage() {

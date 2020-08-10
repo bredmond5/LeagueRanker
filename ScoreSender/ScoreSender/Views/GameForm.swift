@@ -9,31 +9,44 @@
 import SwiftUI
 import Combine
 
+
 struct GameForm: View {
-    @EnvironmentObject var session: FirebaseSession
+//    @EnvironmentObject var session: FirebaseSession
     
     let myAlerts = MyAlerts()
     
     @State private var keyboardHeight: CGFloat = 0
     
+    var curLeague: League
+    
+    @State var isResponders: [Bool] = {
+        var isResponders: [Bool] = []
+        for i in 0..<5 {
+            isResponders.append(false)
+        }
+        isResponders[0] = true
+        return isResponders
+    }()
+    
     var datasource: [String: String] {
-        let players = session.curLeague.returnPlayers()
+        let players = curLeague.returnPlayers()
         var datasource: [String: String] = [:]
         var duplicates: [String] = []
         for player in players {
-            if datasource[player.realName] != nil {
+            if datasource[player.realName] != nil { // If multiple people have the same real name dont want it autofinishing
                 datasource[player.realName] = nil
                 duplicates.append(player.realName)
             } else if !duplicates.contains(player.realName) {
                 datasource[player.displayName] = player.displayName
                 datasource[player.realName] = player.displayName
+                datasource[player.phoneNumber] = player.displayName
             }
         }
         return datasource
     }
     
     func makeAutoCompleteTextField(text: Binding<String>, placeholder: String) -> AutoCompleteTextFieldSwiftUI {
-        return AutoCompleteTextFieldSwiftUI(text: text, placeholder: placeholder, datasource: datasource)
+        return AutoCompleteTextFieldSwiftUI(text: text, placeholder: placeholder, datasource: datasource)//, isResponder: isResponders[textfieldNum], nextResponder: isResponders[textfieldNum + 1] ?? .constant(nil))
     }
     
     var didAddGame: (Game, [Rating]) -> ()
@@ -141,9 +154,9 @@ struct GameForm: View {
                    return
                }
                 
-                let leagueName = self.session.curLeague.name
-                let displayNameToPhoneNumber = self.session.curLeague.displayNameToPhoneNumber
-                let phoneNumberToPlayer = self.session.curLeague.players
+                let leagueName = self.curLeague.name
+                let displayNameToPhoneNumber = self.curLeague.displayNameToPhoneNumber
+                let phoneNumberToPlayer = self.curLeague.players
                 var players: [PlayerForm] = []
                 
                 if displayNameToPhoneNumber[self.p1] == nil {
@@ -212,28 +225,5 @@ struct GameForm: View {
             .padding(.bottom, keyboardHeight)
             .onReceive(Publishers.keyboardHeight, perform: {self.keyboardHeight = $0})
         }
-    }
-}
-
-
-extension Publishers {
-    // 1.
-    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        // 2.
-        let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-            .map { $0.keyboardHeight }
-        
-        let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-        
-        // 3.
-        return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher()
-    }
-}
-
-extension Notification {
-    var keyboardHeight: CGFloat {
-        return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }

@@ -2,11 +2,14 @@ import UIKit
 import SwiftUI
  
  struct AutoCompleteTextFieldSwiftUI: UIViewRepresentable, AutoCompleteTextFieldDelegate {
-    @EnvironmentObject var session: FirebaseSession
+    
     @Binding var text: String
     let placeholder: String
     typealias UIViewType = UITextField
     var datasource: [String: String]
+    
+//    @Binding var isResponder : Bool?
+//    @Binding var nextResponder : Bool?
     
     var textfield: AutoCompleteTextField = {
         let textfield = AutoCompleteTextField()
@@ -19,11 +22,19 @@ import SwiftUI
         
     mutating func provideDatasource() {
         textfield.datasource = datasource
-        
     }
     
     mutating func returned(with selection: String) {
         self.text = selection
+        
+//        let nextTag = textfield.tag + 1
+//
+//        if let nextResponder = textfield.superview?.viewWithTag(nextTag) {
+//            nextResponder.becomeFirstResponder()
+//        } else {
+//            textfield.resignFirstResponder()
+//        }
+
     }
     
     mutating func textFieldCleared() {
@@ -63,7 +74,7 @@ import SwiftUI
     
     var datasource: [String: String]?
      
-     var autocompleteDelegate: AutoCompleteTextFieldDelegate?
+    var autocompleteDelegate: AutoCompleteTextFieldDelegate?
      
      var lightTextColor: UIColor = UIColor.gray {
          didSet {
@@ -76,11 +87,11 @@ import SwiftUI
      private var currInput: String = ""
      private var isReturned: Bool = false
      
-     override init(frame: CGRect) {
-         super.init(frame: frame)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
          
-         self.textColor = lightTextColor
-         self.delegate = self
+        self.textColor = lightTextColor
+        self.delegate = self
      }
      
      required init?(coder aDecoder: NSCoder) {
@@ -90,6 +101,10 @@ import SwiftUI
  }
 
  extension AutoCompleteTextField: UITextFieldDelegate {
+    
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<CustomTextField>) {
+        uiView.text = text
+     }
 
      func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
          self.autocompleteDelegate?.provideDatasource()
@@ -162,18 +177,24 @@ import SwiftUI
          } else {
              textField.textColor = boldTextColor
          }
+        
+//        self.autocompleteDelegate?.returned(with: textField.text!)
+//        self.isReturned = true
+//        self.endEditing(true)
      }
      
      func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.autocompleteDelegate?.returned(with: textField.text!)
-         self.isReturned = true
-         self.endEditing(true)
-         return true
+        self.isReturned = true
+        self.endEditing(true)
+        
+        if let nextField = textField.superview?.superview?.viewWithTag(textField.tag + 1) as? UITextField {
+            print("making next field")
+            nextField.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        
+        return true
      }
- }
-
- extension String {
-//     func nsRange(from range: Range<Index>) -> NSRange {
-//         return NSRange(range, in: self)
-//     }
  }

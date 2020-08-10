@@ -101,7 +101,8 @@ class MyAlerts {
       }
 
       private func topMostViewController() -> UIViewController? {
-          guard let rootController = keyWindow()?.rootViewController else {
+        let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+        guard let rootController = keyWindow?.rootViewController else {
               return nil
           }
           return topMostViewController(for: rootController)

@@ -16,7 +16,7 @@ struct ContentView: View {
         NavigationView {
             Group {
                 if session.session != nil {
-                    CurLeague()
+                    LeaguesScrollerVertical()
                     
                 }else{
                    LoginView()
@@ -26,7 +26,6 @@ struct ContentView: View {
             }
         }
         .onAppear(perform: getUser)
-        .navigationBarTitle(Text("Shithaus Die"))
         .padding()
         }
            

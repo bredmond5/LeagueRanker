@@ -31,7 +31,7 @@ def check_valid_game(game):
     return None
 
 def add_scores(filename):
-    f = open("scores.txt","a+")
+    f = open(Constants.FILENAME,"a+")
 
     print_intro()
 

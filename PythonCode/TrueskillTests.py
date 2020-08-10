@@ -95,3 +95,4 @@ while s := input("For a score breakdown per person, enter their initials. To see
         show_scores(player_scores)
     else:
         print("Invalid entry")
+

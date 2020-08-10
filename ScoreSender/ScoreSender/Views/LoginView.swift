@@ -31,6 +31,8 @@ struct LoginView: View {
         }
     }
     
+    @State var isFirstResponder: Bool? = true
+    
     @State var isShowingAlert = false
     @EnvironmentObject var session: FirebaseSession
     
@@ -40,13 +42,27 @@ struct LoginView: View {
             HStack (spacing: 16) {
                 Text("Phone Number")
                     .frame(width: 80, alignment: .leading)
-                TextField("6505551234", text: $phoneNumber)
-                    .padding(.all, 12)
+                CustomTextField(text: $phoneNumber,
+                                nextResponder: .constant(nil),
+                                isResponder: $isFirstResponder,
+                                isSecured: false,
+                                keyboard: .numberPad,
+                                placeholder: "6505551234")
+                    
+                    .padding(12)
                     .overlay(
                     RoundedRectangle(cornerRadius: 4)
                         .strokeBorder(style: StrokeStyle(lineWidth: 1))
                         .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
-                    .keyboardType(.numberPad)
+                        .frame(height: 30)
+                
+//                TextField("6505551234", text: $phoneNumber)
+//                    .padding(.all, 12)
+//                    .overlay(
+//                    RoundedRectangle(cornerRadius: 4)
+//                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
+//                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
+//                    .keyboardType(.numberPad)
                 if(buttonDisabled) {
                     ActivityIndicator()
                     .frame(width: 40, height: 40)

@@ -7,3 +7,17 @@
 //
 
 import Foundation
+import FirebaseDatabase
+
+class FirebaseFunctions {
+    var ref: DatabaseReference!
+
+    init() {
+        ref = Database.database().reference()
+    }
+    
+    func addUser(_ username: String, uid: UUID) {
+        self.ref.child("users/\(uid)/username").setValue(username)
+    }
+    
+}

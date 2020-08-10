@@ -1,9 +1,27 @@
 //
-//  TODORowView.swift
-//  TestingFirebase
+//  TODORow.swift
+//  TODO
 //
-//  Created by Brice Redmond on 5/10/20.
-//  Copyright © 2020 Brice Redmond. All rights reserved.
+//  Created by Sebastian Esser on 9/19/19.
+//  Copyright © 2019 Sebastian Esser. All rights reserved.
 //
+import SwiftUI
 
-import Foundation
+struct TODORowView: View {
+    
+    var todo: TODOS
+    
+    var body: some View {
+        HStack {
+            Text(todo.todo)
+            
+            Spacer()
+            
+            if todo.isComplete == "true" {
+                Image(systemName: "checkmark").imageScale(.medium)
+            } else {
+                Image(systemName: "xmark").imageScale(.medium)
+            }
+        }
+    }
+}
