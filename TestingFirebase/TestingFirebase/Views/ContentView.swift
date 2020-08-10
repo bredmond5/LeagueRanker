@@ -1,20 +1,20 @@
 //
 //  ContentView.swift
-//  TestingFirebase
+//  TODO
 //
-//  Created by Brice Redmond on 5/10/20.
-//  Copyright © 2020 Brice Redmond. All rights reserved.
+//  Created by Sebastian Esser on 9/18/19.
+//  Copyright © 2019 Sebastian Esser. All rights reserved.
 //
-
 import SwiftUI
 
 struct ContentView: View {
-    var session: Session
     
-    init() {
-        session = Session()
-    }
+    
+    //MARK: Properties
+    @ObservedObject var session = FirebaseSession()
+    
     var body: some View {
+        
         NavigationView {
             Group {
                 if session.session != nil {
@@ -26,13 +26,12 @@ struct ContentView: View {
                         List {
                             ForEach(self.session.items) { todo in
                                 NavigationLink(destination: TODODetailView(todo: todo)) {
-                                    Text(todo.todo)
+                                    TODORowView(todo: todo)
                                 }
                             }
                         }
                         .navigationBarItems(trailing: Button(action: {
                             self.session.logOut()
-                                
                         }) {
                             Text("Logout")
                         })
@@ -46,6 +45,11 @@ struct ContentView: View {
             .navigationBarTitle(Text("TODO"))
             .padding()
         }
+    }
+    
+    //MARK: Functions
+    func getUser() {
+        session.listen()
     }
 }
 

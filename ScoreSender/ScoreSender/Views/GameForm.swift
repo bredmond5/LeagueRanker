@@ -9,21 +9,44 @@
 import SwiftUI
 import Combine
 
+
 struct GameForm: View {
-    @EnvironmentObject var session: FirebaseSession
+//    @EnvironmentObject var session: FirebaseSession
     
     let myAlerts = MyAlerts()
     
     @State private var keyboardHeight: CGFloat = 0
     
-    func makeAutoCompleteTextField(text: Binding<String>, _ playerNumber: Int) -> AutoCompleteTextFieldSwiftUI {
-        return AutoCompleteTextFieldSwiftUI(text: text, playerNumber: playerNumber)
+    var curLeague: League
+    
+    @State var isResponders: [Bool] = {
+        var isResponders: [Bool] = []
+        for i in 0..<5 {
+            isResponders.append(false)
+        }
+        isResponders[0] = true
+        return isResponders
+    }()
+    
+    var datasource: [String: String] {
+        let players = curLeague.returnPlayers()
+        var datasource: [String: String] = [:]
+        var duplicates: [String] = []
+        for player in players {
+            if datasource[player.realName] != nil { // If multiple people have the same real name dont want it autofinishing
+                datasource[player.realName] = nil
+                duplicates.append(player.realName)
+            } else if !duplicates.contains(player.realName) {
+                datasource[player.displayName] = player.displayName
+                datasource[player.realName] = player.displayName
+                datasource[player.phoneNumber] = player.displayName
+            }
+        }
+        return datasource
     }
     
-    var selection: String? {
-        didSet {
-            print("SELECTION IS: \(String(describing: selection))")
-        }
+    func makeAutoCompleteTextField(text: Binding<String>, placeholder: String) -> AutoCompleteTextFieldSwiftUI {
+        return AutoCompleteTextFieldSwiftUI(text: text, placeholder: placeholder, datasource: datasource)//, isResponder: isResponders[textfieldNum], nextResponder: isResponders[textfieldNum + 1] ?? .constant(nil))
     }
     
     var didAddGame: (Game, [Rating]) -> ()
@@ -32,8 +55,8 @@ struct GameForm: View {
     @State var p2: String = ""
     @State var p3: String = ""
     @State var p4: String = ""
-    @State var score1: String = "12"
-    @State var score2: String = "4"
+    @State var score1: String = ""
+    @State var score2: String = ""
     
     var width: CGFloat = 80
     
@@ -59,7 +82,7 @@ struct GameForm: View {
             HStack (spacing: 16) {
                 Text("Player 1")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p1, 1)
+                makeAutoCompleteTextField(text: self.$p1, placeholder: "username")
                 .padding(.all, 12)
                .overlay(
                RoundedRectangle(cornerRadius: 4)
@@ -70,7 +93,7 @@ struct GameForm: View {
             HStack (spacing: 16) {
                 Text("Player 2")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p2, 2)
+                makeAutoCompleteTextField(text: self.$p2, placeholder: "username")
                 .padding(.all, 12)
                 .overlay(
                 RoundedRectangle(cornerRadius: 4)
@@ -90,7 +113,7 @@ struct GameForm: View {
                         .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
                     .keyboardType(.numbersAndPunctuation)
                 Text("-")
-                    .frame(width: 30, alignment: .center)
+                    .frame(width: 25, alignment: .center)
                 
                 TextField("Score 2", text: $score2)
                     .frame(alignment: .center)
@@ -105,7 +128,7 @@ struct GameForm: View {
             HStack (spacing: 16) {
                 Text("Player 3")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p3, 3)
+                makeAutoCompleteTextField(text: self.$p3, placeholder: "username")
                 .padding(.all, 12)
                 .overlay(
                 RoundedRectangle(cornerRadius: 4)
@@ -117,7 +140,7 @@ struct GameForm: View {
            HStack (spacing: 16) {
                Text("Player 4")
                    .frame(width: width, alignment: .leading)
-            makeAutoCompleteTextField(text: self.$p4, 4)
+            makeAutoCompleteTextField(text: self.$p4, placeholder: "username")
             .padding(.all, 12)
             .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -131,9 +154,9 @@ struct GameForm: View {
                    return
                }
                 
-                let leagueName = self.session.curLeague.name
-                let displayNameToPhoneNumber = self.session.curLeague.displayNameToPhoneNumber
-                let phoneNumberToPlayer = self.session.curLeague.players
+                let leagueName = self.curLeague.name
+                let displayNameToPhoneNumber = self.curLeague.displayNameToPhoneNumber
+                let phoneNumberToPlayer = self.curLeague.players
                 var players: [PlayerForm] = []
                 
                 if displayNameToPhoneNumber[self.p1] == nil {
@@ -159,7 +182,7 @@ struct GameForm: View {
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p3]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p4]!]!)
 
-                    if let (game, newPlayerRatings) = checkValidGameAndGetGameScores(players: [self.p1, self.p2, self.p3, self.p4], scores: [self.score1, self.score2], ratings: [players[0].rating, players[1].rating, players[2].rating, players[3].rating]) {
+                    if let (game, newPlayerRatings) = Functions.checkValidGameAndGetGameScores(players: [self.p1, self.p2, self.p3, self.p4], scores: [self.score1, self.score2], ratings: [players[0].rating, players[1].rating, players[2].rating, players[3].rating]) {
                         //set game here
                         
                         self.didAddGame(game, newPlayerRatings)
@@ -202,28 +225,5 @@ struct GameForm: View {
             .padding(.bottom, keyboardHeight)
             .onReceive(Publishers.keyboardHeight, perform: {self.keyboardHeight = $0})
         }
-    }
-}
-
-
-extension Publishers {
-    // 1.
-    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        // 2.
-        let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-            .map { $0.keyboardHeight }
-        
-        let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-        
-        // 3.
-        return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher()
-    }
-}
-
-extension Notification {
-    var keyboardHeight: CGFloat {
-        return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
     }
 }

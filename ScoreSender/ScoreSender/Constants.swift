@@ -9,5 +9,5 @@
 import Foundation
 
 class Constants {
-    public static let appName = "Player Ranker"
+    public static let appName = "Score Sender"
 }

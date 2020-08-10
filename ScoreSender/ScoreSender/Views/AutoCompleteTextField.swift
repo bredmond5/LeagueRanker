@@ -2,30 +2,39 @@ import UIKit
 import SwiftUI
  
  struct AutoCompleteTextFieldSwiftUI: UIViewRepresentable, AutoCompleteTextFieldDelegate {
-    @EnvironmentObject var session: FirebaseSession
+    
     @Binding var text: String
-    let playerNumber: Int
+    let placeholder: String
     typealias UIViewType = UITextField
+    var datasource: [String: String]
+    
+//    @Binding var isResponder : Bool?
+//    @Binding var nextResponder : Bool?
     
     var textfield: AutoCompleteTextField = {
         let textfield = AutoCompleteTextField()
         textfield.tintColor = UIColor.gray
         textfield.boldTextColor = UIColor.black
         textfield.lightTextColor = UIColor.gray
+        textfield.autocapitalizationType = UITextAutocapitalizationType.none
         return textfield
     }()
         
     mutating func provideDatasource() {
-        let players = session.curLeague.returnPlayers()
-        var datasource: [String] = []
-        for player in players {
-            datasource.append(player.displayName)
-        }
         textfield.datasource = datasource
     }
     
     mutating func returned(with selection: String) {
         self.text = selection
+        
+//        let nextTag = textfield.tag + 1
+//
+//        if let nextResponder = textfield.superview?.viewWithTag(nextTag) {
+//            nextResponder.becomeFirstResponder()
+//        } else {
+//            textfield.resignFirstResponder()
+//        }
+
     }
     
     mutating func textFieldCleared() {
@@ -36,7 +45,7 @@ import SwiftUI
         let tf = textfield
         tf.autocompleteDelegate = self
 //        tf.placeholder = "Player \(playerNumber)"
-        tf.placeholder = "Username"
+        tf.placeholder = placeholder
         return tf
     }
     
@@ -63,9 +72,9 @@ import SwiftUI
     
     typealias UIViewType = UITextField
     
-     var datasource: [String]?
+    var datasource: [String: String]?
      
-     var autocompleteDelegate: AutoCompleteTextFieldDelegate?
+    var autocompleteDelegate: AutoCompleteTextFieldDelegate?
      
      var lightTextColor: UIColor = UIColor.gray {
          didSet {
@@ -78,11 +87,11 @@ import SwiftUI
      private var currInput: String = ""
      private var isReturned: Bool = false
      
-     override init(frame: CGRect) {
-         super.init(frame: frame)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
          
-         self.textColor = lightTextColor
-         self.delegate = self
+        self.textColor = lightTextColor
+        self.delegate = self
      }
      
      required init?(coder aDecoder: NSCoder) {
@@ -92,6 +101,10 @@ import SwiftUI
  }
 
  extension AutoCompleteTextField: UITextFieldDelegate {
+    
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<CustomTextField>) {
+        uiView.text = text
+     }
 
      func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
          self.autocompleteDelegate?.provideDatasource()
@@ -114,7 +127,7 @@ import SwiftUI
      
      private func updateText(_ string: String, in textField: UITextField) {
          textField.textColor = self.lightTextColor
-         self.currInput += string
+        self.currInput += string
          textField.text = self.currInput
      }
      
@@ -136,16 +149,18 @@ import SwiftUI
             return
             
         }
-         
-         let allOptions = datasource.filter({ $0.hasPrefix(self.currInput) })
-         let exactMatch = allOptions.filter() { $0 == self.currInput }
-         let fullName = exactMatch.count > 0 ? exactMatch.first! : allOptions.first ?? self.currInput
-         if let range = fullName.range(of: self.currInput) {
-            let nsRange = NSRange(String(fullName.suffix(from: range.upperBound)))
-             let attribute = NSMutableAttributedString.init(string: fullName as String)
-            attribute.addAttribute(NSAttributedString.Key.foregroundColor, value: self.boldTextColor, range: nsRange ?? NSRange())
-             textField.attributedText = attribute
-         }
+                 
+        let allOptions = datasource.keys.filter({ $0.hasPrefix(self.currInput) })
+        let exactMatch = allOptions.filter() { $0 == self.currInput }
+        let fullName = exactMatch.count > 0 ? exactMatch.first! : allOptions.first ?? self.currInput
+        if let val = datasource[fullName] {
+             if let range = fullName.range(of: self.currInput) {
+                 let nsRange = NSRange(String(val.suffix(from: range.upperBound)))
+                 let attribute = NSMutableAttributedString.init(string: val as String)
+                 attribute.addAttribute(NSAttributedString.Key.foregroundColor, value: self.boldTextColor, range: nsRange ?? NSRange())
+                 textField.attributedText = attribute
+             }
+        }
     }
      
      private func updateCursorPosition(in textField: UITextField) {
@@ -162,18 +177,24 @@ import SwiftUI
          } else {
              textField.textColor = boldTextColor
          }
+        
+//        self.autocompleteDelegate?.returned(with: textField.text!)
+//        self.isReturned = true
+//        self.endEditing(true)
      }
      
      func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-         self.autocompleteDelegate?.returned(with: textField.text!)
-         self.isReturned = true
-         self.endEditing(true)
-         return true
+        self.autocompleteDelegate?.returned(with: textField.text!)
+        self.isReturned = true
+        self.endEditing(true)
+        
+        if let nextField = textField.superview?.superview?.viewWithTag(textField.tag + 1) as? UITextField {
+            print("making next field")
+            nextField.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+        }
+        
+        return true
      }
- }
-
- extension String {
-//     func nsRange(from range: Range<Index>) -> NSRange {
-//         return NSRange(range, in: self)
-//     }
  }

@@ -125,7 +125,7 @@ struct JoinLeague: View {
                         } else {
                             // all error checking is finished, hand over to displayNameAndPhoto
                             var usedUsernames: [String] = []
-                            if let league = League(snapshot: snapshot, id: snapshot.key, callingFunction: "getDisplayNameAndPhoto") {
+                            if let league = League(snapshot: snapshot, id: snapshot.key) {
                                 for player in league.returnPlayers() {
                                     usedUsernames.append(player.displayName)
                                 }

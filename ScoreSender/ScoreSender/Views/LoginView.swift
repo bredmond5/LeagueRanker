@@ -10,15 +10,30 @@ import SwiftUI
 import UIKit
 import FirebaseAuth
 
-
 struct LoginView: View {
     
     //MARK: Properties
-    @State var phoneNumber: String = "650555"
-    
-    @State var isShowingMsgAlert = false
+    @State var phoneNumber: String = ""
     @State var buttonDisabled = false
-        
+    @State var firstTime = true
+    
+    @State private var activeSheet: ActiveSheet = .first {
+        didSet {
+            if activeSheet == .first {
+                self.isShowingAlert = false
+            }
+        }
+    }
+    
+    @State var error: Error? {
+        didSet {
+            self.activeSheet = .third
+        }
+    }
+    
+    @State var isFirstResponder: Bool? = true
+    
+    @State var isShowingAlert = false
     @EnvironmentObject var session: FirebaseSession
     
     var body: some View {
@@ -27,64 +42,110 @@ struct LoginView: View {
             HStack (spacing: 16) {
                 Text("Phone Number")
                     .frame(width: 80, alignment: .leading)
-                TextField("6505551432", text: $phoneNumber)
-                    .padding(.all, 12)
+                CustomTextField(text: $phoneNumber,
+                                nextResponder: .constant(nil),
+                                isResponder: $isFirstResponder,
+                                isSecured: false,
+                                keyboard: .numberPad,
+                                placeholder: "6505551234")
+                    
+                    .padding(12)
                     .overlay(
                     RoundedRectangle(cornerRadius: 4)
                         .strokeBorder(style: StrokeStyle(lineWidth: 1))
                         .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
-                    .keyboardType(.numberPad)
-            }
-            
-//            HStack (spacing: 16) {
-//                Text("Password")
-//                    .frame(width: 80, alignment: .leading)
-//                SecureField("Password", text: $password)
+                        .frame(height: 30)
+                
+//                TextField("6505551234", text: $phoneNumber)
 //                    .padding(.all, 12)
 //                    .overlay(
 //                    RoundedRectangle(cornerRadius: 4)
 //                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
 //                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
-//            }
-            
+//                    .keyboardType(.numberPad)
+                if(buttonDisabled) {
+                    ActivityIndicator()
+                    .frame(width: 40, height: 40)
+                }
+            }
             
             Button(action: {
-                self.isShowingMsgAlert = true
+                self.isShowingAlert = true
+                self.activeSheet = .second
             }) {
                 SpanningLabel(color: Color.green, content: "Log In")
             }.disabled(buttonDisabled)
-           
-
-//            NavigationLink(destination: SignUp().navigationBarTitle("Sign Up")) {
-//                SpanningLabel(color: Color.blue, content: "Sign Up")
-//            }
-
+        
             Spacer()
          
-            }.alert(isPresented: $isShowingMsgAlert) {
-                Alert(title: Text("Standard Message Rates May Apply"), message: Text("This will send a text message to your phone"), primaryButton: .default(Text("Go"), action: self.logIn), secondaryButton: .destructive(Text("Cancel")) {
-                    
-                })
             }
-        
+            .alert(isPresented: $isShowingAlert) {
+                if activeSheet == .first {
+                    return Alert(title: Text("Enter Phone Number"), message: Text("\(Constants.appName) uses your phone number to log in and name to identify players"), dismissButton: .default(Text("Ok")) {})
+                } else if activeSheet == .second {
+                    return Alert(title: Text("Standard Message Rates May Apply"), message: Text("This will send a text message to your phone"), primaryButton: .default(Text("Go"), action: self.logIn), secondaryButton: .destructive(Text("Cancel")) { self.buttonDisabled = false })
+                }else{
+                    return Alert(title: Text("Error"), message: Text(error?.localizedDescription ?? "Try Again"), dismissButton: .default(Text("Ok")) { self.error = nil })
+                }
+            }
         .padding(.all, 20)
-        
+        .onAppear(perform: {
+            if self.firstTime {
+                self.isShowingAlert = true
+                self.firstTime = false
+            }
+        })
         
     }
 
     //MARK: Functions
     func logIn() {
-        buttonDisabled = true
+        self.buttonDisabled = true
         let finalPhone = "+1" + phoneNumber
-        self.buttonDisabled = false
-        self.session.login(withPhoneNumber: finalPhone)
+        self.session.login(withPhoneNumber: finalPhone, resignRequired: { error in
+            self.error = error
+            self.isShowingAlert = true
+            self.buttonDisabled = false
+        })
     }
 }
-
-
-
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
-}
+//
+//struct TextFieldAlert<Presenting>: View where Presenting: View {
+//
+//    @Binding var isShowing: Bool
+//    @Binding var text: String
+//    let presenting: Presenting
+//    let title: String
+//
+//    var body: some View {
+//        GeometryReader { (deviceSize: GeometryProxy) in
+//            ZStack {
+//                self.presenting
+//                    .disabled(self.isShowing)
+//                VStack {
+//                    Text(self.title)
+//                    TextField("", text: self.$text)
+//                    Divider()
+//                    HStack {
+//                        Button(action: {
+//                            withAnimation {
+//                                self.isShowing.toggle()
+//                            }
+//                        }) {
+//                            Text("Dismiss")
+//                        }
+//                    }
+//                }
+//                .padding()
+//                .background(Color.white)
+//                .frame(
+//                    width: deviceSize.size.width*0.7,
+//                    height: deviceSize.size.height*0.7
+//                )
+//                .shadow(radius: 1)
+//                .opacity(self.isShowing ? 1 : 0)
+//            }
+//        }
+//    }
+//
+//}
