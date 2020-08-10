@@ -250,7 +250,7 @@
 		422F48C824C39417002C434F /* PairwiseComparison.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairwiseComparison.swift; sourceTree = "<group>"; };
 		422F48C924C39417002C434F /* SkillCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillCalculator.swift; sourceTree = "<group>"; };
 		422F48CA24C39417002C434F /* TeamsRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsRange.swift; sourceTree = "<group>"; };
-		422F490124C3983D002C434F /* GameInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameInfo.swift; path = ../../../Skills/TrueskillSwift/GameInfo.swift; sourceTree = "<group>"; };
+		422F490124C3983D002C434F /* GameInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameInfo.swift; path = ../../../Skills/TrueskillSwift/TrueskillSwift/GameInfo.swift; sourceTree = "<group>"; };
 		423ABAEC248ABF280059FE23 /* FirebaseSessionPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSessionPhone.swift; sourceTree = "<group>"; };
 		423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewPhone.swift; sourceTree = "<group>"; };
 		4241F20924D347FC00B59174 /* LeaguesScrollerVertical.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaguesScrollerVertical.swift; sourceTree = "<group>"; };
