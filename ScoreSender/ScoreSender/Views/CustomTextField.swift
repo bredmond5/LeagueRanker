@@ -59,18 +59,16 @@ import SwiftUI
   @Binding var nextResponder : Bool?
   @Binding var isResponder : Bool?
 
-  var isSecured : Bool = false
   var keyboard : UIKeyboardType
     var placeholder: String?
 
   func makeUIView(context: UIViewRepresentableContext<CustomTextField>) -> UITextField {
       let textField = UITextField(frame: .zero)
-      textField.isSecureTextEntry = isSecured
       textField.autocapitalizationType = .none
       textField.autocorrectionType = .no
       textField.keyboardType = keyboard
       textField.delegate = context.coordinator
-        textField.placeholder = placeholder
+      textField.placeholder = placeholder
       return textField
   }
 

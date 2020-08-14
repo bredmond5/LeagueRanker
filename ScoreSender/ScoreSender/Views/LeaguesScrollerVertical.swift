@@ -18,9 +18,7 @@ struct LeaguesScrollerVertical: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 74){
             List(self.session.leagues) { league in
-                NavigationLink(destination: CurLeague(curLeague: league, didUploadLeague: { league, game, newRatings in
-                    self.session.uploadGame(curLeague: league, game: game, newRatings: newRatings)
-                }).navigationBarTitle(league.name))
+                NavigationLink(destination: CurLeague(curLeague: league).navigationBarTitle(league.name))
                 {
                     LeagueRow(league: league)
                 }

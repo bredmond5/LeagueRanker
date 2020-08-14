@@ -7,7 +7,6 @@
 //
 
 import XCTest
-@testable import ScoreSender
 
 class ScoreSenderTests: XCTestCase {
     
@@ -76,7 +75,6 @@ class ScoreSenderTests: XCTestCase {
         //winners
         XCTAssertEqual(28.108, league!.players[players[0].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[0].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
-        print(players[1].phoneNumber)
         XCTAssertEqual(28.108, league!.players[players[1].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[1].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
 
@@ -107,7 +105,6 @@ class ScoreSenderTests: XCTestCase {
         //winners
         XCTAssertEqual(28.108, league!.players[players[0].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[0].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
-        print(players[1].phoneNumber)
         XCTAssertEqual(28.108, league!.players[players[1].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[1].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
 
@@ -136,7 +133,6 @@ class ScoreSenderTests: XCTestCase {
         //winners
         XCTAssertEqual(28.108, league!.players[players[2].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[2].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
-        print(players[1].phoneNumber)
         XCTAssertEqual(28.108, league!.players[players[1].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[1].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
 
@@ -170,7 +166,6 @@ class ScoreSenderTests: XCTestCase {
         //winners
         XCTAssertEqual(28.108, league!.players[players[1].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[1].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
-        print(players[1].phoneNumber)
         XCTAssertEqual(28.108, league!.players[players[2].phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
         XCTAssertEqual(7.774, league!.players[players[2].phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
 
@@ -225,7 +220,6 @@ class ScoreSenderTests: XCTestCase {
         }
         // the idea here is that if you delete from the beginning, since its like a game at the end, it should affect the score the same.
         for i in stride(from: 0, through: 49, by: 1) {
-            print(i)
             let games = league!.deleteGame(forDate: dates[i], forPlayer: players[2])
             XCTAssertEqual(games.count, 49 - i)
             
@@ -259,6 +253,43 @@ class ScoreSenderTests: XCTestCase {
         
         XCTAssertEqual(league!.players["6505554321"]!.playerGames.count, 0)
     }
+    
+    func testReRunAlgorithm() {
+        var games: [Game] = []
+        for i in 0..<100 {
+            games.append(addOneGame(players: getFourRandomPlayers(), scores: getRandomScore(), fixedDate: "\(i)"))
+        }
+        
+        var ratings: [PlayerForm: Rating] = [:]
+        
+        for player in league!.players.values {
+            ratings[player] = player.rating
+        }
+        
+        let newGames = league!.recalculateRankings()
+        
+        XCTAssertEqual(games.count, newGames.count)
+        
+        for i in 0..<newGames.count {
+            XCTAssertEqual(newGames[i][0].date, games[i].date)
+            XCTAssertEqual(newGames[i][0].scores, games[i].scores)
+        }
+        
+        for (player, rating) in ratings {
+            XCTAssertEqual(rating.Mean, league!.players[player.phoneNumber]!.rating.Mean, accuracy: ErrorTolerance)
+            XCTAssertEqual(rating.StandardDeviation, league!.players[player.phoneNumber]!.rating.StandardDeviation, accuracy: ErrorTolerance)
+        }
+    }
+    
+//    func testDeleteAnother() {
+//            //create a game
+//            let game = addOneGame(players: [players[0], players[1], players[2], players[3]], scores: ["12","4"], fixedDate: "1")
+//            let game2 = addOneGame(players: [players[0], players[1], players[2], players[3]], scores: ["4","12"], fixedDate: "2")
+//        
+//        for player in league!.players.values {
+//            print(player.rating.Mean)
+//        }
+//    }
     
     func getFourRandomPlayers() -> [PlayerForm] {
         var p: Set<Int> = []
@@ -294,8 +325,7 @@ class ScoreSenderTests: XCTestCase {
             let oldPlayerSigma = players[i].rating.StandardDeviation
             let newRating = newRatings[i]
             let gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, gameScore: newRating.Mean - oldPlayerMean, sigmaChange: newRating.StandardDeviation - oldPlayerSigma, date: game.date)
-            players[i].playerGames.append(gameToAdd)
-            players[i].rating = newRating
+            league?.addPlayerGame(forPlayerPhone: players[i].phoneNumber, playerGame: gameToAdd, newRating: newRating)
         }
         return game
     }

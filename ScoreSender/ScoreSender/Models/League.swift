@@ -21,6 +21,16 @@ class League: Identifiable, ObservableObject {
     @Published var leagueImage: UIImage?
     var creatorPhone: String // phone number of creator
     
+    var forDisplay: Bool
+    
+    //convience static intializer
+    static func getLeagueFromFirebase(forLeagueID leagueID: String, forDisplay: Bool, callback: @escaping (League?) -> ()) {
+        let locRef = Database.database().reference(withPath: "\(leagueID)")
+        locRef.observeSingleEvent(of: DataEventType.value) { (locSnapshot) in
+            callback(League(snapshot: locSnapshot, id: "\(leagueID)", forDisplay: forDisplay))
+        }
+    }
+    
     //Default init for before the real leagues have been downloaded
     init() {
         self.ref = nil
@@ -28,8 +38,10 @@ class League: Identifiable, ObservableObject {
         self.leagueImage = UIImage()
         self.name = "No Leagues"
         self.creatorPhone = ""
+        self.forDisplay = false
     }
     
+    // init for first creating the league
     init(leagueName: String, id: UUID = UUID(), image: UIImage = UIImage(), creator: User, creatorDisplayName: String) {
         self.ref = nil
         self.id = id
@@ -39,9 +51,11 @@ class League: Identifiable, ObservableObject {
         
         self.players[creatorPhone] = (PlayerForm(phoneNumber: creator.phoneNumber!, displayName: creatorDisplayName, image: creator.image, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, realName: creator.displayName!))
         self.displayNameToPhoneNumber[creatorDisplayName] = creatorPhone
+        self.forDisplay = false
         self.rankPlayers()
     }
         
+    // init for first creating league
     init(leagueName: String, id: UUID = UUID(), image: UIImage, creatorPhone: String, creatorDisplayName: String, creatorRealName: String, creatorImage: UIImage) {
         self.ref = nil
         self.id = id
@@ -51,12 +65,14 @@ class League: Identifiable, ObservableObject {
         
         self.players[creatorPhone] = (PlayerForm(phoneNumber: creatorPhone, displayName: creatorDisplayName, image: creatorImage, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, realName: creatorRealName))
         self.displayNameToPhoneNumber[creatorDisplayName] = creatorPhone
+        self.forDisplay = false
         self.rankPlayers()
 //        self.players[creator.phoneNumber!]!.playerGames.append(Game(team1: ["+16506693169", "+16505553434"], team2: ["+16505551234", "+16505554321"], scores: ["12", "5"], gameScore: -1.5))
         //runAlgorithm()
     }
     
-    init?(snapshot: DataSnapshot, id: String) {
+    //init from firebase
+    init?(snapshot: DataSnapshot, id: String, forDisplay: Bool) {
        guard
             let value = snapshot.value as? [String: AnyObject],
             let name = value["leagueName"] as? String,
@@ -71,8 +87,11 @@ class League: Identifiable, ObservableObject {
         self.name = name
         self.creatorPhone = creatorPhone
         self.id = id
-        getPlayersSorted(value["players"] as? NSDictionary)
-        getImage()
+        self.forDisplay = forDisplay
+        if forDisplay {
+            getPlayersSorted(value["players"] as? NSDictionary)
+            getImage()
+        }
     }
     
     func returnPlayers() -> [PlayerForm] {
@@ -86,7 +105,6 @@ class League: Identifiable, ObservableObject {
             return
         }
 
-        //maybe should rework these next 5 lines because i am storing displayNames now
         for each in playersDict {
             getPlayer(each.key as? String, each.value as? NSDictionary)
         }
@@ -117,48 +135,76 @@ class League: Identifiable, ObservableObject {
             return
         }
 
-        let p = PlayerForm(phoneNumber: phoneNumber, displayName: playerDict["displayName"] as! String, rank: 1, rating: Rating(mean: mu, standardDeviation: sigma), playerGames: [], realName: playerDict["realName"] as! String)
+        //let p = PlayerForm(phoneNumber: phoneNumber, displayName: playerDict["displayName"] as! String, rank: 1, rating: Rating(mean: mu, standardDeviation: sigma), playerGames: [], realName: playerDict["realName"] as! String)
         
-        getGames(playerDict["games"] as? NSDictionary, player: p)
-        
-        p.getImage(leagueID: id.uuidString)
+        let p = PlayerForm(phoneNumber: phoneNumber, displayName: playerDict["displayName"] as! String, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, playerGames: [], realName: playerDict["realName"] as! String)
         self.players[phoneNumber] = p
+
+        if forDisplay {
+            let pair = getGames(playerDict["games"] as? NSDictionary, player: p)
+            if let pair = pair {
+                p.setGamesInfo(rivals: pair.0, bestTeammates: pair.1)
+            }
+            p.getImage(leagueID: id.uuidString)
+        }
+        
         self.displayNameToPhoneNumber[playerDict["displayName"] as! String] = phoneNumber
        
     }
 
-    func getGames(_ gamesDict: NSDictionary?, player: PlayerForm?) {
-        guard let gamesDict = gamesDict, let player = player else {
+    func getGames(_ gamesDict: NSDictionary?, player: PlayerForm) -> ([String: Double], [String: Double])? {
+
+        player.rating = GameInfo.DefaultGameInfo.DefaultRating
+
+        guard let gamesDict = gamesDict else {
            print("failed in getGames")
-           return
+           return nil
        }
+        
+        var rivals: [String: Double] = [:]
+        var bestTeammates: [String: Double] = [:]
+            
+        var mu = 0.0
+        var sigma = 0.0
         
         for each in gamesDict as NSDictionary {
             if let val = each.value as? NSDictionary {
-                var scores: [String] = []
-                var teams: [[String]] = []
-                var gameScore = 0.0
-                var sigmaChange = 0.0
-                for key in val {
-                    if let keyString = key.key as? String {
-                        if keyString == "gameScore" {
-                            gameScore = key.value as! Double
-                        }else if keyString == "sigmaChange" {
-                            sigmaChange = key.value as! Double
-                        }else{
-                            scores.append(key.key as! String)
-                            let displayNames = key.value as! [String]
-                            let p1 = displayNames[0]
-                            let p2 = displayNames[1]
-                            teams.append([p1,p2])
-                        }
+                if let game = Game(gameDict: val, date: each.key as! String) {
+                    if game.team1.contains(player.phoneNumber) || game.team1.contains(player.displayName) {
+                        addToRivalsAndTeammates(playerTeammates: game.team1.filter({$0 != player.displayName}), otherTeam: game.team2, &rivals, &bestTeammates, game.gameScore)
+                    }else{
+                        addToRivalsAndTeammates(playerTeammates: game.team2.filter({$0 != player.displayName}), otherTeam: game.team1, &rivals, &bestTeammates, game.gameScore)
                     }
+                    
+                    mu += game.gameScore
+                    sigma += game.sigmaChange
+                    addPlayerGame(forPlayerPhone: player.phoneNumber, playerGame: game, newRating: nil)
                 }
-                player.playerGames.append(Game(team1: teams[0], team2: teams[1], scores: scores, gameScore: gameScore, sigmaChange: sigmaChange, date: each.key as! String))
             }
         }
         
-        player.playerGames.sort(by: {$0.date > $1.date})
+//        player.rating = Rating(mean: player.rating.Mean + mu, standardDeviation: player.rating.StandardDeviation + sigma)
+        player.playerGames.sort(by: {Int($0.date)! > Int($1.date)!})
+        
+        return (rivals, bestTeammates)
+    }
+    
+    func addToRivalsAndTeammates(playerTeammates: [String], otherTeam: [String], _ rivals: inout [String: Double], _ bestTeammates: inout [String: Double], _ gameScore: Double) {
+        for p in otherTeam {
+            if var rival = rivals[p] {
+                rival += gameScore
+            } else {
+                rivals[p] = gameScore
+            }
+        
+        }
+        for teammate in playerTeammates {
+            if var teammate = bestTeammates[teammate] {
+                teammate += gameScore
+            }else{
+                bestTeammates[teammate] = gameScore
+            }
+        }
     }
     
     func getImage() {
@@ -183,19 +229,7 @@ class League: Identifiable, ObservableObject {
         var playersDict = [String : AnyObject]()
         
         for player in players {
-            var playerDict = [String : AnyObject]()
-            playerDict["mu"] = player.value.rating.Mean as AnyObject
-            playerDict["sigma"] = player.value.rating.StandardDeviation as AnyObject
-            playerDict["displayName"] = player.value.displayName as AnyObject
-            playerDict["realName"] = player.value.realName as AnyObject
-            
-            var gamesDict = [String : AnyObject]()
-            for game in player.value.playerGames {
-                gamesDict[game.date] = game.toAnyObject() as AnyObject
-            }
-            playerDict["games"] = gamesDict as AnyObject
-            
-            playersDict[player.key] = playerDict as AnyObject
+            playersDict[player.key] = player.value.toAnyObject() as AnyObject
         }
         
         retVal["players"] = playersDict as AnyObject
@@ -205,17 +239,70 @@ class League: Identifiable, ObservableObject {
         return retVal
     }
     
-    func changePlayerDisplayName(phoneNumber: String, newDisplayName: String) {
-        players[phoneNumber]?.changeDisplayName(newDisplayName: newDisplayName, leagueID: id.uuidString)
+    func changePlayerDisplayName(phoneNumber: String, newDisplayName: String, callback: @escaping (Bool, String) -> ()) {
+        
+        self.players[phoneNumber]?.changeDisplayName(newDisplayName: newDisplayName, leagueID: self.id.uuidString, callback: { success, errorMessage in
+            if success {
+                self.displayNameToPhoneNumber[newDisplayName] = phoneNumber
+            }
+            callback(success, errorMessage)
+        })
     }
     
-    func changePlayerImage(phoneNumber: String, newImage: UIImage) {
-        players[phoneNumber]?.image = newImage
+    
+    func changeRealName(forPlayerPhone phoneNumber: String, newName: String) {
+        Database.database().reference(withPath: "\(self.id)/players/\(phoneNumber)/realName").setValue(newName) { (error, ref) -> Void in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                self.players[phoneNumber]?.realName = newName
+            }
+        }
     }
     
-    func addPlayerGame(forPlayerPhone phone: String, playerGame: Game, newRating: Rating) {
-        players[phone]?.playerGames.append(playerGame)
-        players[phone]?.rating = newRating
+    func changePlayerImage(player: PlayerForm, newImage: UIImage, callback: @escaping (Bool) -> ()) {
+        let imageRef = Storage.storage().reference().child("\(self.id)\(player.phoneNumber).jpg")
+        StorageService.uploadImage(newImage, at: imageRef) { (downloadURL) in
+            guard let _ = downloadURL else {
+                callback(false)
+                return
+            }
+            callback(true)
+        }
+    }
+    
+    func getRealName(fromDisplayName displayName: String) -> String? {
+        print("----")
+        print(displayName)
+        for player in players {
+            print(player.value.displayName)
+        }
+        
+        if let realName = players[displayNameToPhoneNumber[displayName] ?? ""]?.realName {
+            return realName
+        } else {
+            return nil
+        }
+        
+    }
+    
+    func addPlayerGame(forPlayerPhone phone: String, playerGame: Game, newRating: Rating?) {
+        let player = players[phone]
+        
+        if playerGame.gameScore > 0 {
+            player?.wins += 1
+        } else {
+            player?.losses += 1
+        }
+        player?.playerGames.insert(playerGame, at: 0)
+        
+        if let newRating = newRating {
+            player?.rating = newRating
+        }else{
+            let rating = Rating(mean: (player?.rating.Mean)! + playerGame.gameScore, standardDeviation: (player?.rating.StandardDeviation)! + playerGame.sigmaChange)
+            
+            player?.rating = rating
+        }
     }
     
     func deleteGame(forDate date: String, forPlayer player: PlayerForm) -> [[Game]] {
@@ -225,24 +312,38 @@ class League: Identifiable, ObservableObject {
             //get their initial ratings
             var mean = player.rating.Mean
             var sigma = player.rating.StandardDeviation
-            while let game = player.playerGames.last, Int(game.date)! > Int(date)! {
+            while let game = player.playerGames.first, Int(game.date)! > Int(date)! {
                 //bubble back each time to get back to the original game
-                mean -= player.playerGames.last!.gameScore
-                sigma -= player.playerGames.last!.sigmaChange
-                allGamesAfterDate[Int(player.playerGames.last!.date)!] = player.playerGames.last!
-                player.playerGames.removeLast()
-            }
-            
-            if let game = player.playerGames.last, game.date == date && (game.team1.contains(player.displayName) || game.team2.contains(player.displayName)) {
                 mean -= game.gameScore
                 sigma -= game.sigmaChange
-                player.playerGames.removeLast() // remove the actual game but dont add it to allgamesafterdate                
+                allGamesAfterDate[Int(game.date)!] = game
+                player.playerGames.removeFirst()
+                if game.gameScore > 0 {
+                   player.wins -= 1
+               } else{
+                   player.losses -= 1
+               }
+            }
+            
+            if let game = player.playerGames.first, game.date == date && (game.team1.contains(player.displayName) || game.team2.contains(player.displayName)) {
+                mean -= game.gameScore
+                sigma -= game.sigmaChange
+                player.playerGames.removeFirst() // remove the actual game but dont add it to allgamesafterdate
+                if game.gameScore > 0 {
+                    player.wins -= 1
+                } else{
+                    player.losses -= 1
+                }
             }
             
             //set the player rating to whatever it was before this game
             player.rating = Rating(mean: mean, standardDeviation: sigma)
         }
         
+        return calculateRankingsFromDictionary(allGamesAfterDate)
+    }
+    
+    func calculateRankingsFromDictionary(_ allGamesAfterDate: [Int: Game]) -> [[Game]] {
         var gamesToUpload: [[Game]] = []
         //iterate through all the games, calculating the new rankings
         for (_, value) in allGamesAfterDate.sorted(by: { $0.0 < $1.0 }) {
@@ -260,9 +361,33 @@ class League: Identifiable, ObservableObject {
             }
             
             gamesToUpload.append(games)
-                
+            
         }
+        
+        for player in players.values {
+            player.playerGames.sort(by: {Int($0.date)! > Int($1.date)!})
+        }
+        
         self.rankPlayers()
         return gamesToUpload
+    }
+    
+    func recalculateRankings() -> [[Game]] {
+        let gameInfo = GameInfo.DefaultGameInfo
+        for player in players.values {
+            player.rating = gameInfo.DefaultRating
+        }
+        
+        var allGamesAfterDate: [Int: Game] = [:]
+        for player in players.values {
+            for game in player.playerGames {
+                allGamesAfterDate[Int(game.date)!] = game
+            }
+            player.playerGames = []
+            player.wins = 0
+            player.losses = 0
+        }
+        
+        return calculateRankingsFromDictionary(allGamesAfterDate)
     }
 }

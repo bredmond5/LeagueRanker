@@ -124,25 +124,19 @@ struct InviteToLeague: View {
                             return
                         } else {
                             // all error checking is finished, hand over to displayNameAndPhoto
-                            var usedUsernames: [String] = []
-                            if let league = League(snapshot: snapshot, id: snapshot.key) {
-                                for player in league.returnPlayers() {
-                                    usedUsernames.append(player.displayName)
-                                }
                     
-                                self.username = self.user.displayName!
-                                self.image = self.user.image
-                                self.displayNameAndPhoto = DisplayNameAndPhoto(username: self.$username, image: self.$image, isPresented: self.$isPresentingModal, usedUsernames: usedUsernames, callback: { userDidCancel in
-                                    if userDidCancel {
-                                        self.cancelButton()
-                                    }else{
-                                        
-                                        self.didAddLeague(leagueID, self.leagueName, self.username, creatorPhoneNumber, self.image)
-                                        self.isPresented = false
-                                    }
-                                })
-                                self.isPresentingModal = true
-                            }
+                            self.username = self.user.displayName!
+                            self.image = self.user.image
+                            self.displayNameAndPhoto = DisplayNameAndPhoto(username: self.$username, image: self.$image, isPresented: self.$isPresentingModal, leagueID: snapshot.key, callback: { userDidCancel in
+                                if userDidCancel {
+                                    self.cancelButton()
+                                }else{
+                                    
+                                    self.didAddLeague(leagueID, self.leagueName, self.username, creatorPhoneNumber, self.image)
+                                    self.isPresented = false
+                                }
+                            })
+                            self.isPresentingModal = true
                         }
                     }
                 }

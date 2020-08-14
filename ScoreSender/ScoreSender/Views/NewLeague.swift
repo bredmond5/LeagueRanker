@@ -115,7 +115,7 @@ struct NewLeague: View {
             self.username = user.displayName!
             self.playerImage = user.image
             
-            displayNameAndPhoto = DisplayNameAndPhoto(username: $username, image: $playerImage, isPresented: $isPresentingModal, usedUsernames: [], callback: { userDidCancel in
+            displayNameAndPhoto = DisplayNameAndPhoto(username: $username, image: $playerImage, isPresented: $isPresentingModal, leagueID: nil, callback: { userDidCancel in
                 if userDidCancel {
                     self.isPresented = false
                 }else{

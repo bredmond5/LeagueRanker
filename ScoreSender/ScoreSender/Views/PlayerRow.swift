@@ -44,7 +44,7 @@ struct PlayerRow: View {
 //                print(self.player.displayName)
 //            }) {
             
-            Text("See Games")
+            Text("See Stats")
                 .foregroundColor(.white)
                 .fontWeight(.bold)
                 .padding(.all, 12)

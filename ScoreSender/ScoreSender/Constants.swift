@@ -10,4 +10,5 @@ import Foundation
 
 class Constants {
     public static let appName = "League Stats"
+    public static let maxCharacterDisplayName = 11
 }
