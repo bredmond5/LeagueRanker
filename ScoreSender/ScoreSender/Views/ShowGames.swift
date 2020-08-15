@@ -34,23 +34,23 @@ struct ShowGames: View {
                 .padding(.trailing, 12)
             }
             
-            HStack {
-                NavigationLink(destination: OtherPlayerMeanChanges(dict: player.bestTeammates)) {
-                    Text("See Best Partners")
-                    .fontWeight(.heavy)
-                        .font(.system(size: 16))
-                    .padding(.leading, 12)
-                }
-                
-                Spacer()
-                
-                NavigationLink(destination: OtherPlayerMeanChanges(dict: player.rivals)) {
-                    Text("See Rivals")
-                    .fontWeight(.heavy)
-                        .font(.system(size: 16))
-                    .padding(.leading, 12)
-                }
-            }
+//            HStack {
+//                NavigationLink(destination: OtherPlayerMeanChanges(dict: player.bestTeammates)) {
+//                    Text("See Best Partners")
+//                    .fontWeight(.heavy)
+//                        .font(.system(size: 16))
+//                    .padding(.leading, 12)
+//                }
+//                
+//                Spacer()
+//                
+//                NavigationLink(destination: OtherPlayerMeanChanges(dict: player.rivals)) {
+//                    Text("See Rivals")
+//                    .fontWeight(.heavy)
+//                        .font(.system(size: 16))
+//                    .padding(.leading, 12)
+//                }
+//            }
             
             List {
                 Text("Games:")

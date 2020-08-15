@@ -28,13 +28,13 @@ struct SettingsFormLeague: View {
                 SpanningLabel(color: Color.blue, content: "Edit Profile")
             }
             
-            Button(action: redoLeague) {
-                SpanningLabel(color: .red, content: "Switch to phone Numbers")
-            }
+//            Button(action: redoLeague) {
+//                SpanningLabel(color: .red, content: "Switch to phone Numbers")
+//            }
             
             
             if curLeague.creatorPhone == session.session!.phoneNumber! {
-                
+                /*
                 Button(action: {
                     MyAlerts().showTextInputPrompt(placeholder: "", title: "Delete league", message: "Enter the name of the league to delete it", keyboardType: .default, callback: { userPressEnter, name  in
                         if userPressEnter && name == self.curLeague.name {
@@ -44,6 +44,7 @@ struct SettingsFormLeague: View {
                 }) {
                     SpanningLabel(color: .red, content: "Delete League")
                 }
+                 */
                 Button(action: { self.showingAlert.toggle() }) {
                     SpanningLabel(color: .red, content: "Recalculate Rankings")
                 }.alert(isPresented: $showingAlert) {
@@ -52,6 +53,7 @@ struct SettingsFormLeague: View {
                     }, secondaryButton: .cancel())
                 }
             } else {
+                /*
                 Button(action: {
                    MyAlerts().showTextInputPrompt(placeholder: "", title: "Leave league", message: "Enter the name of the league to leave it", keyboardType: .default, callback: { userPressEnter, name  in
                        if userPressEnter && name == self.curLeague.name {
@@ -61,6 +63,7 @@ struct SettingsFormLeague: View {
                }) {
                    SpanningLabel(color: .red, content: "Leave League")
                }
+                 */
             }
             Spacer()
             }

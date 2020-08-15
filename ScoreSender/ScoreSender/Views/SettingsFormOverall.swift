@@ -16,6 +16,7 @@ struct SettingsFormOverall: View {
 //    @State var currentUsername: String
         
     @State var showingAlert = false
+    @State var showingMessageAlert = false
     
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
     
@@ -34,10 +35,17 @@ struct SettingsFormOverall: View {
                     .strokeBorder(style: StrokeStyle(lineWidth: 1))
                     .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
                 Button(action: {
-                    self.session.changeUser(displayName: self.username, image: nil)
+                    if self.username != "" {
+                        self.showingMessageAlert = true
+                    }
                 }) {
                     SpanningLabel(color: .green, content: "Change")
-                }.frame(width: 70)
+                    }.alert(isPresented: $showingMessageAlert) {
+                        Alert(title: Text("This should be your real first name"), message: Text("This is used to help people identify you in leagues"), primaryButton: .default(Text("Change")) {
+                            self.session.changeUser(displayName: self.username, image: nil)
+                        }, secondaryButton: .cancel())
+                    }
+                .frame(width: 70)
             }
             Divider()
             

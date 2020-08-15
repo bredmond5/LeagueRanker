@@ -94,9 +94,9 @@ class League: Identifiable, ObservableObject {
         if forDisplay {
             getImage()
         }
-        for player in players {
-            print(player.value.playerGames.count)
-        }
+//        for player in players {
+//            print(player.value.playerGames.count)
+//        }
     }
     
     func returnPlayers() -> [PlayerForm] {
@@ -386,7 +386,6 @@ class League: Identifiable, ObservableObject {
                 
                 var allGamesAfterDate: [Int: Game] = [:]
                 for player in league.players.values {
-                    print(player.playerGames.count)
                     // get all the games from the online league
                    for game in player.playerGames {
                        allGamesAfterDate[Int(game.date)!] = game
@@ -411,7 +410,6 @@ class League: Identifiable, ObservableObject {
                 
                 var allGamesAfterDate: [Int: Game] = [:]
                 for player in league.players.values {
-                    print(player.playerGames.count)
                     // get all the games from the online league
                    for game in player.playerGames {
                        allGamesAfterDate[Int(game.date)!] = game
