@@ -59,7 +59,7 @@ struct ShowGames: View {
                 .padding(.leading, 12)
                 
                 ForEach(player.playerGames, id: \.self) { game in
-                    NavigationLink(destination: SingleGameView(game: game, player: self.player, canDelete: (self.getCanDelete(gameInputter: game.inputter ?? "")), deleteGame: { game, player in
+                    NavigationLink(destination: SingleGameView(game: game, player: self.player, canDelete: (self.getCanDelete(gameInputter: game.inputter )), deleteGame: { game, player in
                         self.deleteGame(game, player)
                     }, curLeague: self.curLeague)) {
                         GameRow(game: game, playerName: self.player.displayName, players: self.curLeague.players)

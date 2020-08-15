@@ -21,7 +21,7 @@ struct ChangeProfileLeague: View {
     @State var showingAlert = false
     @State var alertMessage = "" {
         didSet {
-            showingAlert = true
+            self.showingAlert = true
         }
     }
     @State var isShowingImagePicker = false
@@ -92,17 +92,23 @@ struct ChangeProfileLeague: View {
     }
     
     func save() {
-        if self.displayName != "" {
-            changeDisplayName(callback: { success in
-                if success {
+        if self.displayName != ""  && self.displayName != self.player.displayName {
+            changeDisplayName(callback: { errorMessage in
+                if let msg = errorMessage {
+                    self.alertMessage = msg
+                } else {
                     self.changeImage(callback: { imageSuccess in
-                        self.mode.wrappedValue.dismiss()
+                        if imageSuccess {
+                            self.mode.wrappedValue.dismiss()
+                        }
                     })
                 }
             })
         } else {
             self.changeImage(callback: { imageSuccess in
-                self.mode.wrappedValue.dismiss()
+                if imageSuccess {
+                    self.mode.wrappedValue.dismiss()
+                }
             })
         }
     }
@@ -124,42 +130,38 @@ struct ChangeProfileLeague: View {
         }
     }
     
-    func changeDisplayName(callback: @escaping (Bool) -> ()) {
+    func changeDisplayName(callback: @escaping (String?) -> ()) {
         if displayName == "" {
-            alertMessage = "You cant have a blank username"
-            callback(false)
+            callback("You cant have a blank username")
             return
         }
             
         if displayName.count > Constants.maxCharacterDisplayName {
-            alertMessage = "Usernames must be less than \(Constants.maxCharacterDisplayName)"
-            callback(false)
+            callback("Usernames must be less than \(Constants.maxCharacterDisplayName)")
             return
         }
         
         //Redownload league just to make sure no one else has changed their display name to what we are trying
-        League.getLeagueFromFirebase(forLeagueID: curLeague.id.uuidString, forDisplay: false, callback: { league in
+        League.getLeagueFromFirebase(forLeagueID: curLeague.id.uuidString, forDisplay: false, shouldGetGames: false, callback: { league in
             if let league = league {
                 for player in league.returnPlayers() {
                     if player.displayName == self.displayName {
-                        self.alertMessage = "\(self.displayName) is taken"
-                        callback(false)
+                        callback("\(self.displayName) is taken")
                         return
                     }
                 }
                 // no one has the name so tell the league to change the display name
-                self.curLeague.changePlayerDisplayName(phoneNumber: self.player.phoneNumber, newDisplayName: self.displayName, callback: { success, errorMessage in
-                    if success {
-                        self.player.displayName = self.displayName
-                        callback(true)
-                    } else {
-                        self.alertMessage = errorMessage
+                self.curLeague.changePlayerDisplayName(phoneNumber: self.player.phoneNumber, newDisplayName: self.displayName, callback: { errorMessage in
+                    if let msg = errorMessage {
+                        self.alertMessage = msg
                         self.showingAlert = true
-                        return
+                    } else {
+                       self.player.displayName = self.displayName
+                       callback(nil)
                     }
                 })
             } else {
-                self.alertMessage = "Try again later"
+                callback("Try again later")
             }
         })
     }

@@ -194,11 +194,23 @@ struct GameForm: View {
                     self.showingAlert = true
                     
                 }else {
+                    if Set([self.p1, self.p2, self.p3, self.p4]).count != 4 {
+                        self.errorTitle = "Duplicate names input"
+                        self.showingAlert = true
+                        return 
+                    }
+                    
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p1]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p2]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p3]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p4]!]!)
+               
                     
+                    if !self.score1.isInt || !self.score2.isInt {
+                        self.errorTitle = "Scores must be numbers"
+                        self.showingAlert = true
+                        return
+                    }
                     // pull rankings from online in case someone has entered a game
                     // even though not getting images or games this still takes a lot of data
                     var ratings: [Rating] = []
@@ -221,15 +233,12 @@ struct GameForm: View {
                                 }
                                 ratings.append(Rating(mean: mu, standardDeviation: sigma))
                                 if ratings.count == 4 {
-                                    if let (game, newPlayerRatings) = Functions.checkValidGameAndGetGameScores(players: [players[0].phoneNumber, players[1].phoneNumber, players[2].phoneNumber, players[3].phoneNumber], scores: [self.score1, self.score2], ratings: [ratings[0], ratings[1], ratings[2], ratings[3]], inputter: self.inputter) {
+                                    let (game, newPlayerRatings) = Functions.getGameScores(players: [players[0].phoneNumber, players[1].phoneNumber, players[2].phoneNumber, players[3].phoneNumber], scores: [self.score1, self.score2], ratings: [ratings[0], ratings[1], ratings[2], ratings[3]], inputter: self.inputter)
                                         
-                                        self.didAddGame(game, newPlayerRatings)
-                                        self.mode.wrappedValue.dismiss()
-                                    } else {
-                                        self.errorTitle = "Duplicate names input"
-                                        self.showingAlert = true
-                                    }
+                                    self.didAddGame(game, newPlayerRatings)
+                                    self.mode.wrappedValue.dismiss()
                                 }
+                                
                             })  { (error) in
                                 self.errorTitle = error.localizedDescription
                                 self.showingAlert = true
@@ -291,6 +300,24 @@ extension Binding where Value: MutableCollection, Value.Index == Int {
         }, set: { (value: Value.Element) -> () in
             self.wrappedValue[idx] = value
         })
+    }
+}
+
+extension String {
+    var isInt: Bool {
+        return Int(self) != nil
+    }
+}
+
+extension Array where Element : Equatable {
+    var unique: [Element] {
+        var uniqueValues: [Element] = []
+        forEach { item in
+            if !uniqueValues.contains(item) {
+                uniqueValues += [item]
+            }
+        }
+        return uniqueValues
     }
 }
 

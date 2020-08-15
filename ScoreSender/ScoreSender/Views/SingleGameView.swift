@@ -29,8 +29,8 @@ struct SingleGameView: View {
         VStack (alignment: .leading, spacing: 16) {
             
             Group {
-                if curLeague.players[game.inputter ?? ""]?.displayName != nil{
-                    Text("Input by \(curLeague.players[game.inputter!]!.displayName) (\( curLeague.players[game.inputter!]!.realName)) on \(Date(timeIntervalSinceReferenceDate: TimeInterval(Int(game.date)! / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
+                if curLeague.players[game.inputter]?.displayName != nil{
+                    Text("Input by \(curLeague.players[game.inputter]!.displayName) (\( curLeague.players[game.inputter]!.realName)) on \(Date(timeIntervalSinceReferenceDate: TimeInterval(Int(game.date)! / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
                 } else {
                     Text("Date: \(Date(timeIntervalSinceReferenceDate: TimeInterval(Int(game.date)! / 1000)).toString())")
 
@@ -45,10 +45,10 @@ struct SingleGameView: View {
                     .fontWeight(.heavy)
                     .font(.system(size: 24))
                             
-                Text("Player 1: \(curLeague.players[game.team1[0]]?.displayName ?? game.team1[0]) \(addExtra(forPlayer: curLeague.players[game.team1[0]]?.displayName ?? game.team1[0]))")
+                Text("Player 1: \(curLeague.players[game.team1[0]]?.displayName ?? game.team1[0]) \(addExtra(forPhoneNumber: curLeague.players[game.team1[0]]?.displayName ?? game.team1[0]))")
                     .fontWeight(.heavy)
 
-                Text("Player 2: \(curLeague.players[game.team1[1]]?.displayName ?? game.team1[1]) \(addExtra(forPlayer: curLeague.players[game.team1[1]]?.displayName ?? game.team1[1]))")
+                Text("Player 2: \(curLeague.players[game.team1[1]]?.displayName ?? game.team1[1]) \(addExtra(forPhoneNumber: curLeague.players[game.team1[1]]?.displayName ?? game.team1[1]))")
                     .fontWeight(.heavy)
                 
                 Divider()
@@ -65,10 +65,10 @@ struct SingleGameView: View {
                     .fontWeight(.heavy)
                     .font(.system(size: 24))
 
-                Text("Player 3: \(curLeague.players[game.team2[0]]?.displayName ?? game.team2[0]) \(addExtra(forPlayer: curLeague.players[game.team2[0]]?.displayName ?? game.team2[0]))")
+                Text("Player 3: \(curLeague.players[game.team2[0]]?.displayName ?? game.team2[0]) \(addExtra(forPhoneNumber: curLeague.players[game.team2[0]]?.displayName ?? game.team2[0]))")
                     .fontWeight(.heavy)
     //
-                Text("Player 4: \(curLeague.players[game.team2[1]]?.displayName ?? game.team2[1]) \(addExtra(forPlayer: curLeague.players[game.team2[1]]?.displayName ?? game.team2[1]))")
+                Text("Player 4: \(curLeague.players[game.team2[1]]?.displayName ?? game.team2[1]) \(addExtra(forPhoneNumber: curLeague.players[game.team2[1]]?.displayName ?? game.team2[1]))")
                     .fontWeight(.heavy)
 
                 Divider()
@@ -82,8 +82,8 @@ struct SingleGameView: View {
                         SpanningLabel(color: .red, content: "Delete Game")
                     }.alert(isPresented: $showingAlert) {
                             Alert(title: Text("Are you sure you want to delete this game?"), message: Text("There is no going back"), primaryButton: .destructive(Text("Ok")) {
-                                self.mode.wrappedValue.dismiss()
                                 self.deleteGame(self.game, self.player)
+                                self.mode.wrappedValue.dismiss()
                         }, secondaryButton: .cancel())
                     }
                 }
@@ -93,13 +93,18 @@ struct SingleGameView: View {
             .padding(.all, 16)
     }
     
-    func addExtra(forPlayer displayName: String) -> String {
-        if let realName = curLeague.getRealName(fromDisplayName: displayName) {
-            return realName == displayName ? "" : "(\(realName))"
+    func addExtra(forPhoneNumber phoneNumber: String) -> String {
+//        if let realName = curLeague.getRealName(fromDisplayName: displayName) {
+//            return realName == displayName ? "" : "(\(realName))"
+//        } else {
+//            return ""
+//        }
+        
+        if let player = curLeague.players[phoneNumber] {
+            return player.realName == player.displayName ? "" : "(\(player.realName))"
         } else {
             return ""
         }
-        
     }
 }
 

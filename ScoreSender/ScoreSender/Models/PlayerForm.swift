@@ -14,8 +14,9 @@ import FirebaseStorage
 
 class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(phoneNumber) //phonenumber will be unique
-        hasher.combine(displayName) //displayname will also be unique
+        hasher.combine(id)
+    //        hasher.combine(displayName) //displayname will also be unique
+        
     }
     
     static func < (lhs: PlayerForm, rhs: PlayerForm) -> Bool {
@@ -81,12 +82,12 @@ class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
         }
     }
     
-    func changeDisplayName(newDisplayName: String, leagueID: String, callback: @escaping (Bool, String) -> ()) {
+    func changeDisplayName(newDisplayName: String, leagueID: String, callback: @escaping (String?) -> ()) {
         Database.database().reference(withPath: "/\(leagueID)/players/\(phoneNumber)/displayName").setValue(newDisplayName) { (error, ref) -> Void in
             if let error = error {
-                callback(false, error.localizedDescription)
+                callback(error.localizedDescription)
             } else {
-                callback(true, "")
+                callback(nil)
                 self.displayName = newDisplayName
             }
         }

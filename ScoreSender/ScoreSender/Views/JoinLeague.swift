@@ -125,7 +125,7 @@ struct JoinLeague: View {
                         } else {
                             self.username = self.user.displayName!
                             self.image = self.user.image
-                            self.displayNameAndPhoto = DisplayNameAndPhoto(username: self.$username, image: self.$image, isPresented: self.$isPresentingModal, leagueID: snapshot.key, callback: { userDidCancel in
+                            self.displayNameAndPhoto = DisplayNameAndPhoto(username: self.$username, image: self.$image, isPresented: self.$isPresentingModal, leagueID: leagueID, callback: { userDidCancel in
                                 if userDidCancel {
                                     self.cancelButton()
                                 }else{

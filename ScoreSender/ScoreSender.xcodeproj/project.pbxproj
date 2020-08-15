@@ -145,6 +145,7 @@
 		4276F52D24E5BF1400479386 /* ChangeProfileLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4276F52C24E5BF1400479386 /* ChangeProfileLeague.swift */; };
 		4276F52E24E5BF1400479386 /* ChangeProfileLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4276F52C24E5BF1400479386 /* ChangeProfileLeague.swift */; };
 		4276F52F24E5BF1400479386 /* ChangeProfileLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4276F52C24E5BF1400479386 /* ChangeProfileLeague.swift */; };
+		4276F53124E87E6400479386 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4276F53024E87E6300479386 /* PerformanceTests.swift */; };
 		4278DBC2246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC3246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
 		4278DBC4246E19A5004DB8B0 /* CurLeague.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4278DBC1246E19A5004DB8B0 /* CurLeague.swift */; };
@@ -275,6 +276,7 @@
 		4276F52424E38F7900479386 /* SingleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleGameView.swift; sourceTree = "<group>"; };
 		4276F52824E4D2F600479386 /* OtherPlayerMeanChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherPlayerMeanChanges.swift; sourceTree = "<group>"; };
 		4276F52C24E5BF1400479386 /* ChangeProfileLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeProfileLeague.swift; sourceTree = "<group>"; };
+		4276F53024E87E6300479386 /* PerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceTests.swift; sourceTree = "<group>"; };
 		4278DBC1246E19A5004DB8B0 /* CurLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurLeague.swift; sourceTree = "<group>"; };
 		4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaguesScroller.swift; sourceTree = "<group>"; };
 		4278DBC9246E1D5D004DB8B0 /* JoinLeague.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinLeague.swift; sourceTree = "<group>"; };
@@ -380,11 +382,9 @@
 				42F3260F246CA2DB005C6E71 /* NewLeague.swift */,
 				4276F52824E4D2F600479386 /* OtherPlayerMeanChanges.swift */,
 				422D0824246A59A700D605C4 /* PlayerRow.swift */,
-				42A3315324AD959000B78B57 /* SearchBar.swift */,
 				4241F21924D34D0000B59174 /* SettingsFormLeague.swift */,
 				422D0818246A594500D605C4 /* SettingsFormOverall.swift */,
 				42DC6BB62487516700A4D42C /* ShowGames.swift */,
-				4207ECB2246A68740079AFA7 /* SignUp.swift */,
 				4276F52424E38F7900479386 /* SingleGameView.swift */,
 				42F3260B246C92DA005C6E71 /* SpanningLabel.swift */,
 				42166DE0246F1EBD00C65CE6 /* StorageService.swift */,
@@ -475,6 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				4296E39D243D71D70058B451 /* ScoreSenderTests.swift */,
+				4276F53024E87E6300479386 /* PerformanceTests.swift */,
 				4296E39F243D71D70058B451 /* Info.plist */,
 			);
 			path = ScoreSenderTests;
@@ -517,6 +518,8 @@
 		42FA7BDC24A4011C0029A6B0 /* OldCode */ = {
 			isa = PBXGroup;
 			children = (
+				42A3315324AD959000B78B57 /* SearchBar.swift */,
+				4207ECB2246A68740079AFA7 /* SignUp.swift */,
 				42CE160724D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift */,
 				4278DBC5246E19BA004DB8B0 /* LeaguesScroller.swift */,
 				423ABAF0248ABF560059FE23 /* ContentViewPhone.swift */,
@@ -885,6 +888,7 @@
 				42948B5D24A436F600B37B25 /* Constants.swift in Sources */,
 				4241F21724D34BFB00B59174 /* ActiveSheet.swift in Sources */,
 				4276F52624E38F7900479386 /* SingleGameView.swift in Sources */,
+				4276F53124E87E6400479386 /* PerformanceTests.swift in Sources */,
 				422F48E624C39664002C434F /* TwoPlayerTrueSkillCalculator.swift in Sources */,
 				422D081E246A596300D605C4 /* HybridImagePickerController.swift in Sources */,
 				42CE160924D8C01600C754E6 /* AutocompleteTextFieldCoordinator.swift in Sources */,

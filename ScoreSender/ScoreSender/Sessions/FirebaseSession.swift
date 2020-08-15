@@ -218,7 +218,7 @@ class FirebaseSession: ObservableObject {
     }
     
     func getLeague(name: String, path: String) {
-        League.getLeagueFromFirebase(forLeagueID: path, forDisplay: true, callback: { league in
+        League.getLeagueFromFirebase(forLeagueID: path, forDisplay: true, shouldGetGames: true, callback: { league in
             if let league = league {
                 self.session?.leagueNames.append(name)
                 self.leagues.append(league)
@@ -290,15 +290,13 @@ class FirebaseSession: ObservableObject {
 //    }
     
     func uploadGames(forLeague curLeague: League, games: [[Game]]) {
-        let displayNameToPhoneNumber = curLeague.displayNameToPhoneNumber
         let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
         
         for i in 0..<games.count {
-            let playerNames = games[i][0].team1 + games[i][0].team2 // the players will be the same for each game
+            let phoneNumbers = games[i][0].team1 + games[i][0].team2 // the players will be the same for each game
             for j in 0..<games[i].count {
-                if let playerPhone = displayNameToPhoneNumber[playerNames[j]] {
-                    leagueRef.child("\(playerPhone)/games/\(games[i][j].date)").setValue(games[i][j].toAnyObject())
-                }
+                leagueRef.child("\(phoneNumbers[j])/games/\(games[i][j].date)").setValue(games[i][j].toAnyObject())
+                
             }
         }
     }
@@ -320,11 +318,6 @@ class FirebaseSession: ObservableObject {
         
     }
     
-    func uploadCorrectGame(forPlayer playerPhone: String, game: Game, leagueRef: DatabaseReference, newRating: Rating)
-    {
-        
-    }
-    
     func uploadGame(forLeague curLeague: League, forPlayer playerPhone: String, game: Game, leagueRef: DatabaseReference, newRating: Rating) {
         //let playerDisplayName = curLeague.players[playerPhone]!.displayName
         let oldPlayerMean = curLeague.players[playerPhone]!.rating.Mean
@@ -341,34 +334,50 @@ class FirebaseSession: ObservableObject {
     }
     
     func deleteGame(fromLeague league: League, game: Game, fromPlayer player: PlayerForm) {
-        let gamesToUpload = league.deleteGame(forDate: game.date, forPlayer: player)
-        
-        let displayNameToPhone = league.displayNameToPhoneNumber
-        
-        //actually remove the game from the four players on firebase. The deletion of the game from the players locally was done in the league
-        for playerName in game.team1 + game.team2 {
-            if let name = displayNameToPhone[playerName] {
-                var leagueRef = Database.database().reference(withPath: "\(league.id.uuidString)/players/\(name)/games/\(game.date)")
-                leagueRef.removeValue()
-                leagueRef = Database.database().reference(withPath: "\(league.id.uuidString)/players")
-                let playerPhone = displayNameToPhone[playerName]!
-                changePlayerRating(leagueRef: leagueRef, newRating: league.players[playerPhone]!.rating, playerPhone: playerPhone)
+        league.deleteGame(forDate: game.date, forPlayer: player, callback: { gamesToUpload in
+            let leagueRef = Database.database().reference(withPath: "\(league.id.uuidString)/players/")
+
+            //actually remove the game from the four players on firebase. The deletion of the game from the players locally was done in the league
+
+            for playerPhone in game.team1 + game.team2 {
+                leagueRef.child("\(playerPhone)/games/\(game.date)").removeValue()
             }
-        }
+            
+            //upload the games that need to be reuploaded
+            self.uploadGames(forLeague: league, games: gamesToUpload)
+                        
+            for player in league.players.values {
+                self.changePlayerRating(leagueRef: leagueRef, newRating: player.rating, playerPhone: player.phoneNumber)
+            }
+        })
         
-        uploadGames(forLeague: league, games: gamesToUpload)
+//        let displayNameToPhone = league.displayNameToPhoneNumber
+        
+        
     }
     
     func recalculateRankings(forLeague curLeague: League) {
-        let gamesToUpload = curLeague.recalculateRankings()
-        uploadGames(forLeague: curLeague, games: gamesToUpload)
-        
-        
-        let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
-        
-        for player in curLeague.players.values {
-            changePlayerRating(leagueRef: leagueRef, newRating: player.rating, playerPhone: player.phoneNumber)
-        }
+        curLeague.recalculateRankings(callback: { gamesToUpload in
+            self.uploadGames(forLeague: curLeague, games: gamesToUpload)
+            
+            let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
+            
+            for player in curLeague.players.values {
+                self.changePlayerRating(leagueRef: leagueRef, newRating: player.rating, playerPhone: player.phoneNumber)
+            }
+        })
+    }
+    
+    func redoLeague(forLeague curLeague: League) {
+        curLeague.returnGamesWithPhoneNumbers(callback: { gamesToUpload in
+            self.uploadGames(forLeague: curLeague, games: gamesToUpload)
+            
+            let leagueRef = Database.database().reference(withPath: "\(curLeague.id.uuidString)/players")
+            
+            for player in curLeague.players.values {
+                self.changePlayerRating(leagueRef: leagueRef, newRating: player.rating, playerPhone: player.phoneNumber)
+            }
+        })
     }
     
     //        var newRatingsArr: [[Rating]] = []

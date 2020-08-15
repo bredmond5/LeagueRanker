@@ -17,9 +17,9 @@ struct Game: Identifiable, Hashable {
     let date: String
     let gameScore: Double
     let sigmaChange: Double
-    var inputter: String?
+    var inputter: String
     
-    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, sigmaChange: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String? = nil) {
+    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, sigmaChange: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) {
         self.team1 = team1
         self.team2 = team2
         self.scores = scores
@@ -36,7 +36,7 @@ struct Game: Identifiable, Hashable {
         
         var gs = 0.0
         var sc = 0.0
-        var inputter: String?
+        var inputter: String = ""
         
         for key in gameDict {
             if let keyString = key.key as? String {
@@ -45,7 +45,7 @@ struct Game: Identifiable, Hashable {
                 }else if keyString == "sigmaChange" {
                     sc = key.value as! Double
                 }else if keyString == "inputter" {
-                    inputter = key.value as? String
+                    inputter = key.value as! String
                 
                 }else{
                     scores.append(key.key as! String)
@@ -65,11 +65,7 @@ struct Game: Identifiable, Hashable {
         self.gameScore = gs
         self.sigmaChange = sc
         
-        if let inputter = inputter {
-            self.inputter = inputter
-        }else{
-            self.inputter = nil
-        }
+        self.inputter = inputter
     }
     
     func toAnyObject() -> Any {
@@ -82,24 +78,12 @@ struct Game: Identifiable, Hashable {
         gameDict["gameScore"] = gameScore as AnyObject
         gameDict["sigmaChange"] = sigmaChange as AnyObject
         
-        if let inputter = self.inputter {
-            gameDict["inputter"] = inputter as AnyObject
-        }
+        gameDict["inputter"] = inputter as AnyObject
+        
         
         return gameDict
     }
 
 }
 
-//struct PlayerGame {
-//    let game: Game
-//    
-//    
-//    func toAnyObject() -> Any {
-//        return [
-//            "game": game as AnyObject,
-//5            "gameScore": gameScore,
-//        ]
-//    }
-//}
 

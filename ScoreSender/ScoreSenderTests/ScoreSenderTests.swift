@@ -242,7 +242,7 @@ class ScoreSenderTests: XCTestCase {
             var gamesReRun = games
             gamesReRun.remove(at: num)
             let ratings = runAlgo(onGames: gamesReRun)
-            let gamesFromLeague = league!.deleteGame(forDate: games[num].date, forPlayer: league!.players[league!.displayNameToPhoneNumber[games[num].team1[0]]!]!)
+            let gamesFromLeague = league!.deleteGame(forDate: games[num].date, forPlayer: league!.players[games[num].team1[0]]!)
             XCTAssertEqual(gamesFromLeague.count, games.count - num - 1)
             for i in 0..<players.count {
                 XCTAssertEqual(players[i].rating.Mean, ratings[i].Mean, accuracy: ErrorTolerance)
@@ -317,14 +317,14 @@ class ScoreSenderTests: XCTestCase {
 
     
     func addOneGame(players: [PlayerForm], scores: [String], fixedDate: String) -> Game {
-        let (game, newRatings) = Functions.checkValidGameAndGetGameScores(players: [players[0].displayName, players[1].displayName, players[2].displayName, players[3].displayName], scores: scores, ratings: [players[0].rating, players[1].rating, players[2].rating, players[3].rating], gameDate: fixedDate)!
+        let (game, newRatings) = Functions.getGameScores(players: [players[0].phoneNumber, players[1].phoneNumber, players[2].phoneNumber, players[3].phoneNumber], scores: scores, ratings: [players[0].rating, players[1].rating, players[2].rating, players[3].rating], gameDate: fixedDate, inputter: "")
         
         //add the game to each player
         for i in 0..<players.count {
             let oldPlayerMean = players[i].rating.Mean
             let oldPlayerSigma = players[i].rating.StandardDeviation
             let newRating = newRatings[i]
-            let gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, gameScore: newRating.Mean - oldPlayerMean, sigmaChange: newRating.StandardDeviation - oldPlayerSigma, date: game.date)
+            let gameToAdd = Game(team1: game.team1, team2: game.team2, scores: game.scores, gameScore: newRating.Mean - oldPlayerMean, sigmaChange: newRating.StandardDeviation - oldPlayerSigma, date: game.date, inputter: game.inputter)
             league?.addPlayerGame(forPlayerPhone: players[i].phoneNumber, playerGame: gameToAdd, newRating: newRating)
         }
         return game
@@ -336,7 +336,7 @@ class ScoreSenderTests: XCTestCase {
         
         for i in 0..<players.count {
             ratings.append(gameInfo.DefaultRating)
-            key[players[i].displayName] = i
+            key[players[i].phoneNumber] = i
         }
         
         for game in games {

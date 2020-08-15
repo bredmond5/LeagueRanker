@@ -10,11 +10,7 @@ import Foundation
 import SwiftUI
 
 class Functions {
-    static func checkValidGameAndGetGameScores(players: [String], scores: [String], ratings: [Rating], gameDate: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) -> (Game, [Rating])? {
-        
-        if(players.count != Set(players).count)  {
-            return nil
-        }
+    static func getGameScores(players: [String], scores: [String], ratings: [Rating], gameDate: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) -> (Game, [Rating]) {
         
         let newRatings = getNewRatings(players: players, scores: scores, ratings: ratings)
         

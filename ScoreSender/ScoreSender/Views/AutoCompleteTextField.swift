@@ -180,6 +180,8 @@ struct AutoCompleteTextFieldSwiftUI: UIViewRepresentable, AutoCompleteTextFieldD
                  attribute.addAttribute(NSAttributedString.Key.foregroundColor, value: self.boldTextColor, range: nsRange ?? NSRange())
                  textField.attributedText = attribute
             }
+        } else {
+            textField.textColor = .red
         }
     }
      
@@ -197,7 +199,9 @@ struct AutoCompleteTextFieldSwiftUI: UIViewRepresentable, AutoCompleteTextFieldD
 //             self.currInput = ""
 //         } else {
 //         }
-        textField.textColor = boldTextColor
+        if textField.textColor != .red {
+            textField.textColor = boldTextColor
+        }
 //        self.autocompleteDelegate?.returned(with: textField.text!)
 
      }

@@ -28,6 +28,10 @@ struct SettingsFormLeague: View {
                 SpanningLabel(color: Color.blue, content: "Edit Profile")
             }
             
+            Button(action: redoLeague) {
+                SpanningLabel(color: .red, content: "Switch to phone Numbers")
+            }
+            
             
             if curLeague.creatorPhone == session.session!.phoneNumber! {
                 
@@ -67,6 +71,10 @@ struct SettingsFormLeague: View {
     
     func resetRankings() {
         session.recalculateRankings(forLeague: curLeague)
+    }
+    
+    func redoLeague() {
+        session.redoLeague(forLeague: curLeague)
     }
 }
 

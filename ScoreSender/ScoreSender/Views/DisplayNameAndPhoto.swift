@@ -102,23 +102,26 @@ struct DisplayNameAndPhoto: View {
             // get another reference to league right before we upload so we can check that the displayname
             // is still unique
             if let leagueID = self.leagueID {
-                League.getLeagueFromFirebase(forLeagueID: leagueID, forDisplay: false, callback: { league in
-                if let league = league {
+                League.getLeagueFromFirebase(forLeagueID: leagueID, forDisplay: false, shouldGetGames: false, callback: { league in
+                    if let league = league {
                         for player in league.returnPlayers() {
                             if player.displayName == self.username {
                                 self.alertMessage = "\(self.username) is taken"
                                 return
                             }
                         }
+                        // no errors, send back that the user didnt cancel
+                        self.callback(false)
+                        self.isPresented = false
                     }else{
                         self.alertMessage = "Try again later"
                         return
                     }
                 })
+            } else {
+                self.callback(false)
+                self.isPresented = false
             }
-            // no errors, send back that the user didnt cancel
-            self.callback(false)
-            self.isPresented = false
         }
     }
     
