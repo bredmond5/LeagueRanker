@@ -9,18 +9,17 @@
 import Foundation
 import FirebaseDatabase
 
-struct Game: Identifiable {
+struct Game: Identifiable, Hashable {
     let id: String
     var team1: [String]
     var team2: [String]
     var scores: [String]
-    let ref: DatabaseReference?
     let date: String
     let gameScore: Double
     let sigmaChange: Double
+    var inputter: String
     
-    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, sigmaChange: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000))) {
-        self.ref = nil
+    init(team1: [String], team2: [String], scores: [String], key: String = "", gameScore: Double, sigmaChange: Double, date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) {
         self.team1 = team1
         self.team2 = team2
         self.scores = scores
@@ -28,43 +27,45 @@ struct Game: Identifiable {
         self.gameScore = gameScore
         self.sigmaChange = sigmaChange
         self.date = date
+        self.inputter = inputter
     }
     
-    init?(snapshot: DataSnapshot, date: String) {
-        guard
-            let value = snapshot.value as? [String: AnyObject],
-            let gameScore = value["gameScore"] as? Double,
-            let sigmaChange = value["sigmaChange"] as? Double
-            else {
-                print("Failed in game snapshot initializer")
-                return nil
-        }
-        
-        let enumerator = snapshot.children
+    init?(gameDict: NSDictionary, date: String) {
         var scores: [String] = []
-        var team1: [String] = []
-        var team2: [String] = []
-        if let rest = enumerator.nextObject() as? DataSnapshot {
-            scores.append(rest.key)
-            let arr = rest.value as! NSArray
-            team1.append(arr[0] as! String)
-            team1.append(arr[1] as! String)
-        }
-        if let rest = enumerator.nextObject() as? DataSnapshot {
-            scores.append(rest.key)
-            let arr = rest.value as! NSArray
-            team2.append(arr[0] as! String)
-            team2.append(arr[1] as! String)
+        var teams: [[String]] = []
+        
+        var gs = 0.0
+        var sc = 0.0
+        var inputter: String = ""
+        
+        for key in gameDict {
+            if let keyString = key.key as? String {
+                if keyString == "gameScore" {
+                    gs = key.value as! Double
+                }else if keyString == "sigmaChange" {
+                    sc = key.value as! Double
+                }else if keyString == "inputter" {
+                    inputter = key.value as! String
+                
+                }else{
+                    scores.append(key.key as! String)
+                    let displayNames = key.value as! [String]
+                    let p1 = displayNames[0]
+                    let p2 = displayNames[1]
+                    teams.append([p1,p2])
+                }
+            }
         }
         
-        self.ref = snapshot.ref
-        self.id = snapshot.key
-        self.team1 = team1
-        self.team2 = team2
+        self.id = date
+        self.team1 = teams[0]
+        self.team2 = teams[1]
         self.scores = scores
         self.date = date
-        self.gameScore = gameScore
-        self.sigmaChange = sigmaChange
+        self.gameScore = gs
+        self.sigmaChange = sc
+        
+        self.inputter = inputter
     }
     
     func toAnyObject() -> Any {
@@ -77,19 +78,12 @@ struct Game: Identifiable {
         gameDict["gameScore"] = gameScore as AnyObject
         gameDict["sigmaChange"] = sigmaChange as AnyObject
         
+        gameDict["inputter"] = inputter as AnyObject
+        
+        
         return gameDict
     }
+
 }
 
-//struct PlayerGame {
-//    let game: Game
-//    
-//    
-//    func toAnyObject() -> Any {
-//        return [
-//            "game": game as AnyObject,
-//5            "gameScore": gameScore,
-//        ]
-//    }
-//}
 

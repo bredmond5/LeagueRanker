@@ -65,13 +65,13 @@ class MyAlerts {
         showAlert(alert: alert)
     }
            
-    public func showTextInputPrompt(placeholder: String, title: String, message: String, callback: @escaping (Bool, String) -> Void) {
+    public func showTextInputPrompt(placeholder: String, title: String, message: String, keyboardType: UIKeyboardType, callback: @escaping (Bool, String) -> Void) {
            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                    
            alert.addTextField() { textField in
                textField.placeholder = placeholder
                textField.text = ""
-               textField.keyboardType = .numberPad
+               textField.keyboardType = keyboardType
            }
            
            alert.addAction(UIAlertAction(title: "Enter", style: .default) { _ in

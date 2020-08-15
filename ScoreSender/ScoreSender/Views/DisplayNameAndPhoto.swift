@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import FirebaseDatabase
 
 struct DisplayNameAndPhoto: View {
     
@@ -14,14 +15,21 @@ struct DisplayNameAndPhoto: View {
     @Binding var image: UIImage
     @Binding var isPresented: Bool
     
-    var usedUsernames: [String]
+//    var usedUsernames: [String]
     
     @State var isShowingImagePicker = false
     
+    @State var showingAlert = false
+    @State var alertMessage = "" {
+        didSet {
+            showingAlert = true
+        }
+    }
+    
+    var leagueID: String?
+        
     let callback: (Bool) -> ()
-    
-    let maxCharacterDisplayName = 11
-    
+        
     var body: some View {
         
         VStack (alignment: .leading, spacing: 16) {
@@ -74,7 +82,9 @@ struct DisplayNameAndPhoto: View {
             
             Button(action: addButton) {
                SpanningLabel(color: .green, content: "Add")
-            }
+            }.alert(isPresented: $showingAlert, content: {
+                Alert(title: Text(alertMessage))
+            })
            
             Button(action: cancelButton) {
                SpanningLabel(color: .red, content: "Cancel")
@@ -84,16 +94,33 @@ struct DisplayNameAndPhoto: View {
     }
     
     func addButton() {
-        if username != "" {
-            if username.count > maxCharacterDisplayName {
-                MyAlerts().showMessagePrompt(title: "Error", message: "Usernames must be less than \(maxCharacterDisplayName) characters", callback: {})
+        if username == "" {
+            self.alertMessage = "You cant have a blank username"
+        } else if username.count > Constants.maxCharacterDisplayName {
+            self.alertMessage = "Usernames must be less than \(Constants.maxCharacterDisplayName) characters"
+        }else{
+            // get another reference to league right before we upload so we can check that the displayname
+            // is still unique
+            if let leagueID = self.leagueID {
+                League.getLeagueFromFirebase(forLeagueID: leagueID, forDisplay: false, shouldGetGames: false, callback: { league in
+                    if let league = league {
+                        for player in league.returnPlayers() {
+                            if player.displayName == self.username {
+                                self.alertMessage = "\(self.username) is taken"
+                                return
+                            }
+                        }
+                        // no errors, send back that the user didnt cancel
+                        self.callback(false)
+                        self.isPresented = false
+                    }else{
+                        self.alertMessage = "Try again later"
+                        return
+                    }
+                })
             } else {
-                if usedUsernames.contains(username) {
-                    MyAlerts().showMessagePrompt(title: "Error", message: "Someone in this league already has the username \(username)", callback: {})
-                }else{
-                    self.callback(false)
-                    self.isPresented = false
-                }
+                self.callback(false)
+                self.isPresented = false
             }
         }
     }

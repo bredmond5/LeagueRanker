@@ -12,10 +12,11 @@ struct SettingsFormOverall: View {
     @EnvironmentObject var session: FirebaseSession
     
     @State var isShowingImagePicker = false
-//    @State var username: String = ""
+    @State var username: String = ""
 //    @State var currentUsername: String
         
     @State var showingAlert = false
+    @State var showingMessageAlert = false
     
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
     
@@ -26,9 +27,26 @@ struct SettingsFormOverall: View {
                   .fontWeight(.heavy)
                   .font(.system(size: 18))
                    Divider()
-            Text("Name: " + (session.session?.displayName ?? ""))
-                       .fontWeight(.heavy)
-                       .font(.system(size: 18))
+            HStack (spacing: 12) {
+                TextField(self.session.session?.displayName ?? "", text: self.$username)
+                .padding(.all, 12)
+                .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1))
+                    .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
+                Button(action: {
+                    if self.username != "" {
+                        self.showingMessageAlert = true
+                    }
+                }) {
+                    SpanningLabel(color: .green, content: "Change")
+                    }.alert(isPresented: $showingMessageAlert) {
+                        Alert(title: Text("This should be your real first name"), message: Text("This is used to help people identify you in leagues"), primaryButton: .default(Text("Change")) {
+                            self.session.changeUser(displayName: self.username, image: nil)
+                        }, secondaryButton: .cancel())
+                    }
+                .frame(width: 70)
+            }
             Divider()
             
 //            HStack (spacing: 16) {

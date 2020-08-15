@@ -14,8 +14,9 @@ import FirebaseStorage
 
 class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(phoneNumber) //phonenumber will be unique
-        hasher.combine(displayName)
+        hasher.combine(id)
+    //        hasher.combine(displayName) //displayname will also be unique
+        
     }
     
     static func < (lhs: PlayerForm, rhs: PlayerForm) -> Bool {
@@ -29,11 +30,15 @@ class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
     let phoneNumber: String
     @Published var displayName: String
     @Published var image: UIImage
-    var rank: Int // id is their ranking
+    var rank: Int
     @Published var rating: Rating
     @Published var playerGames: [Game] = []
     var id: UUID
     var realName: String
+    @Published var wins: Int = 0
+    @Published var losses: Int = 0
+    var rivals: [String: Double] = [:]
+    var bestTeammates: [String: Double] = [:]
     
     init(phoneNumber: String, displayName: String, image: UIImage = UIImage(), rank: Int, rating: Rating, playerGames: [Game] = [], realName: String) {
         id = UUID()
@@ -46,16 +51,21 @@ class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
         self.realName = realName
     }
     
-//    func toAnyObject() -> Any {
-//        var retVal = [String : AnyObject]()
-//
-//        retVal["displayName"] = displayName as AnyObject
-//        retVal["id"] = String(id) as AnyObject
-//        retVal["score"] = String(score) as AnyObject
-//       // retVal["playerGames"] = playerGames as AnyObject
-//
-//        return retVal
-//    }
+    func toAnyObject() -> Any {
+        var playerDict = [String : AnyObject]()
+        playerDict["mu"] = rating.Mean as AnyObject
+        playerDict["sigma"] = rating.StandardDeviation as AnyObject
+        playerDict["displayName"] = displayName as AnyObject
+        playerDict["realName"] = realName as AnyObject
+        
+        var gamesDict = [String : AnyObject]()
+        for game in playerGames {
+            gamesDict[game.date] = game.toAnyObject() as AnyObject
+        }
+        playerDict["games"] = gamesDict as AnyObject
+        
+        return playerDict
+    }
     
     func getImage(leagueID: String) {
         let r = Storage.storage().reference().child("\(leagueID)\(phoneNumber).jpg")
@@ -72,18 +82,20 @@ class PlayerForm: Identifiable, ObservableObject, Comparable, Hashable {
         }
     }
     
-    func changeDisplayName(newDisplayName: String, leagueID: String) {
-        Database.database().reference(withPath: "/\(leagueID)/players/\(phoneNumber)").setValue(newDisplayName)
-        //how to handle duplicate displayNames?
-        for playerGame in playerGames {
-            if playerGame.team1.contains(displayName) {
-                
-            }else{
-                
+    func changeDisplayName(newDisplayName: String, leagueID: String, callback: @escaping (String?) -> ()) {
+        Database.database().reference(withPath: "/\(leagueID)/players/\(phoneNumber)/displayName").setValue(newDisplayName) { (error, ref) -> Void in
+            if let error = error {
+                callback(error.localizedDescription)
+            } else {
+                callback(nil)
+                self.displayName = newDisplayName
             }
         }
-        
-        displayName = newDisplayName
-        return
     }
+    
+    func setGamesInfo(rivals: [String: Double], bestTeammates: [String: Double]) {
+        self.rivals = rivals
+        self.bestTeammates = bestTeammates
+    }
+    
 }

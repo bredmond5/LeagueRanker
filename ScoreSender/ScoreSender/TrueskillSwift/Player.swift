@@ -12,8 +12,6 @@ class Player<T: Hashable>: Hashable {
     
     public func hash(into hasher: inout Hasher) { //definite possible issue here, should test, maybe ids should be unique?
         hasher.combine(id)
-        hasher.combine(partialPlayPercentage)
-        hasher.combine(partialUpdatePercentage)
     }
     
     static func == (lhs: Player<T>, rhs: Player<T>) -> Bool {

@@ -16,7 +16,6 @@ struct CurLeague: View {
     var myAlerts = MyAlerts()
     
     @State var curLeague: League
-    var didUploadLeague: (League, Game, [Rating]) -> ()
     
     var body: some View {
         VStack (alignment: .leading){
@@ -35,8 +34,8 @@ struct CurLeague: View {
                 }
             }else{
                 NavigationLink(destination:
-                    GameForm(curLeague: self.curLeague, didAddGame: { g, newRatings in
-                        self.didUploadLeague(self.curLeague, g, newRatings)
+                    GameForm(curLeague: self.curLeague, inputter: self.session.session!.phoneNumber!,  didAddGame: { g, newRatings in
+                        self.session.uploadGame(curLeague: self.curLeague, game: g, newRatings: newRatings)
 
                         //force swift to reload the page
                         self.curLeague.rankPlayers()
@@ -58,13 +57,14 @@ struct CurLeague: View {
 //
             
             List(curLeague.sortedPlayers) { player in
-                NavigationLink(destination: ShowGames(player: player, canDelete: self.curLeague.creatorPhone == self.session.session?.phoneNumber, deleteGame: { game, player in
-                    self.session.deleteGame(fromLeague: self.curLeague, game: game, fromPlayer: player)
-
-                }).navigationBarTitle(player.displayName + "'s games"))
+                NavigationLink(destination:
+                    ShowGames(player: player, curLeague: self.curLeague, deleteGame: { game, player in
+                        self.session.deleteGame(fromLeague: self.curLeague, game: game, fromPlayer: player)
+                    }))
                 {
                     PlayerRow(player: player)
                 }
+                
             }
             
             
@@ -83,7 +83,7 @@ struct CurLeague: View {
 //                },
                 
                 trailing:
-            NavigationLink(destination: Text("Settings")) {
+            NavigationLink(destination: SettingsFormLeague(curLeague: self.curLeague)) {
                 Image(systemName: "text.justify")
                 .resizable()
                 .frame(width: 20, height: 20)

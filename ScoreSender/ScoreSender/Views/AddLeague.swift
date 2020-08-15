@@ -56,7 +56,7 @@ struct AddLeague: View {
                     }, userLeagueNames: self.session.getUserLeagueNames())
                 }else if self.activeSheet == .second {
                     JoinLeague(isPresented: self.$isPresentingModal, user: self.session.session!, didAddLeague : { leagueID, leagueName, username, creatorPhoneNumber, image  in
-                        self.session.joinLeague(leagueID: leagueID, leagueName: leagueName, displayName: username, phoneNumber: creatorPhoneNumber, image: image)
+                        self.session.joinLeague(leagueID: leagueID, leagueName: leagueName, displayName: username, image: image)
                         //self.session.addLeague(name: n, image: i)
     //                            self.session.uploadLeague(league: League(users: [self.session.session!], games: nil, name: n, image: i))
                     })

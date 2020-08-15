@@ -8,25 +8,23 @@
 
 import SwiftUI
 import Combine
+import FirebaseDatabase
 
 
 struct GameForm: View {
 //    @EnvironmentObject var session: FirebaseSession
-    
-    let myAlerts = MyAlerts()
-    
+        
     @State private var keyboardHeight: CGFloat = 0
     
     var curLeague: League
     
-    @State var isResponders: [Bool] = {
-        var isResponders: [Bool] = []
-        for i in 0..<5 {
-            isResponders.append(false)
-        }
-        isResponders[0] = true
-        return isResponders
-    }()
+    @State var showingAlert = false
+    
+    @State var errorTitle = ""
+    @State var errorMessage = ""
+        
+//    @ObservedObject var textFieldsController = TextFieldsController(numResponders: 6)
+        
     
     var datasource: [String: String] {
         let players = curLeague.returnPlayers()
@@ -39,15 +37,19 @@ struct GameForm: View {
             } else if !duplicates.contains(player.realName) {
                 datasource[player.displayName] = player.displayName
                 datasource[player.realName] = player.displayName
-                datasource[player.phoneNumber] = player.displayName
+//                datasource[player.phoneNumber] = player.displayName
             }
         }
         return datasource
     }
     
-    func makeAutoCompleteTextField(text: Binding<String>, placeholder: String) -> AutoCompleteTextFieldSwiftUI {
-        return AutoCompleteTextFieldSwiftUI(text: text, placeholder: placeholder, datasource: datasource)//, isResponder: isResponders[textfieldNum], nextResponder: isResponders[textfieldNum + 1] ?? .constant(nil))
+    func makeAutoCompleteTextField(text: Binding<String>, placeholder: String, isResponder: Binding<Bool?>, nextResponder: Binding<Bool?>) -> AutoCompleteTextFieldSwiftUI {
+        
+        return AutoCompleteTextFieldSwiftUI(text: text, placeholder: placeholder, datasource: datasource, isResponder: isResponder, nextResponder: nextResponder)
+       
     }
+    
+    let inputter: String
     
     var didAddGame: (Game, [Rating]) -> ()
     
@@ -57,6 +59,13 @@ struct GameForm: View {
     @State var p4: String = ""
     @State var score1: String = ""
     @State var score2: String = ""
+    
+    @State var firstResponder: Bool? = true
+    @State var secondResponder: Bool? = false
+    @State var thirdResponder: Bool? = false
+    @State var fourthResponder: Bool? = false
+    @State var fifthResponder: Bool? = false
+    @State var sixthResponder: Bool? = false
     
     var width: CGFloat = 80
     
@@ -82,7 +91,7 @@ struct GameForm: View {
             HStack (spacing: 16) {
                 Text("Player 1")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p1, placeholder: "username")
+                makeAutoCompleteTextField(text: self.$p1, placeholder: "username", isResponder: self.$firstResponder, nextResponder: self.$secondResponder)
                 .padding(.all, 12)
                .overlay(
                RoundedRectangle(cornerRadius: 4)
@@ -93,7 +102,7 @@ struct GameForm: View {
             HStack (spacing: 16) {
                 Text("Player 2")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p2, placeholder: "username")
+                makeAutoCompleteTextField(text: self.$p2, placeholder: "username", isResponder: self.$secondResponder, nextResponder: self.$thirdResponder)
                 .padding(.all, 12)
                 .overlay(
                 RoundedRectangle(cornerRadius: 4)
@@ -104,31 +113,38 @@ struct GameForm: View {
             HStack(spacing: 16) {
                 Text("Score")
                     .frame(width: width, alignment: .leading)
-                TextField("Score 1", text: $score1)
-                    .frame(alignment: .center)
-                    .padding(.all, 12)
-                    .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
-                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
-                    .keyboardType(.numbersAndPunctuation)
+                CustomTextField(text: $score1,
+                                nextResponder: self.$fourthResponder,
+                                isResponder: self.$thirdResponder,
+                                keyboard: .numbersAndPunctuation,
+                                placeholder: "Score 1")
+                .frame(alignment: .center)
+                .padding(.all, 12)
+                .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1))
+                    .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
+        
                 Text("-")
                     .frame(width: 25, alignment: .center)
                 
-                TextField("Score 2", text: $score2)
-                    .frame(alignment: .center)
-                    .padding(.all, 12)
-                    .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .strokeBorder(style: StrokeStyle(lineWidth: 1))
-                        .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
-                    .keyboardType(.numbersAndPunctuation)
+                CustomTextField(text: $score2,
+                                nextResponder: self.$fifthResponder,
+                                isResponder: self.$fourthResponder,
+                                keyboard: .numbersAndPunctuation,
+                                placeholder: "Score 2")
+                .frame(alignment: .center)
+                .padding(.all, 12)
+                .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1))
+                    .foregroundColor(Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1, opacity: 0.2)))
             }
             
             HStack (spacing: 16) {
                 Text("Player 3")
                     .frame(width: width, alignment: .leading)
-                makeAutoCompleteTextField(text: self.$p3, placeholder: "username")
+                makeAutoCompleteTextField(text: self.$p3, placeholder: "username", isResponder: self.$fifthResponder, nextResponder: self.$sixthResponder)
                 .padding(.all, 12)
                 .overlay(
                 RoundedRectangle(cornerRadius: 4)
@@ -140,7 +156,7 @@ struct GameForm: View {
            HStack (spacing: 16) {
                Text("Player 4")
                    .frame(width: width, alignment: .leading)
-            makeAutoCompleteTextField(text: self.$p4, placeholder: "username")
+            makeAutoCompleteTextField(text: self.$p4, placeholder: "username", isResponder: self.$sixthResponder, nextResponder: .constant(nil))
             .padding(.all, 12)
             .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -151,7 +167,9 @@ struct GameForm: View {
             
             Button(action: {
                 if self.p1 == "" || self.p2 == "" || self.p3 == "" || self.p4 == "" {
-                   return
+                    self.errorTitle = "Please fill in all the player fields"
+                    self.showingAlert = true
+                    return
                }
                 
                 let leagueName = self.curLeague.name
@@ -160,33 +178,76 @@ struct GameForm: View {
                 var players: [PlayerForm] = []
                 
                 if displayNameToPhoneNumber[self.p1] == nil {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: "\(self.p1) is not a member of \(leagueName)", callback: {
-                        return
-                    })
+                    self.errorTitle = "\(self.p1) is not a member of \(leagueName)"
+                    self.showingAlert = true
+                
                 } else if displayNameToPhoneNumber[self.p2] == nil {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: "\(self.p2) is not a member of \(leagueName)", callback: {
-                        return
-                    })
+                    self.errorTitle = "\(self.p2) is not a member of \(leagueName)"
+                    self.showingAlert = true
                     
                 }else if displayNameToPhoneNumber[self.p3] == nil {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: "\(self.p3) is not a member of \(leagueName)", callback: {
-                        return
-                    })
+                    self.errorTitle = "\(self.p3) is not a member of \(leagueName)"
+                    self.showingAlert = true
+                    
                 }else if displayNameToPhoneNumber[self.p4] == nil {
-                    self.myAlerts.showMessagePrompt(title: "Error", message: "\(self.p4) is not a member of \(leagueName)", callback: {
-                        return
-                    })
+                    self.errorTitle = "\(self.p4) is not a member of \(leagueName)"
+                    self.showingAlert = true
+                    
                 }else {
+                    if Set([self.p1, self.p2, self.p3, self.p4]).count != 4 {
+                        self.errorTitle = "Duplicate names input"
+                        self.showingAlert = true
+                        return 
+                    }
+                    
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p1]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p2]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p3]!]!)
                     players.append(phoneNumberToPlayer[displayNameToPhoneNumber[self.p4]!]!)
-
-                    if let (game, newPlayerRatings) = Functions.checkValidGameAndGetGameScores(players: [self.p1, self.p2, self.p3, self.p4], scores: [self.score1, self.score2], ratings: [players[0].rating, players[1].rating, players[2].rating, players[3].rating]) {
-                        //set game here
-                        
-                        self.didAddGame(game, newPlayerRatings)
-                        self.mode.wrappedValue.dismiss()
+               
+                    
+                    if !self.score1.isInt || !self.score2.isInt {
+                        self.errorTitle = "Scores must be numbers"
+                        self.showingAlert = true
+                        return
+                    }
+                    // pull rankings from online in case someone has entered a game
+                    // even though not getting images or games this still takes a lot of data
+                    var ratings: [Rating] = []
+                    
+                    for player in players {
+                        let leagueRef = Database.database().reference(withPath: "\(self.curLeague.id)/players/\(player.phoneNumber)")
+                        leagueRef.child("mu").observeSingleEvent(of: .value, with: { (snapshot) in
+                          // Get user value
+                            guard let mu = snapshot.value as? Double else {
+                                self.errorTitle = "Error retrieving rankings"
+                                self.showingAlert = true
+                                return
+                            }
+                            
+                            leagueRef.child("sigma").observeSingleEvent(of: .value, with: { (snapshot) in
+                                guard let sigma = snapshot.value as? Double else {
+                                    self.errorTitle = "Error retreiving rankings"
+                                    self.showingAlert = true
+                                    return
+                                }
+                                ratings.append(Rating(mean: mu, standardDeviation: sigma))
+                                if ratings.count == 4 {
+                                    let (game, newPlayerRatings) = Functions.getGameScores(players: [players[0].phoneNumber, players[1].phoneNumber, players[2].phoneNumber, players[3].phoneNumber], scores: [self.score1, self.score2], ratings: [ratings[0], ratings[1], ratings[2], ratings[3]], inputter: self.inputter)
+                                        
+                                    self.didAddGame(game, newPlayerRatings)
+                                    self.mode.wrappedValue.dismiss()
+                                }
+                                
+                            })  { (error) in
+                                self.errorTitle = error.localizedDescription
+                                self.showingAlert = true
+                            }
+                          
+                        }) { (error) in
+                            self.errorTitle = error.localizedDescription
+                            self.showingAlert = true
+                        }
                     }
                 }
             }, label: {
@@ -224,6 +285,55 @@ struct GameForm: View {
         }.padding(.all, 20)
             .padding(.bottom, keyboardHeight)
             .onReceive(Publishers.keyboardHeight, perform: {self.keyboardHeight = $0})
+            .alert(isPresented: $showingAlert) {
+                Alert(title: Text(self.errorTitle), message: Text(self.errorMessage))
+            }
         }
     }
 }
+
+extension Binding where Value: MutableCollection, Value.Index == Int {
+    func element(_ idx: Int) -> Binding<Value.Element> {
+        return Binding<Value.Element>(
+            get: {
+                return self.wrappedValue[idx]
+        }, set: { (value: Value.Element) -> () in
+            self.wrappedValue[idx] = value
+        })
+    }
+}
+
+extension String {
+    var isInt: Bool {
+        return Int(self) != nil
+    }
+}
+
+extension Array where Element : Equatable {
+    var unique: [Element] {
+        var uniqueValues: [Element] = []
+        forEach { item in
+            if !uniqueValues.contains(item) {
+                uniqueValues += [item]
+            }
+        }
+        return uniqueValues
+    }
+}
+
+//class TextFieldsController: ObservableObject {
+//    @Published var isResponders = [BoolStruct]()
+//
+//    init(numResponders: Int) {
+//        isResponders.append(BoolStruct(id: 0, isResponder: true))
+//        for i in 1..<numResponders {
+//            isResponders.append(BoolStruct(id: i, isResponder: false))
+//        }
+//    }
+//}
+//
+//struct BoolStruct: Identifiable {
+//    var id: Int
+//    var isResponder: Bool
+//}
+
