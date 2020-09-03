@@ -219,16 +219,16 @@ class UnitTestFunctions {
         return ps
     }
     
-    static func getRandomScore() -> [String] {
-        var scores: Set<String> = []
+    static func getRandomScore() -> [Int] {
+        var scores: Set<Int> = []
         while scores.count < 2 {
-            scores.insert(String(Int.random(in: 0..<100)))
+            scores.insert(Int.random(in: 0..<100))
         }
         return Array(scores)
     }
 
     
-    static func addOneGame(session: FirebaseSession, players: [PlayerForm], league: League, scores: [String], fixedDate: String, completion: @escaping (Error?) -> ()) {
+    static func addOneGame(session: FirebaseSession, players: [PlayerForm], league: League, scores: [Int], fixedDate: String, completion: @escaping (Error?) -> ()) {
         session.uploadGame(curLeague: league, players: players, scores: scores, inputter: session.session!.uid, completion: { error in
             if let error = error {
                 completion(error)
@@ -260,7 +260,7 @@ class UnitTestFunctions {
         }
     }
     
-    static func addMultipleGamesNotRandom(session: FirebaseSession, players: [PlayerForm], league: League, scores: [String], numGames: Int, completion: @escaping (Error?) -> ()) {
+    static func addMultipleGamesNotRandom(session: FirebaseSession, players: [PlayerForm], league: League, scores: [Int], numGames: Int, completion: @escaping (Error?) -> ()) {
         var errorFound: Error?
         if numGames > 0 {
             self.addMultipleGamesNotRandom(session: session, players: players, league: league, scores: scores, numGames: numGames - 1, completion: { error in

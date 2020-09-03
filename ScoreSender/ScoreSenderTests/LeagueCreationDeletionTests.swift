@@ -294,7 +294,7 @@ class LeagueCreationDeletionTests: XCTestCase {
                     }
                 }
                 myGroup.notify(queue: .main) {
-                    session.uploadGame(curLeague: session.leagues[1], players: Array(Array(league.players.values)[0..<4]), scores: ["12","5"], inputter: "", completion: { error in
+                    session.uploadGame(curLeague: session.leagues[1], players: Array(Array(league.players.values)[0..<4]), scores: [12,5], inputter: "", completion: { error in
                         if let error = error {
                            XCTFail("Error: \(error.localizedDescription)")
                            return
@@ -417,7 +417,43 @@ class LeagueCreationDeletionTests: XCTestCase {
         let promise = expectation(description: "league rejoined")
         let session = FirebaseSession()
         
+        UnitTestFunctions.loginNoLogout(session: session, withPhoneNumber: "+16505551234", realName: "Xavie", completion: {
+            let league = session.leagues[0]
+            let devin = league.players[league.displayNameToUserID["Devin"]!]!
+            let userID = devin.id
+            session.remove(player: devin, fromLeague: league, shouldDeletePlayerGames: false, shouldDeleteInputGames: false, completion: { error in
+                if let error = error {
+                    XCTFail("Error: \(error.localizedDescription)")
+                    return
+                }
+                
+                UnitTestFunctions.loginNoLogout(session: session, withPhoneNumber: "+16505555555", realName: "Devin", completion: {
+                    XCTAssertEqual(session.leagues.count, 0)
+                    UnitTestFunctions.loginNoLogout(session: session, withPhoneNumber: "+16505551234", realName: "Xavie", completion: {
+                        session.unblock(userID: userID, fromLeague: session.leagues[0], completion: { error in
+                            if let error = error {
+                                XCTFail("Error: \(error.localizedDescription)")
+                                return
+                            }
+                            UnitTestFunctions.loginNoLogout(session: session, withPhoneNumber: "+16505555555", realName: "Devin", completion: {
+                                session.rejoinLeague(league: league, completion: { error in
+                                    if let error = error {
+                                       XCTFail("Error: \(error.localizedDescription)")
+                                       return
+                                   }
+                                   UnitTestFunctions.checkLocalLeagueAgainst(localLeague: session.leagues[0], completion: {
+                                       promise.fulfill()
+                                   })
+                                })
+                            })
+                        })
+                    })
+                })
+                
+            })
+        })
         
+        wait(for: [promise], timeout: 90)
     }
     
     func testDeleteInputGamesAndRejoinLeague() {
@@ -464,6 +500,33 @@ class LeagueCreationDeletionTests: XCTestCase {
         })
         
         wait(for: [promise], timeout: 90)
+    }
+    
+    func testEditLeague() {
+        let promise = expectation(description: "league name put back")
+        let session = FirebaseSession()
+        
+        UnitTestFunctions.loginNoLogout(session: session, withPhoneNumber: "+16505551234", realName: "Xavie", completion: {
+            let league = session.leagues[0]
+            let oldName = league.name
+            let oldImage = league.leagueImage
+            session.edit(league: league, newName: "test", newImage: nil, completion: { error in
+                if let error = error {
+                    XCTFail("Error: \(error.localizedDescription)")
+                    return
+                }
+                UnitTestFunctions.checkLocalLeagueAgainst(localLeague: league, completion: {
+                    session.edit(league: league, newName: oldName, newImage: oldImage, completion: { error in
+                        if let error = error {
+                            XCTFail("Error: \(error.localizedDescription)")
+                            return
+                        }
+                        promise.fulfill()
+                    })
+                })
+            })
+        })
+        wait(for: [promise], timeout: 30)
     }
 
 //    func testInviteToLeague() {

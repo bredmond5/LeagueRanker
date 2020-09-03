@@ -11,7 +11,7 @@ import FirebaseDatabase
 
 class Game: Identifiable, Hashable, Comparable {
     static func < (lhs: Game, rhs: Game) -> Bool {
-        return Double(lhs.date)! < Double(rhs.date)!
+        return lhs.date < rhs.date
     }
     
     static func == (lhs: Game, rhs: Game) -> Bool {
@@ -26,11 +26,11 @@ class Game: Identifiable, Hashable, Comparable {
     let id: UUID
     var team1: [String]
     var team2: [String]
-    var scores: [String]
-    var date: String
+    var scores: [Int]
+    var date: Int
     var inputter: String
     
-    init(id: UUID = UUID(), team1: [String], team2: [String], scores: [String], date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) {
+    init(id: UUID = UUID(), team1: [String], team2: [String], scores: [Int], date: Int = Int(Date.timeIntervalSinceReferenceDate * 1000), inputter: String) {
         self.team1 = team1
         self.team2 = team2
         self.scores = scores
@@ -40,13 +40,13 @@ class Game: Identifiable, Hashable, Comparable {
     }
     
     init?(gameDict: NSDictionary, id: UUID) {
-        var scores: [String] = []
+        var scores: [Int] = []
         var teams: [[String]] = []
         
 //        var gs = 0.0
 //        var sc = 0.0
         var inputter: String = ""
-        var date: String = ""
+        var date: Int = 0
         
         for key in gameDict {
             if let keyString = key.key as? String {
@@ -54,10 +54,10 @@ class Game: Identifiable, Hashable, Comparable {
                     inputter = key.value as! String
                     
                 }else if keyString == "date" {
-                    date = key.value as! String
+                    date = key.value as! Int
                     
                 }else{
-                    scores.append(key.key as! String)
+                    scores.append(key.key as! Int)
                     let displayNames = key.value as! [String]
                     let p1 = displayNames[0]
                     let p2 = displayNames[1]
@@ -77,16 +77,21 @@ class Game: Identifiable, Hashable, Comparable {
     }
     
     func toAnyObject() -> Any {
-        var gameDict = [String: AnyObject]()
-        let team1Arr = [team1[0], team1[1]]
-        let team2Arr = [team2[0], team2[1]]
-        
-        gameDict[scores[0]] = team1Arr as AnyObject
-        gameDict[scores[1]] = team2Arr as AnyObject
-        
-        gameDict["inputter"] = inputter as AnyObject
-        gameDict["date"] = date as AnyObject
-        return gameDict
+//        var gameDict = [String: AnyObject]()
+//        let team1Arr =
+//        let team2Arr =
+//
+//        gameDict[scores[0]] = team1Arr as AnyObject
+//        gameDict[scores[1]] = team2Arr as AnyObject
+//
+//        gameDict["inputter"] = inputter as AnyObject
+//        gameDict["date"] = date
+        return [
+            scores[0] : [team1[0], team1[1]],
+            scores[1] : [team2[0], team2[1]],
+            "inputter" : inputter,
+            "date" : date
+        ] as Any
     }
 
 }

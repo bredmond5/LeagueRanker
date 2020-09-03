@@ -245,7 +245,7 @@ struct GameForm: View {
              }
              // pull rankings from online in case someone has entered a game
              // even though not getting images or games this still takes a lot of data
-             self.session.uploadGame(curLeague: self.curLeague, players: players, scores: [score1, score2], inputter: self.inputter, completion: { error in
+             self.session.uploadGame(curLeague: self.curLeague, players: players, scores: [Int(score1)!, Int(score2)!], inputter: self.inputter, completion: { error in
                  if let error = error {
                     self.errorTitle = error.localizedDescription
                     self.shouldDismiss = true

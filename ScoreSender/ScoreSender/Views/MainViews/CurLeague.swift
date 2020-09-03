@@ -35,7 +35,7 @@ struct CurLeague: View {
                     }
                 }else{
                     NavigationLink(destination:
-                        GameForm(curLeague: self.curLeague, inputter: self.session.session!.uid, completion: { didUploadGame in
+                        GameForm(curLeague: self.curLeague, inputter: self.session.session?.uid ?? "", completion: { didUploadGame in
                             
                             if didUploadGame {
                                 //force swift to reload the page

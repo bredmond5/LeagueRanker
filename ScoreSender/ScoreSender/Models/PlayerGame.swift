@@ -12,11 +12,11 @@ class PlayerGame: Game {
     let gameScore: Double
     let sigmaChange: Double
     
-    init(team1: [String], team2: [String], scores: [String], date: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String, gameScore: Double, sigmaChange: Double) {
-        self.gameScore = gameScore
-        self.sigmaChange = sigmaChange
-        super.init(team1: team1, team2: team2, scores: scores, date: date, inputter: inputter)
-    }
+//    init(team1: [String], team2: [String], scores: [Int], date: Int = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String, gameScore: Double, sigmaChange: Double) {
+//        self.gameScore = gameScore
+//        self.sigmaChange = sigmaChange
+//        super.init(team1: team1, team2: team2, scores: scores, date: date, inputter: inputter)
+//    }
     
     init(game: Game, gameScore: Double, sigmaChange: Double) {
         self.gameScore = gameScore

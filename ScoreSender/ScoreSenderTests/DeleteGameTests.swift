@@ -63,7 +63,7 @@ class DeleteGameTests: XCTestCase {
                     completion(session)
                 })
             } else {
-                UnitTestFunctions.addMultipleGamesNotRandom(session: session, players: [self.players[0], self.players[1], self.players[2], self.players[3]], league: self.league!, scores: ["12","4"], numGames: numGames, completion: { error in
+                UnitTestFunctions.addMultipleGamesNotRandom(session: session, players: [self.players[0], self.players[1], self.players[2], self.players[3]], league: self.league!, scores: [12,4], numGames: numGames, completion: { error in
                     if let error = error {
                         XCTFail("Error: \(error.localizedDescription)")
                         return
@@ -134,7 +134,7 @@ class DeleteGameTests: XCTestCase {
         wait(for: [promise], timeout: 40)
     }
 
-    func testDeleteFiftyGamesFromEnd() {
+    func testDeleteTenGamesFromEnd() {
         let promise = expectation(description: "Status code: 200")
         sendToFirebase(numGames: 10, isRandom: false, completion: { session in
             UnitTestFunctions.deleteGamesUntilEmptyFromLastGame(session: session, league: self.league!, callback: {
@@ -145,7 +145,7 @@ class DeleteGameTests: XCTestCase {
     }
     
     
-    func testDeleteFiftyGamesFromBeginning() {
+    func testDeleteTenGamesFromBeginning() {
         let promise = expectation(description: "Status code: 200")
            sendToFirebase(numGames: 10, isRandom: true, completion: { session in
                UnitTestFunctions.deleteGamesUntilEmptyFromFirstGame(session: session, league: self.league!, callback: {
@@ -155,7 +155,7 @@ class DeleteGameTests: XCTestCase {
            wait(for: [promise], timeout: 50)
     }
 
-    func testDeleteRandomGames() {
+    func testDeleteTenRandomGames() {
         let promise = expectation(description: "Status code: 200")
         sendToFirebase(numGames: 10, isRandom: true, completion: { session in
             UnitTestFunctions.deleteGamesUntilEmptyRandomGames(session: session, league: self.league!, callback: {

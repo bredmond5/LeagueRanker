@@ -38,8 +38,10 @@ class League: Identifiable, ObservableObject, Equatable {
     //convience static intializer
     static func getLeagueFromFirebase(forLeagueID leagueID: String, forDisplay: Bool, shouldGetGames: Bool, callback: @escaping (League?) -> ()) {
         let locRef = Database.database().reference(withPath: "leagues/\(leagueID)")
-        locRef.observeSingleEvent(of: DataEventType.value) { (locSnapshot) in
+        locRef.observeSingleEvent(of: DataEventType.value, with: { (locSnapshot) in
             callback(League(snapshot: locSnapshot, forDisplay: forDisplay, shouldGetGames: shouldGetGames))
+        }) { (error) in
+            callback(nil)
         }
     }
     
@@ -307,7 +309,7 @@ class League: Identifiable, ObservableObject, Equatable {
         
         var gamesDict = [String : AnyObject]()
         for game in leagueGames {
-            gamesDict[game.date] = game.toAnyObject() as AnyObject
+            gamesDict[game.id.uuidString] = game.toAnyObject() as AnyObject
         }
         
         retVal["games"] = gamesDict as AnyObject
@@ -439,7 +441,7 @@ class League: Identifiable, ObservableObject, Equatable {
         }
         
         for player in players.values {
-            player.playerGames.sort(by: {Int($0.date)! > Int($1.date)!})
+            player.playerGames.sort(by: {$0.date > $1.date})
         }
         
         self.rankPlayers()

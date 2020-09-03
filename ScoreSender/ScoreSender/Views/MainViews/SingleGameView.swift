@@ -46,9 +46,9 @@ struct SingleGameView: View {
             
             Group {
                 if curLeague.players[game.inputter]?.displayName != nil{
-                    Text("Input by \(curLeague.players[game.inputter]!.displayName) \(addExtra(forUID: game.inputter))on \(Date(timeIntervalSinceReferenceDate: TimeInterval(Int(game.date)! / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
+                    Text("Input by \(curLeague.players[game.inputter]!.displayName) \(addExtra(forUID: game.inputter))on \(Date(timeIntervalSinceReferenceDate: TimeInterval(game.date / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
                 } else {
-                    Text("Date: \(Date(timeIntervalSinceReferenceDate: TimeInterval(Int(game.date)! / 1000)).toString())")
+                    Text("Date: \(Date(timeIntervalSinceReferenceDate: TimeInterval(game.date / 1000)).toString())")
 
                 }
                 

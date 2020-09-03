@@ -42,14 +42,14 @@ struct LeagueGameRow: View {
 
             Spacer()
 
-            Text(game.scores[0])
+            Text("\(game.scores[0])")
                 .font(.system(size: 12))
                 .fontWeight(.bold)
 
              Text("-")
                  .font(.system(size: 12))
 
-            Text(game.scores[1])
+            Text("\(game.scores[1])")
                 .font(.system(size: 12))
                 .fontWeight(.bold)
 

@@ -64,6 +64,9 @@ struct RemovePlayer: View {
                 
                 Toggle(isOn: $removePlayerGames.onUpdate {
                     self.removePlayerGamesAlert = self.removePlayerGames
+                    if self.removePlayerGames == false {
+                        self.removePlayerInputGames = false
+                    }
                 }) {
                     Text("Remove \(displayName)'s profile")
                 }.alert(isPresented: $removePlayerGamesAlert, content: {

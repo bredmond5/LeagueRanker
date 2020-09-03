@@ -155,12 +155,12 @@ struct GameRow: View {
                
                 Spacer()
                 
-                BoldTextToggle(isBold: game.team1.contains(self.playerName), name: game.scores[0])
+                BoldTextToggle(isBold: game.team1.contains(self.playerName), name: "\(game.scores[0])")
                 
                 Text("-")
                     .font(.system(size: 12))
                 
-                BoldTextToggle(isBold: game.team2.contains(self.playerName), name: game.scores[1])
+                BoldTextToggle(isBold: game.team2.contains(self.playerName), name: "\(game.scores[1])")
                
                 Spacer()
                 

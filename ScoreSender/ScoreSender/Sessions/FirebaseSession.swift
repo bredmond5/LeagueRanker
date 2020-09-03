@@ -397,17 +397,20 @@ class FirebaseSession: ObservableObject {
             if league.players[self.session!.uid]!.realName != self.session!.realName! {
                 league.changeRealName(forUID: self.session!.uid, newName: self.session!.realName!, completion: { error in
                     self.leagues.append(league)
+                    completion(error)
                 })
+            } else {
+                self.leagues.append(league)
+                completion(nil)
             }
-            completion(nil)
         }
     }
     
-    public func uploadGame(curLeague: League, players: [PlayerForm], scores: [String], inputter: String, completion: @escaping (Error?) -> ()) {
+    public func uploadGame(curLeague: League, players: [PlayerForm], scores: [Int], inputter: String, completion: @escaping (Error?) -> ()) {
         // Called from GameForm.swift.
         let leagueRef = Database.database().reference(withPath: "leagues/\(curLeague.id.uuidString)/players")
         
-        getOnlineRatings(leagueRef: leagueRef, curLeague: curLeague, players: players, scores: scores, completion: { ratings in
+        getOnlineRatings(leagueRef: leagueRef, curLeague: curLeague, players: players, completion: { ratings in
             guard let oldRatings = ratings else {
                 completion(FirebaseSessionErrors.PlayerScoreDownloadError)
                 return
@@ -547,8 +550,8 @@ class FirebaseSession: ObservableObject {
     
     public func remove(player: PlayerForm, fromLeague league: League, shouldDeletePlayerGames: Bool, shouldDeleteInputGames: Bool, completion: @escaping (Error?) -> ()) {
         
-        if shouldDeletePlayerGames {
-            if !shouldDeleteInputGames {
+        if !shouldDeletePlayerGames {
+            if shouldDeleteInputGames {
                 completion(FirebaseSessionErrors.GamesInputButNotPlayed)
             }
         }
@@ -717,6 +720,7 @@ class FirebaseSession: ObservableObject {
                 return
             }
             league.blockedPlayers.removeValue(forKey: userID)
+            completion(nil)
         }
     }
     
@@ -842,7 +846,6 @@ class FirebaseSession: ObservableObject {
     }
     
     private func getLeaguesHelper(fromRef userLeaguesRef: DatabaseReference, completion: @escaping (Error?) -> ()) {
-        
         var errorFound: Error?
         userLeaguesRef.observeSingleEvent(of: DataEventType.value, with: { snapshot in
             if !snapshot.exists() {
@@ -880,28 +883,28 @@ class FirebaseSession: ObservableObject {
         })
     }
     
-    private func uploadGames(forLeague curLeague: League, games: [[Game]], completion: ((Error?) -> Void)? = nil) {
-        let leagueRef = Database.database().reference(withPath: "leagues/\(curLeague.id.uuidString)/players")
-        let myGroup = DispatchGroup()
-        
-        for i in 0..<games.count {
-            let userIDs = games[i][0].team1 + games[i][0].team2 // the players will be the same for each game
-            for j in 0..<games[i].count {
-                myGroup.enter()
-                leagueRef.child("\(userIDs[j])/games/\(games[i][j].date)").setValue(games[i][j].toAnyObject()) { error, ref in
-                    if let error = error {
-                        completion?(error)
-                    } else {
-                        myGroup.leave()
-                    }
-                }
-            }
-        }
-        
-        myGroup.notify(queue: .main) {
-            completion?(nil)
-        }
-    }
+//    private func uploadGames(forLeague curLeague: League, games: [[Game]], completion: ((Error?) -> Void)? = nil) {
+//        let leagueRef = Database.database().reference(withPath: "leagues/\(curLeague.id.uuidString)/players")
+//        let myGroup = DispatchGroup()
+//
+//        for i in 0..<games.count {
+//            let userIDs = games[i][0].team1 + games[i][0].team2 // the players will be the same for each game
+//            for j in 0..<games[i].count {
+//                myGroup.enter()
+//                leagueRef.child("\(userIDs[j])/games/\(games[i][j].date)").setValue(games[i][j].toAnyObject()) { error, ref in
+//                    if let error = error {
+//                        completion?(error)
+//                    } else {
+//                        myGroup.leave()
+//                    }
+//                }
+//            }
+//        }
+//
+//        myGroup.notify(queue: .main) {
+//            completion?(nil)
+//        }
+//    }
     
     private func addPlayer(toLeague league: League, displayName: String?, image: UIImage?, userID: String, realName: String, phoneNumber: String, completion: @escaping (Error?) -> ()) {
         
@@ -936,7 +939,7 @@ class FirebaseSession: ObservableObject {
         })
     }
     
-    private func getOnlineRatings(leagueRef: DatabaseReference, curLeague: League, players: [PlayerForm], scores: [String], completion: @escaping ([String: Rating]?) -> ()) {
+    private func getOnlineRatings(leagueRef: DatabaseReference, curLeague: League, players: [PlayerForm], completion: @escaping ([String: Rating]?) -> ()) {
         var ratings: [String: Rating] = [:]
         let myGroup = DispatchGroup()
         
