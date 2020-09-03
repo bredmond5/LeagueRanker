@@ -12,14 +12,14 @@ class User: Identifiable {
     
     var uid: String
     var phoneNumber: String?
-    @Published var displayName: String? // this will be the users real name
-    @State var image: UIImage
+    @Published var realName: String? // this will be the users real name
+    @Published var image: UIImage
     var leagueNames: [String]
     
-    init(uid: String, displayName: String?, phoneNumber: String?, image: UIImage = UIImage(), leagueNames: [String])
+    init(uid: String, realName: String?, phoneNumber: String?, image: UIImage = Constants.defaultPlayerPhoto, leagueNames: [String])
     {
         self.uid = uid
-        self.displayName = displayName
+        self.realName = realName
         self.phoneNumber = phoneNumber
         self.image = image
         self.leagueNames = leagueNames

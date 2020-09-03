@@ -14,12 +14,16 @@ class PerformanceTests: XCTestCase {
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
         self.measure {
-            League.getLeagueFromFirebase(forLeagueID: "3BFF9535-7224-4842-8013-7CCA29F3B55F", forDisplay: false, callback: { league in
+            League.getLeagueFromFirebase(forLeagueID: "3BFF9535-7224-4842-8013-7CCA29F3B55F", forDisplay: false, shouldGetGames: false, callback: { league in
                 if let league = league {
                     print(league.players)
                 }
             })
         }
+    }
+    
+    func testMemoryLeakageOnLeague() {
+        
     }
 
 }

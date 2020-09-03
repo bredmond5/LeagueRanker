@@ -1,0 +1,89 @@
+{
+  "leagues" : {
+    "899516D1-A77F-45B6-98C0-EA05A3B72064" : {
+      "creatorUID" : "Y09Kbw0v0nXU9Qft7k3gq2QMN602",
+      "leagueName" : "Unittest",
+      "players" : {
+        "PDC6wmFOprfVegmPk0DYgwELj7S2" : {
+          "displayName" : "Devin",
+          "mu" : 25,
+          "phoneNumber" : "+16505555555",
+          "realName" : "Devin",
+          "sigma" : 8.333333333333334
+        },
+        "TmCQLJEHk3MfacO3K0wsFSG8U152" : {
+          "displayName" : "Brice",
+          "mu" : 25,
+          "phoneNumber" : "+16505554321",
+          "realName" : "Brice",
+          "sigma" : 8.333333333333334
+        },
+        "Y09Kbw0v0nXU9Qft7k3gq2QMN602" : {
+          "displayName" : "Xavie",
+          "mu" : 25,
+          "phoneNumber" : "+16505551234",
+          "realName" : "Xavie",
+          "sigma" : 8.333333333333334
+        },
+        "gPTrjP9wt4aakIYsl5ySK40dhGw2" : {
+          "displayName" : "Dic",
+          "mu" : 25,
+          "phoneNumber" : "+16505553434",
+          "realName" : "Dic",
+          "sigma" : 8.333333333333334
+        },
+        "j9sd8dsWKZfMT7b2yCX05GVwsfn1" : {
+          "displayName" : "zack",
+          "mu" : 25,
+          "phoneNumber" : "+16505551111",
+          "realName" : "zack",
+          "sigma" : 8.333333333333334
+        }
+      }
+    }
+  },
+  "phoneNumberToUID" : {
+    "+16505551111" : "j9sd8dsWKZfMT7b2yCX05GVwsfn1",
+    "+16505551234" : "Y09Kbw0v0nXU9Qft7k3gq2QMN602",
+    "+16505553434" : "gPTrjP9wt4aakIYsl5ySK40dhGw2",
+    "+16505554321" : "TmCQLJEHk3MfacO3K0wsFSG8U152",
+    "+16505555555" : "PDC6wmFOprfVegmPk0DYgwELj7S2"
+  },
+  "users" : {
+    "PDC6wmFOprfVegmPk0DYgwELj7S2" : {
+      "joinedLeagues" : {
+        "899516D1-A77F-45B6-98C0-EA05A3B72064" : "Unittest"
+      },
+      "phoneNumber" : "+16505555555",
+      "realName" : "Devin"
+    },
+    "TmCQLJEHk3MfacO3K0wsFSG8U152" : {
+      "joinedLeagues" : {
+        "899516D1-A77F-45B6-98C0-EA05A3B72064" : "Unittest"
+      },
+      "phoneNumber" : "+16505554321",
+      "realName" : "Brice"
+    },
+    "Y09Kbw0v0nXU9Qft7k3gq2QMN602" : {
+      "ownedLeagues" : {
+        "899516D1-A77F-45B6-98C0-EA05A3B72064" : "Unittest"
+      },
+      "phoneNumber" : "+16505551234",
+      "realName" : "Xavie"
+    },
+    "gPTrjP9wt4aakIYsl5ySK40dhGw2" : {
+      "joinedLeagues" : {
+        "899516D1-A77F-45B6-98C0-EA05A3B72064" : "Unittest"
+      },
+      "phoneNumber" : "+16505553434",
+      "realName" : "Dic"
+    },
+    "j9sd8dsWKZfMT7b2yCX05GVwsfn1" : {
+      "joinedLeagues" : {
+        "899516D1-A77F-45B6-98C0-EA05A3B72064" : "Unittest"
+      },
+      "phoneNumber" : "+16505551111",
+      "realName" : "zack"
+    }
+  }
+}

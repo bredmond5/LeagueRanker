@@ -9,74 +9,80 @@ import SwiftUI
 import FirebaseDatabase
 import FirebaseStorage
 
-class League: Identifiable, ObservableObject {
+class League: Identifiable, ObservableObject, Equatable {
+    static func == (lhs: League, rhs: League) -> Bool { // this could use some work probably
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.creatorUID == rhs.creatorUID
+    }
     
     let ref: DatabaseReference?
     let id: UUID
-    var players: [String : PlayerForm] = [:] // Key = PhoneNumber, Value = Player
+    var players: [String : PlayerForm] = [:] {
+        didSet {
+            sortedPlayers = Array(players.values).sorted()
+        }
+    }// Key = uid, Value = Player
     @Published var sortedPlayers: [PlayerForm] = []
     
-    var displayNameToPhoneNumber: [String : String] = [:]
-    var name: String
+    var phoneNumberToUID: [String: String] = [:]
+    var displayNameToUserID: [String : String] = [:]
+    @Published var name: String
     @Published var leagueImage: UIImage?
-    var creatorPhone: String // phone number of creator
+    var creatorUID: String // uid of creator
+    var leagueGames: [Game] = []
     
     var forDisplay: Bool
+    let numPlacements: Int
+    
+    var blockedPlayers: [String: [String]] //uid : [displayName, phonenumber, realName]
     
     //convience static intializer
     static func getLeagueFromFirebase(forLeagueID leagueID: String, forDisplay: Bool, shouldGetGames: Bool, callback: @escaping (League?) -> ()) {
-        
-        let locRef = Database.database().reference(withPath: "\(leagueID)")
+        let locRef = Database.database().reference(withPath: "leagues/\(leagueID)")
         locRef.observeSingleEvent(of: DataEventType.value) { (locSnapshot) in
-            callback(League(snapshot: locSnapshot, id: "\(leagueID)", forDisplay: forDisplay, shouldGetGames: shouldGetGames))
+            callback(League(snapshot: locSnapshot, forDisplay: forDisplay, shouldGetGames: shouldGetGames))
         }
     }
     
-    //Default init for before the real leagues have been downloaded
+    static func getLeague(fromSnapshot snapshot: DataSnapshot, forDisplay: Bool, shouldGetGames: Bool, completion: (League?) -> ()) {
+        completion(League(snapshot: snapshot, forDisplay: forDisplay, shouldGetGames: shouldGetGames))
+    }
+    
+    //Default init for when we need to force swift to reload the page
     init() {
         self.ref = nil
         self.id = UUID()
         self.leagueImage = UIImage()
         self.name = "No Leagues"
-        self.creatorPhone = ""
+        self.creatorUID = ""
         self.forDisplay = false
-    }
-    
-    // init for first creating the league
-    init(leagueName: String, id: UUID = UUID(), image: UIImage = UIImage(), creator: User, creatorDisplayName: String) {
-        self.ref = nil
-        self.id = id
-        self.name = leagueName
-        self.leagueImage = image
-        self.creatorPhone = creator.phoneNumber!
-        
-        self.players[creatorPhone] = (PlayerForm(phoneNumber: creator.phoneNumber!, displayName: creatorDisplayName, image: creator.image, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, realName: creator.displayName!))
-        self.displayNameToPhoneNumber[creatorDisplayName] = creatorPhone
-        self.forDisplay = false
-        self.rankPlayers()
+        self.numPlacements = 15
+        self.blockedPlayers = [:]
     }
         
     // init for first creating league
-    init(leagueName: String, id: UUID = UUID(), image: UIImage, creatorPhone: String, creatorDisplayName: String, creatorRealName: String, creatorImage: UIImage) {
+    init(leagueName: String, id: UUID = UUID(), image: UIImage, creator: User, creatorDisplayName: String, creatorImage: UIImage, numPlacements: Int) {
         self.ref = nil
         self.id = id
         self.name = leagueName
         self.leagueImage = image
-        self.creatorPhone = creatorPhone
-        
-        self.players[creatorPhone] = (PlayerForm(phoneNumber: creatorPhone, displayName: creatorDisplayName, image: creatorImage, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, realName: creatorRealName))
-        self.displayNameToPhoneNumber[creatorDisplayName] = creatorPhone
+        self.creatorUID = creator.uid
+        self.numPlacements = numPlacements
+        self.players[creatorUID] = (PlayerForm(uid: creatorUID, displayName: creatorDisplayName, image: creatorImage, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, realName: creator.realName!, numPlacementsRequired: numPlacements, phoneNumber: creator.phoneNumber!))
+        self.displayNameToUserID[creatorDisplayName] = creatorUID
         self.forDisplay = false
+        self.blockedPlayers = [:]
         self.rankPlayers()
     }
     
     //init from firebase
-    init?(snapshot: DataSnapshot, id: String, forDisplay: Bool, shouldGetGames: Bool) {
+    init?(snapshot: DataSnapshot, forDisplay: Bool, shouldGetGames: Bool) {
        guard
             let value = snapshot.value as? [String: AnyObject],
             let name = value["leagueName"] as? String,
-            let creatorPhone = value["creatorPhone"] as? String,
-            let id = UUID(uuidString: id)
+            let creatorUID = value["creatorUID"] as? String,
+            let players = value["players"] as? NSDictionary,
+            
+            let id = UUID(uuidString: snapshot.key)
            else {
                 print("Failed in league snapshot initializer")
                 return nil
@@ -84,19 +90,31 @@ class League: Identifiable, ObservableObject {
         
         self.ref = snapshot.ref
         self.name = name
-        self.creatorPhone = creatorPhone
+        self.creatorUID = creatorUID
         self.id = id
         self.forDisplay = forDisplay
+        self.numPlacements = 5
         
-        // return self once all players have been gotten
-        getPlayersSorted(value["players"] as? NSDictionary, shouldGetGames: shouldGetGames)
+        self.blockedPlayers = [:]
+        if let blockedUIDs = value["blockedUsers"] as? NSDictionary {
+            for each in blockedUIDs {
+                if let blockUID = each.value as? NSArray {
+                    let playerArr = [blockUID[0] as! String, blockUID[1] as! String, blockUID[2] as! String]
+                    self.blockedPlayers[each.key as! String] = playerArr
+                }
+            }
+        }
+        
+        getPlayersSorted(players, shouldGetGames: shouldGetGames)
+        
+        if shouldGetGames {
+            getGames(value["games"] as? NSDictionary)
+        }
         
         if forDisplay {
-            getImage()
+            rankPlayers()
+            getImages()
         }
-//        for player in players {
-//            print(player.value.playerGames.count)
-//        }
     }
     
     func returnPlayers() -> [PlayerForm] {
@@ -106,16 +124,12 @@ class League: Identifiable, ObservableObject {
     func getPlayersSorted(_ playersDict: NSDictionary?, shouldGetGames: Bool) {
         
         guard let playersDict = playersDict else {
-            print("failed in playersDict")
+            print("failed in getPlayersSorted")
             return
         }
 
         for each in playersDict {
             getPlayer(each.key as? String, each.value as? NSDictionary, shouldGetGames: shouldGetGames)
-        }
-        
-        if forDisplay {
-            rankPlayers()
         }
     }
     
@@ -124,76 +138,92 @@ class League: Identifiable, ObservableObject {
         playerArr.sort()
         
         var count = 0
-        players[playerArr[0].phoneNumber]!.rank = 1
+        players[playerArr[0].id]!.rank = 1
         
         for i in 1..<playerArr.count {
-            if round(playerArr[i].rating.Mean * 100) / 100 < round(playerArr[i-1].rating.Mean * 100) / 100 {
+            if round(playerArr[i].rating.Mean * 100) / 100 < round(playerArr[i-1].rating.Mean * 100) / 100 || (!playerArr[i].enoughGames() && playerArr[i-1].enoughGames()){
                 count = i
             }
-            players[playerArr[i].phoneNumber]!.rank = count + 1
+            players[playerArr[i].id]!.rank = count + 1
         }
         
         sortedPlayers = Array(players.values).sorted()
     }
     
-    func getPlayer(_ phoneNumber: String?, _ playerDict: NSDictionary?, shouldGetGames: Bool) {
-        guard let playerDict = playerDict, let phoneNumber = phoneNumber, let mu = playerDict["mu"] as? Double, let sigma = playerDict["sigma"] as? Double else {
+    func getPlayer(_ uid: String?, _ playerDict: NSDictionary?, shouldGetGames: Bool) {
+        guard let playerDict = playerDict,
+            let uid = uid,
+            let mu = playerDict["mu"] as? Double,
+            let sigma = playerDict["sigma"] as? Double,
+            let displayName =  playerDict["displayName"] as? String,
+            let realName = playerDict["realName"] as? String,
+            let phoneNumber = playerDict["phoneNumber"] as? String
+            
+            else {
             print("failed in playerDict")
             return
         }
 
         //let p = PlayerForm(phoneNumber: phoneNumber, displayName: playerDict["displayName"] as! String, rank: 1, rating: Rating(mean: mu, standardDeviation: sigma), playerGames: [], realName: playerDict["realName"] as! String)
         
-        let p = PlayerForm(phoneNumber: phoneNumber, displayName: playerDict["displayName"] as! String, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, playerGames: [], realName: playerDict["realName"] as! String)
-        self.players[phoneNumber] = p
+        let p = PlayerForm(uid: uid, displayName: displayName, rank: 1, rating: GameInfo.DefaultGameInfo.DefaultRating, playerGames: [], realName: realName, numPlacementsRequired: self.numPlacements, phoneNumber: phoneNumber)
+        self.players[uid] = p
 
-        if shouldGetGames {
-            let pair = getGames(playerDict["games"] as? NSDictionary, player: p)
-            if let pair = pair {
-                p.setGamesInfo(rivals: pair.0, bestTeammates: pair.1)
-            }
-        }
-        if forDisplay {
-            p.getImage(leagueID: id.uuidString)
-        }
+//            let pair = getGames(playerDict["games"] as? NSDictionary, player: p)
+//            if let pair = pair {
+//                p.setGamesInfo(rivals: pair.0, bestTeammates: pair.1)
+//            }
         
-        self.displayNameToPhoneNumber[playerDict["displayName"] as! String] = phoneNumber
+        
+        self.phoneNumberToUID[phoneNumber] = uid
+        self.displayNameToUserID[displayName] = uid
        
     }
-
-    func getGames(_ gamesDict: NSDictionary?, player: PlayerForm) -> ([String: Double], [String: Double])? {
-        player.rating = GameInfo.DefaultGameInfo.DefaultRating
-
+    
+    func getGames(_ gamesDict: NSDictionary?) {
         guard let gamesDict = gamesDict else {
            print("failed in getGames")
-           return nil
-       }
+           return
+        }
         
-        var rivals: [String: Double] = [:]
-        var bestTeammates: [String: Double] = [:]
-            
-        var mu = 0.0
-        var sigma = 0.0
-        
-        for each in gamesDict as NSDictionary {
+        for each in gamesDict {
             if let val = each.value as? NSDictionary {
-                if let game = Game(gameDict: val, date: each.key as! String) {
-                    if game.team1.contains(player.phoneNumber) || game.team1.contains(player.displayName) {
-                        addToRivalsAndTeammates(playerTeammates: game.team1.filter({$0 != player.displayName}), otherTeam: game.team2, &rivals, &bestTeammates, game.gameScore)
-                    }else{
-                        addToRivalsAndTeammates(playerTeammates: game.team2.filter({$0 != player.displayName}), otherTeam: game.team1, &rivals, &bestTeammates, game.gameScore)
-                    }
-                    
-                    mu += game.gameScore
-                    sigma += game.sigmaChange
-                    addPlayerGame(forPlayerPhone: player.phoneNumber, playerGame: game, newRating: nil)
+                if let game = Game(gameDict: val, id: UUID(uuidString: each.key as! String)!) {
+                    self.leagueGames.insert(game, at: 0)
                 }
             }
         }
+        leagueGames.sort(by: >)
+        for game in leagueGames.reversed() {
+            addGame(game)
+        }
+    }
+    
+    func addGameFromGameForm(_ overallGame: Game, ratingsFromFirebase: [String: Rating]) {
+        self.leagueGames.insert(overallGame, at: 0)
+        leagueGames.sort(by: >)
+        for (key, value) in ratingsFromFirebase {
+            players[key]?.rating = value
+        }
+        addGame(overallGame)
+    }
+    
+    func addGame(_ overallGame: Game, completion: (([Game]) -> Void)? = nil) {
+        var games: [Game] = []
+        let playerUIDs = overallGame.team1 + overallGame.team2
+
+        let newRatings = Functions.getNewRatings(players: playerUIDs, scores: overallGame.scores, ratings: [players[playerUIDs[0]]!.rating, players[playerUIDs[1]]!.rating, players[playerUIDs[2]]!.rating, players[playerUIDs[3]]!.rating])
         
-        player.playerGames.sort(by: {Int($0.date)! > Int($1.date)!})
+        for i in 0..<playerUIDs.count {
+            let uid = playerUIDs[i]
+            let oldPlayerMean = players[uid]!.rating.Mean
+            let oldPlayerSigma = players[uid]!.rating.StandardDeviation
+            let game = PlayerGame(game: overallGame, gameScore: newRatings[i].Mean - oldPlayerMean, sigmaChange: newRatings[i].StandardDeviation - oldPlayerSigma)
+            games.append(game)
+            addPlayerGame(forPlayerUID: uid, playerGame: game, newRating: newRatings[i])
+        }
         
-        return (rivals, bestTeammates)
+        completion?(games)
     }
     
     func addToRivalsAndTeammates(playerTeammates: [String], otherTeam: [String], _ rivals: inout [String: Double], _ bestTeammates: inout [String: Double], _ gameScore: Double) {
@@ -214,19 +244,54 @@ class League: Identifiable, ObservableObject {
         }
     }
     
-    func getImage() {
-        let r = Storage.storage().reference().child("\(id).jpg")
+    func getImages() {
+        let r = Storage.storage().reference().child("\(id)")
+        let myGroup = DispatchGroup()
 
-        r.getData(maxSize: 1 * 1024 * 1024) { data, error in
+        myGroup.enter()
+        r.listAll(completion: { result, error in
             if let error = error {
                 print(error.localizedDescription)
-                print("error getting league image")
-            } else {
-               // Data for "images/island.jpg" is returned
-                print("found league image")
-                self.leagueImage = UIImage(data: data!) ?? UIImage()
+                return
+            }
+            
+            for _ in 0..<result.items.count {
+                myGroup.enter()
+            }
+            myGroup.leave()
+
+            result.items.forEach({ imageRef in
+                imageRef.getData(maxSize: 1 * 1024 * 1024, completion: { data, error in
+                    if let error = error {
+                        print("League folder image error: \(error.localizedDescription)")
+                    } else {
+                        let id = String(imageRef.name.split(separator: ".")[0])
+                       
+                        if let player = self.players[id] {
+                            player.image =  UIImage(data: data!) ?? Constants.defaultPlayerPhoto
+                            
+                        } else if id == self.id.uuidString {
+                            self.leagueImage = UIImage(data: data!) ?? Constants.defaultLeaguePhoto
+                            
+                        }
+                    }
+                    myGroup.leave()
+                })
+            })
+        })
+        
+        myGroup.notify(queue: .main) {
+            for player in self.players.values {
+                if player.image == nil {
+                    player.image = Constants.defaultPlayerPhoto
+                }
+            }
+            if self.leagueImage == nil {
+                self.leagueImage = Constants.defaultLeaguePhoto
             }
         }
+        
+        
     }
     
     func toAnyObject() -> Any {
@@ -234,41 +299,51 @@ class League: Identifiable, ObservableObject {
         retVal["leagueName"] = self.name as AnyObject
         
         var playersDict = [String : AnyObject]()
-        
         for player in players {
             playersDict[player.key] = player.value.toAnyObject() as AnyObject
         }
         
         retVal["players"] = playersDict as AnyObject
         
-        retVal["creatorPhone"] = creatorPhone as AnyObject
+        var gamesDict = [String : AnyObject]()
+        for game in leagueGames {
+            gamesDict[game.date] = game.toAnyObject() as AnyObject
+        }
+        
+        retVal["games"] = gamesDict as AnyObject
+        
+        retVal["creatorUID"] = creatorUID as AnyObject
         
         return retVal
     }
     
-    func changePlayerDisplayName(phoneNumber: String, newDisplayName: String, callback: @escaping (String?) -> ()) {
+    func changePlayerDisplayName(uid: String, newDisplayName: String, callback: @escaping (Error?) -> ()) {
         
-        self.players[phoneNumber]?.changeDisplayName(newDisplayName: newDisplayName, leagueID: self.id.uuidString, callback: { errorMessage in
-            if errorMessage != nil {
-                self.displayNameToPhoneNumber[newDisplayName] = phoneNumber
+        self.players[uid]?.changeDisplayName(newDisplayName: newDisplayName, leagueID: self.id.uuidString, callback: { error in
+            if let error = error {
+                callback(error)
+                return
             }
-            callback(errorMessage)
+            self.displayNameToUserID[newDisplayName] = uid
+            callback(nil)
         })
     }
     
     
-    func changeRealName(forPlayerPhone phoneNumber: String, newName: String) {
-        Database.database().reference(withPath: "\(self.id)/players/\(phoneNumber)/realName").setValue(newName) { (error, ref) -> Void in
+    func changeRealName(forUID uid: String, newName: String, completion: ((Error?) -> Void)? = nil) {
+        Database.database().reference(withPath: "leagues/\(self.id)/players/\(uid)/realName").setValue(newName) { (error, ref) -> Void in
             if let error = error {
                 print(error.localizedDescription)
+                completion?(error)
             } else {
-                self.players[phoneNumber]?.realName = newName
+                self.players[uid]?.realName = newName
+                completion?(nil)
             }
         }
     }
     
     func changePlayerImage(player: PlayerForm, newImage: UIImage, callback: @escaping (Bool) -> ()) {
-        let imageRef = Storage.storage().reference().child("\(self.id)\(player.phoneNumber).jpg")
+        let imageRef = Storage.storage().reference().child("\(self.id)/\(player.id).jpg")
         StorageService.uploadImage(newImage, at: imageRef) { (downloadURL) in
             guard let _ = downloadURL else {
                 callback(false)
@@ -278,8 +353,20 @@ class League: Identifiable, ObservableObject {
         }
     }
     
-    func addPlayerGame(forPlayerPhone phone: String, playerGame: Game, newRating: Rating?) {
-        let player = players[phone]
+    func changeLeagueImage(newImage: UIImage, callback: @escaping (Bool) -> ()) {
+        let imageRef = Storage.storage().reference().child("\(self.id)/\(self.id).jpg")
+        StorageService.uploadImage(newImage, at: imageRef) { (downloadURL) in
+            guard let _ = downloadURL else {
+                callback(false)
+                return
+            }
+            self.leagueImage = newImage
+            callback(true)
+        }
+    }
+    
+    func addPlayerGame(forPlayerUID uid: String, playerGame: PlayerGame, newRating: Rating?) {
+        let player = players[uid]
         
         if playerGame.gameScore > 0 {
             player?.wins += 1
@@ -297,73 +384,58 @@ class League: Identifiable, ObservableObject {
         }
     }
     
-    func deleteGame(forDate date: String, forPlayer player: PlayerForm, callback: @escaping ([[Game]]) -> ()) {
-        // for each player, move their games into a dictionary. Depending on the number of players per team, there can be multiple of the same game. The dictionary will take care of this.
-        
-        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
-            if let league = league {
-                var allGamesAfterDate: [Int: Game] = [:]
-                for player in league.players.values {
-                    //get their initial ratings
-                    var mean = player.rating.Mean
-                    var sigma = player.rating.StandardDeviation
-                    while let game = player.playerGames.first, Int(game.date)! > Int(date)! {
-                        //bubble back each time to get back to the original game
-                        mean -= game.gameScore
-                        sigma -= game.sigmaChange
-                        allGamesAfterDate[Int(game.date)!] = game
-                        player.playerGames.removeFirst()
-                        if game.gameScore > 0 {
-                           player.wins -= 1
-                       } else{
-                           player.losses -= 1
-                       }
-                    }
-                    
-                    if let game = player.playerGames.first, game.date == date && (game.team1.contains(player.phoneNumber) || game.team2.contains(player.phoneNumber)) {
-                        mean -= game.gameScore
-                        sigma -= game.sigmaChange
-                        player.playerGames.removeFirst() // remove the actual game but dont add it to allgamesafterdate
-                        if game.gameScore > 0 {
-                            player.wins -= 1
-                        } else{
-                            player.losses -= 1
-                        }
-                    }
-                    
-                    self.players[player.phoneNumber]?.rating = Rating(mean: mean, standardDeviation: sigma)
-                    self.players[player.phoneNumber]?.playerGames = player.playerGames
-                    self.players[player.phoneNumber]?.wins = player.wins
-                    self.players[player.phoneNumber]?.losses = player.losses
-                    
-                    //set the player rating to whatever it was before this game
-//                    player.rating = Rating(mean: mean, standardDeviation: sigma)
-                }
-                callback(self.calculateRankingsFromDictionary(allGamesAfterDate))
-            }
-        })
-    }
+//    func deleteGame(forDate date: String, forPlayer player: PlayerForm, callback: @escaping ([Game]) -> ()) {
+//        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
+//            if let league = league {
+//                var allGamesAfterDate: [Int: Game] = [:]
+//                for player in league.players.values {
+//                    //get their initial ratings
+//                    var mean = player.rating.Mean
+//                    var sigma = player.rating.StandardDeviation
+//                    while let game = player.playerGames.first, Int(game.date)! > Int(date)! {
+//                        //bubble back each time to get back to the original game
+//                        mean -= game.gameScore
+//                        sigma -= game.sigmaChange
+//                        allGamesAfterDate[Int(game.date)!] = game
+//                        player.playerGames.removeFirst()
+//                        if game.gameScore > 0 {
+//                           player.wins -= 1
+//                       } else{
+//                           player.losses -= 1
+//                       }
+//                    }
+//
+//                    if let game = player.playerGames.first, game.date == date && (game.team1.contains(player.id) || game.team2.contains(player.id)) {
+//                        mean -= game.gameScore
+//                        sigma -= game.sigmaChange
+//                        player.playerGames.removeFirst() // remove the actual game but dont add it to allgamesafterdate
+//                        if game.gameScore > 0 {
+//                            player.wins -= 1
+//                        } else{
+//                            player.losses -= 1
+//                        }
+//                    }
+//
+//                    self.players[player.id]?.rating = Rating(mean: mean, standardDeviation: sigma)
+//                    self.players[player.id]?.playerGames = player.playerGames
+//                    self.players[player.id]?.wins = player.wins
+//                    self.players[player.id]?.losses = player.losses
+//
+//                    //set the player rating to whatever it was before this game
+////                    player.rating = Rating(mean: mean, standardDeviation: sigma)
+//                }
+//                //callback(self.calculateRankingsFromDictionary(allGamesAfterDate))
+//            }
+//        })
+//    }
     
     func calculateRankingsFromDictionary(_ allGamesAfterDate: [Int: Game]) -> [[Game]] {
         var gamesToUpload: [[Game]] = []
         //iterate through all the games, calculating the new rankings
         for (_, value) in allGamesAfterDate.sorted(by: { $0.0 < $1.0 }) {
-            let playerStringArr = value.team1 + value.team2
-            
-            let newRatings = Functions.getNewRatings(players: playerStringArr, scores: value.scores, ratings: [players[value.team1[0]]!.rating, players[value.team1[1]]!.rating, players[value.team2[0]]!.rating, players[value.team2[1]]!.rating])
-            
-            var games: [Game] = []
-            for i in 0..<newRatings.count {
-                let playerPhone = playerStringArr[i]
-                let oldPlayerMean = players[playerPhone]!.rating.Mean
-                let oldPlayerSigma = players[playerPhone]!.rating.StandardDeviation
-                let game = Game(team1: value.team1, team2: value.team2, scores: value.scores, gameScore: newRatings[i].Mean - oldPlayerMean, sigmaChange: newRatings[i].StandardDeviation - oldPlayerSigma, date: value.date, inputter: value.inputter)
-                games.append(game)
-                addPlayerGame(forPlayerPhone: playerPhone, playerGame: game, newRating: newRatings[i])
-            }
-            
-            gamesToUpload.append(games)
-            
+            addGame(value, completion: { games in
+                gamesToUpload.append(games)
+            })
         }
         
         for player in players.values {
@@ -374,62 +446,75 @@ class League: Identifiable, ObservableObject {
         return gamesToUpload
     }
     
-    func recalculateRankings(callback: @escaping ([[Game]]) -> ()) {
-        // pull the league so that can get any new games just in case
-        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
-            if let league = league {
-                //reset the rankings
-                let gameInfo = GameInfo.DefaultGameInfo
-                for player in self.players.values {
-                    player.rating = gameInfo.DefaultRating
-                }
-                
-                var allGamesAfterDate: [Int: Game] = [:]
-                for player in league.players.values {
-                    // get all the games from the online league
-                   for game in player.playerGames {
-                       allGamesAfterDate[Int(game.date)!] = game
-                   }
-                    //reset our actual league values
-                    self.players[player.phoneNumber]?.playerGames = []
-                    self.players[player.phoneNumber]?.wins = 0
-                    self.players[player.phoneNumber]?.losses = 0
-               }
-                callback(self.calculateRankingsFromDictionary(allGamesAfterDate))
-            }
-        })
+//    func recalculateRankings(callback: @escaping ([Game]) -> ()) {
+//        // pull the league so that can get any new games just in case
+//        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
+//            if let league = league {
+//                //reset the rankings
+//                let gameInfo = GameInfo.DefaultGameInfo
+//                for player in self.players.values {
+//                    player.rating = gameInfo.DefaultRating
+//                    player.playerGames = []
+//                    player.wins = 0
+//                    player.losses = 0
+//                }
+//                
+//                let games = league.leagueGames
+//                
+//                var allGamesAfterDate: [Int: Game] = [:]
+//                for player in league.players.values {
+//                    // get all the games from the online league
+//                   for game in player.playerGames {
+//                       allGamesAfterDate[Int(game.date)!] = game
+//                   }
+//               }
+//            }
+//        })
+//    }
+    
+    func setValues(toOtherLeague league: League) {
+        self.leagueGames = league.leagueGames
+        self.phoneNumberToUID = league.phoneNumberToUID
+        self.displayNameToUserID = league.displayNameToUserID
+        self.blockedPlayers = league.blockedPlayers
+        let otherPlayers = league.players
+        
+        for (key, player) in self.players {
+            player.setValues(toOtherPlayer: otherPlayers[key] ?? player)
+        }
     }
     
-    func returnGamesWithPhoneNumbers(callback: @escaping ([[Game]]) -> ()) {
-        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
-            if let league = league {
-                let gameInfo = GameInfo.DefaultGameInfo
-                for player in self.players.values {
-                    player.rating = gameInfo.DefaultRating
-                }
-                
-                var allGamesAfterDate: [Int: Game] = [:]
-                for player in league.players.values {
-                    // get all the games from the online league
-                   for game in player.playerGames {
-                       allGamesAfterDate[Int(game.date)!] = game
-                   }
-                    //reset our actual league values
-                    self.players[player.phoneNumber]?.playerGames = []
-                    self.players[player.phoneNumber]?.wins = 0
-                    self.players[player.phoneNumber]?.losses = 0
-               }
-                
-                var allGamesAfterDateCorrected: [Int: Game] = [:]
-                
-                for (key, value) in allGamesAfterDate {
-                    let team1 = [self.displayNameToPhoneNumber[value.team1[0]] ?? value.team1[0], self.displayNameToPhoneNumber[value.team1[1]] ?? value.team1[1]]
-                    let team2 = [self.displayNameToPhoneNumber[value.team2[0]] ?? value.team2[0], self.displayNameToPhoneNumber[value.team2[1]] ?? value.team2[1]]
-                    let gameCorrected = Game(team1: team1, team2: team2, scores: value.scores, gameScore: value.gameScore, sigmaChange: value.sigmaChange, date: value.date, inputter: value.inputter)
-                    allGamesAfterDateCorrected[key] = gameCorrected
-                }
-                callback(self.calculateRankingsFromDictionary(allGamesAfterDateCorrected))
-            }
-        })
-    }
+//    func returnGamesWithUserIDs(callback: @escaping ([[Game]]) -> ()) {
+//        abort()
+//        League.getLeagueFromFirebase(forLeagueID: self.id.uuidString, forDisplay: false, shouldGetGames: true, callback: { league in
+//            if let league = league {
+//                let gameInfo = GameInfo.DefaultGameInfo
+//                for player in self.players.values {
+//                    player.rating = gameInfo.DefaultRating
+//                }
+//
+//                var allGamesAfterDate: [Int: Game] = [:]
+//                for player in league.players.values {
+//                    // get all the games from the online league
+//                   for game in player.playerGames {
+//                       allGamesAfterDate[Int(game.date)!] = game
+//                   }
+//                    //reset our actual league values
+//                    self.players[player.id]?.playerGames = []
+//                    self.players[player.id]?.wins = 0
+//                    self.players[player.id]?.losses = 0
+//               }
+//
+//                var allGamesAfterDateCorrected: [Int: Game] = [:]
+//
+//                for (key, value) in allGamesAfterDate {
+//                    let team1 = [self.displayNameToUserID[value.team1[0]] ?? value.team1[0], self.displayNameToUserID[value.team1[1]] ?? value.team1[1]]
+//                    let team2 = [self.displayNameToUserID[value.team2[0]] ?? value.team2[0], self.displayNameToUserID[value.team2[1]] ?? value.team2[1]]
+//                    let gameCorrected = Game(team1: team1, team2: team2, scores: value.scores, gameScore: value.gameScore, sigmaChange: value.sigmaChange, date: value.date, inputter: value.inputter)
+//                    allGamesAfterDateCorrected[key] = gameCorrected
+//                }
+//                callback(self.calculateRankingsFromDictionary(allGamesAfterDateCorrected))
+//            }
+//        })
+//    }
 }

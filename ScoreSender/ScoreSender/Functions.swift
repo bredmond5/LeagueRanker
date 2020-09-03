@@ -14,7 +14,7 @@ class Functions {
         
         let newRatings = getNewRatings(players: players, scores: scores, ratings: ratings)
         
-        return (Game(team1: [players[0], players[1]], team2: [players[2], players[3]], scores: [scores[0], scores[1]], gameScore: 0, sigmaChange: 0, date: gameDate, inputter: inputter), [newRatings[0], newRatings[1], newRatings[2], newRatings[3]])
+        return (Game(team1: [players[0], players[1]], team2: [players[2], players[3]], scores: [scores[0], scores[1]], date: gameDate, inputter: inputter), [newRatings[0], newRatings[1], newRatings[2], newRatings[3]])
     }
     
     static func getNewRatings(players: [String], scores: [String], ratings: [Rating]) -> [Rating] {
