@@ -256,7 +256,7 @@ class FirebaseSession: ObservableObject {
             }
             let league = League(leagueName: leagueName, image: leagueImage ?? Constants.defaultLeaguePhoto, creator: self.session!, creatorDisplayName: creatorDisplayName!, creatorImage: playerImage ?? Constants.defaultPlayerPhoto, numPlacements: 15)
                //upload to realtime database
-           let leagueRef: DatabaseReference = Database.database().reference().child("leagues/\(league.id)")
+            let leagueRef: DatabaseReference = Database.database().reference().child("leagues/\(league.id.uuidString)")
            leagueRef.setValue(league.toAnyObject()) { error, ref in
                if let error = error {
                    completion?(error)
@@ -379,7 +379,6 @@ class FirebaseSession: ObservableObject {
             }
             
         })
-        
     }
     
     public func rejoinLeague(league: League, completion: @escaping (Error?) -> ()) {
@@ -417,7 +416,7 @@ class FirebaseSession: ObservableObject {
             }
 
             let game = Game(team1: [players[0].id, players[1].id], team2: [players[2].id, players[3].id], scores: scores, inputter: inputter)
-            Database.database().reference(withPath: "leagues/\(curLeague.id.uuidString)/games/\(game.id)").setValue(game.toAnyObject()){ error, ref in
+            Database.database().reference(withPath: "leagues/\(curLeague.id.uuidString)/games/\(game.id.uuidString)").setValue(game.toAnyObject()){ error, ref in
                 if let error = error {
                     completion(error)
                     return

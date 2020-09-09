@@ -41,11 +41,11 @@ struct AddLeague: View {
                         self.activeSheet = .second
                         
                     },
-    //                        .default(Text("Invite to League")) {
-    //                               self.isPresentingModal.toggle()
-    //                               self.activeSheet = .third
-    //
-    //                        },
+                    .default(Text("Invite to League")) {
+                           self.isPresentingModal.toggle()
+                           self.activeSheet = .third
+
+                    },
                     .cancel()
                 ])
             }.sheet(isPresented: $isPresentingModal, content: {

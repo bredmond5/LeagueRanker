@@ -57,7 +57,7 @@ class Game: Identifiable, Hashable, Comparable {
                     date = key.value as! Int
                     
                 }else{
-                    scores.append(key.key as! Int)
+                    scores.append(Int(key.key as! String)!)
                     let displayNames = key.value as! [String]
                     let p1 = displayNames[0]
                     let p2 = displayNames[1]
@@ -87,8 +87,8 @@ class Game: Identifiable, Hashable, Comparable {
 //        gameDict["inputter"] = inputter as AnyObject
 //        gameDict["date"] = date
         return [
-            scores[0] : [team1[0], team1[1]],
-            scores[1] : [team2[0], team2[1]],
+            "\(scores[0])" : [team1[0], team1[1]],
+            "\(scores[1])" : [team2[0], team2[1]],
             "inputter" : inputter,
             "date" : date
         ] as Any

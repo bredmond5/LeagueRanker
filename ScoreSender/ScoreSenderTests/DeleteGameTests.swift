@@ -144,6 +144,22 @@ class DeleteGameTests: XCTestCase {
         wait(for: [promise], timeout: 50)
     }
     
+    func testQueryLimitToFirst5() {
+        let promise = expectation(description: "Status code: 200")
+        sendToFirebase(numGames: 10, isRandom: true, completion: { session in
+            let oldLeague = session.leagues[0]
+            League.getLeagueFromFirebase(forLeagueID: oldLeague.id.uuidString, forDisplay: false, shouldGetGames: false, callback: { league in
+                XCTAssertEqual(league!.leagueGames.count, 5)
+//                for i in 0..<league!.leagueGames.count {
+//                    XCTAssert(league!.leagueGames[i] < oldLeague.leagueGames[i+5])
+//                }
+                promise.fulfill()
+            })
+        })
+        
+        wait(for: [promise], timeout: 20)
+    }
+    
     
     func testDeleteTenGamesFromBeginning() {
         let promise = expectation(description: "Status code: 200")

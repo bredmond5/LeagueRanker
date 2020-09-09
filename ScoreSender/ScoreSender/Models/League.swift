@@ -45,6 +45,7 @@ class League: Identifiable, ObservableObject, Equatable {
         }
     }
     
+    
     static func getLeague(fromSnapshot snapshot: DataSnapshot, forDisplay: Bool, shouldGetGames: Bool, completion: (League?) -> ()) {
         completion(League(snapshot: snapshot, forDisplay: forDisplay, shouldGetGames: shouldGetGames))
     }
