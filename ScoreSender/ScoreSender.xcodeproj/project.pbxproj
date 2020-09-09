@@ -616,9 +616,8 @@
 				42279F0224D5F24A00532CA8 /* TextFieldAlert.swift */,
 				42166DE0246F1EBD00C65CE6 /* StorageService.swift */,
 			);
-			name = HelperViews;
-			path = /Users/Brice/Desktop/LeagueStats/ScoreSender/ScoreSender/Views/HelperViews;
-			sourceTree = "<absolute>";
+			path = HelperViews;
+			sourceTree = "<group>";
 		};
 		42FA7BDC24A4011C0029A6B0 /* OldCode */ = {
 			isa = PBXGroup;
