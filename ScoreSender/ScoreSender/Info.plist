@@ -38,6 +38,16 @@
 				<string>com.googleusercontent.apps.10579102182-g4mblvc3jccmcvs801m4chm4r1k4sqtn</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle ID</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.briceredmond.ScoreSender</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

@@ -62,7 +62,7 @@ struct CurLeague: View {
             
 //            LeaguesScroller()
 //
-            
+           
             List(curLeague.sortedPlayers) { player in
                 NavigationLink(destination:
                     ShowGames(player: player, curLeague: self.curLeague, deleteGame: { game, player in
