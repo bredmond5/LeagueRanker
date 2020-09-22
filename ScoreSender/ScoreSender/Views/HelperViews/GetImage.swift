@@ -66,7 +66,6 @@ struct GetImage: View {
                      guard let image = image else {
                          return
                      }
-                    print("was image")
                      
                      self.image = image
                      DispatchQueue.main.async {

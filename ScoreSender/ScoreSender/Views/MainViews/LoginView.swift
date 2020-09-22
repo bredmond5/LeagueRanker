@@ -96,7 +96,7 @@ struct LoginView: View {
                         self.isFirstResponder = true
                         })
                 } else if activeSheet == .second {
-                    return Alert(title: Text("Standard Message Rates May Apply"), message: Text("This will send a text message to your phone"), primaryButton: .default(Text("Go"), action: self.logIn), secondaryButton: .destructive(Text("Cancel")) { self.buttonDisabled = false })
+                    return Alert(title: Text("Standard Message Rates May Apply"), message: Text("This will send a text message to your phone"), primaryButton: .destructive(Text("Cancel")) { self.buttonDisabled = false }, secondaryButton: .default(Text("Go"), action: self.logIn))
                 }else{
                     return Alert(title: Text("Error"), message: Text(error?.localizedDescription ?? "Try Again"), dismissButton: .default(Text("Ok")) { self.error = nil })
                 }

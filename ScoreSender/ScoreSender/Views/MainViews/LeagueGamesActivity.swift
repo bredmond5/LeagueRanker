@@ -10,15 +10,13 @@ import SwiftUI
 
 struct LeagueGamesActivity: View {
     
-    let games: [Game]
-    
-    let players: [String: PlayerForm]
-    
+    @ObservedObject var league: League
+        
     var body: some View {
         VStack {
             List {
-                ForEach(games, id: \.self) { game in
-                    LeagueGameRow(game: game, players: self.players)
+                ForEach(league.games, id: \.self) { game in
+                    LeagueGameRow(game: game, players: self.league.playersDict)
                 }
             }
         }.navigationBarTitle("League Games")

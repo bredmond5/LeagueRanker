@@ -15,14 +15,14 @@ struct CurLeague: View {
     
     var myAlerts = MyAlerts()
     
-    @State var curLeague: League
+    @ObservedObject var curLeague: League
     
     var body: some View {
-        VStack (alignment: .leading){
+        VStack (alignment: .leading) {
             
             Divider()
             HStack {
-                if curLeague.players.count < 4 {
+                if curLeague.sortedPlayers.count < 4 {
                     Button(action: {
                         self.myAlerts.showMessagePrompt(title: "Error", message: "4 or more players are required to add a game", callback: {})
                     }) {
@@ -39,10 +39,10 @@ struct CurLeague: View {
                             
                             if didUploadGame {
                                 //force swift to reload the page
-                                self.curLeague.rankPlayers()
-                                let temp = self.curLeague
-                                self.curLeague = League()
-                                self.curLeague = temp
+//                                self.curLeague.rankPlayers()
+//                                let temp = self.curLeague
+//                                self.curLeague = League()
+//                                self.curLeague = temp
                             }
                         }).navigationBarTitle("Add Game")) {
                         Image(systemName: "plus.circle.fill")
@@ -54,24 +54,22 @@ struct CurLeague: View {
                     }
                 }
                 Spacer()
-                NavigationLink(destination: LeagueGamesActivity(games: curLeague.leagueGames, players: curLeague.players)) {
+                NavigationLink(destination: LeagueGamesActivity(league: curLeague)) {
                     Text("Recent Activity")
                 }
             }
             Divider()
             
-//            LeaguesScroller()
-//
-            
-            List(curLeague.sortedPlayers) { player in
-                NavigationLink(destination:
-                    ShowGames(player: player, curLeague: self.curLeague, deleteGame: { game, player in
-                        self.session.deleteGames(fromLeague: self.curLeague, games: [game])
-                    }))
-                {
-                    PlayerRow(player: player)
+            List {
+                ForEach(curLeague.sortedPlayers, id: \.id) { player in
+                    NavigationLink(destination:
+                        ShowGames(player: player, curLeague: self.curLeague, deleteGame: { game, player in
+                            self.session.deleteGames(fromLeague: self.curLeague, games: [game])
+                        }))
+                    {
+                        PlayerRow(player: player, leagueSettings: self.curLeague.leagueSettings)
+                    }
                 }
-                
             }
             
             
@@ -90,13 +88,13 @@ struct CurLeague: View {
 //                },
                 
                 trailing:
-            NavigationLink(destination: SettingsFormLeague(session: self._session, curPlayer: self.curLeague.players[self.session.session!.uid]!, curLeague: self.curLeague)) {
-                Image(systemName: "text.justify")
-                .resizable()
-                .frame(width: 20, height: 20)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .foregroundColor(.blue)
-            }
+                NavigationLink(destination: SettingsFormLeague(session: self._session, curPlayer: self.curLeague.player(atID: self.session.session!.uid), curLeague: self.curLeague)) {
+                    Image(systemName: "text.justify")
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                    .foregroundColor(.blue)
+                }
         )}
 }

@@ -11,7 +11,7 @@ import SwiftUI
 struct RemovePlayer: View {
     @EnvironmentObject var session: FirebaseSession
     
-    let curLeague: League
+    @ObservedObject var curLeague: League
     
     @State var displayName: String = ""
     @State var isResponder: Bool? = true
@@ -31,24 +31,8 @@ struct RemovePlayer: View {
     
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
 
-    
     var datasource: [String: String] {
-        let players = curLeague.returnPlayers()
-        var datasource: [String: String] = [:]
-        var duplicates: [String] = []
-        for player in players {
-            if player.id != curLeague.creatorUID {
-                if datasource[player.realName] != nil { // If multiple people have the same real name dont want it autofinishing
-                    datasource[player.realName] = nil
-                    duplicates.append(player.realName)
-                } else if !duplicates.contains(player.realName) {
-                    datasource[player.displayName] = player.displayName
-                    datasource[player.realName] = player.displayName
-    //                datasource[player.phoneNumber] = player.displayName
-                }
-            }
-        }
-        return datasource
+        return curLeague.datasourceForAutocomplete()
     }
     
     var body: some View {
@@ -59,8 +43,8 @@ struct RemovePlayer: View {
                 AutoCompleteTextFieldSwiftUI(text: $displayName, placeholder: "Player to delete", datasource: datasource, isResponder: $isResponder, nextResponder: .constant(nil))
             }
             
-            if curLeague.players[curLeague.displayNameToUserID[displayName] ?? ""] != nil {
-                Text("Real name: \(curLeague.players[curLeague.displayNameToUserID[displayName] ?? ""]!.realName)")
+            if curLeague.player(atDisplayName: displayName) != nil {
+                Text("Real name: \(curLeague.player(atDisplayName: displayName)!.realName)")
                 
                 Toggle(isOn: $removePlayerGames.onUpdate {
                     self.removePlayerGamesAlert = self.removePlayerGames
@@ -109,7 +93,7 @@ struct RemovePlayer: View {
         
         
     func deletePlayer() {
-        self.session.remove(player: curLeague.players[curLeague.displayNameToUserID[displayName]!]!, fromLeague: curLeague, shouldDeletePlayerGames: removePlayerGames, shouldDeleteInputGames: removePlayerInputGames, completion: { error in
+        self.session.remove(player: curLeague.player(atDisplayName: displayName)!, fromLeague: curLeague, shouldDeletePlayerGames: removePlayerGames, shouldDeleteInputGames: removePlayerInputGames, completion: { error in
             if let error = error {
                 print(error.localizedDescription)
                 self.alertMessage = error.localizedDescription

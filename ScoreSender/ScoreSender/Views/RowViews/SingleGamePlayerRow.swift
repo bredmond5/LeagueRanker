@@ -13,7 +13,7 @@ struct SingleGamePlayerRow: View {
 
     var body: some View {
         HStack {
-            Image(uiImage: player.image ?? UIImage())
+            Image(uiImage: player.dbImage.image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 40, height: 40)

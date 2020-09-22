@@ -14,7 +14,6 @@ struct SettingsFormOverall: View {
     @EnvironmentObject var session: FirebaseSession
     
     @State var username: String = ""
-//    @State var currentUsername: String
         
     @State var showingAlert = false
     @State var showingMessageAlert = false
@@ -25,9 +24,7 @@ struct SettingsFormOverall: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            
             Divider()
-            
             Text("Phone Number: " + (session.session?.phoneNumber ?? ""))
                   .fontWeight(.heavy)
                   .font(.system(size: 18))
@@ -54,7 +51,7 @@ struct SettingsFormOverall: View {
             }
             Divider()
            
-            GetImage(initialImage: self.session.session?.image ?? Constants.defaultPlayerPhoto, resizePercentage: 0.2, imageViewSize: 120, userChoseImage: { image in
+            GetImage(initialImage: self.session.session?.dbImage.image ?? Constants.defaultPlayerPhoto, resizePercentage: 0.2, imageViewSize: 120, userChoseImage: { image in
                 self.session.changeUser(image: image)
             })
             

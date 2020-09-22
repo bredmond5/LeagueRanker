@@ -7,22 +7,43 @@
 //
 
 import SwiftUI
+import FirebaseDatabase
 
 struct LeaguesScrollerVertical: View {
     
     @EnvironmentObject var session: FirebaseSession
     
-//    @State var showingAlert = false
-    
+    @State var leagueTest: League?
+    @State var playerTest: PlayerForm?
     
     var body: some View {
+        
         VStack (alignment: .leading, spacing: 74){
+            Button(action: {
+                if self.leagueTest != nil {
+                    self.leagueTest = nil
+                } else {
+                    self.leagueTest = League(id: UUID(uuidString: "69C23B7D-90A2-44A5-865B-5E20648758DE")!)
+                }
+            }) {
+                Text("set up league")
+            }
+            Button(action: {
+                if self.playerTest != nil {
+                    self.playerTest = nil
+                } else {
+                    self.playerTest = PlayerForm(ref: Database.database().reference(withPath: "leagues/69C23B7D-90A2-44A5-865B-5E20648758DE/players/objects/+16505557777"), leagueID: "69C23B7D-90A2-44A5-865B-5E20648758DE")
+                }
+            }) {
+                Text("set up player")
+            }
             List(self.session.leagues) { league in
                 NavigationLink(destination: CurLeague(curLeague: league))
                 {
-                    LeagueRow(league: league)
-                }
-            } 
+//                    LeagueRow(leagueSettings: league.leagueSettings)
+                    Text(league.name)
+                 }
+            }
         }
         .navigationBarTitle("My Leagues")
         .navigationBarItems(leading: NavigationLink(destination: SettingsFormOverall().navigationBarTitle("Settings")) {
@@ -32,13 +53,7 @@ struct LeaguesScrollerVertical: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
             .foregroundColor(.blue)
-//                Text("Settings")
-//                .fontWeight(.bold)
-//                .foregroundColor(.white)
-//                .padding(.vertical, 8)
-//                .padding(.horizontal, 12)
-//                .background(Color.gray)
-//                .cornerRadius(4)
+
         },trailing: AddLeague(session: _session))
         .onAppear(perform: getDisplayName)
         

@@ -14,7 +14,6 @@ struct NewLeague: View {
         
     @State var leagueName: String = ""
     
-    @State var leagueImage: UIImage = UIImage()
     @State var isShowingImagePicker = false
     
     @State var showingAlert = false
@@ -38,7 +37,6 @@ struct NewLeague: View {
    @State var currentSheet: SheetType = .imagePick
 
    @State var imageIn: UIImage?
-       
 
     var body: some View {
         VStack (alignment: .leading, spacing: 16) {
@@ -71,8 +69,8 @@ struct NewLeague: View {
             }.alert(isPresented: self.$showingAlert, content: {
                 Alert(title: Text(self.alertMessage))
             }).sheet(isPresented: $isPresentingModal, content: {
-                DisplayNameAndPhoto(username: self.session.session!.realName!, image: self.session.session!.image, isPresented: self.$isPresentingModal, title: self.leagueName, userFinished: { displayName, image, userFinished in
-                    self.session.uploadLeague(leagueName: self.leagueName, leagueImage: self.leagueImage, creatorDisplayName: displayName, playerImage: image, completion: { error in
+                DisplayNameAndPhoto(username: self.session.session!.realName!, image: self.session.session!.dbImage.image, isPresented: self.$isPresentingModal, title: self.leagueName, userFinished: { displayName, image, userFinished in
+                    self.session.uploadLeague(leagueName: self.leagueName, leagueImage: self.imageIn, creatorDisplayName: displayName, playerImage: image, completion: { error in
                         userFinished(error)
                         if error == nil {
                             self.isPresented = false

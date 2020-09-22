@@ -23,4 +23,12 @@ class PlayerGame: Game {
         self.sigmaChange = sigmaChange
         super.init(id: game.id, team1: game.team1, team2: game.team2, scores: game.scores, date: game.date, inputter: game.inputter)
     }
+    
+    override func toAnyObject() -> Any {
+        return [
+            "game" : super.toAnyObject(),
+            "gameScore" : self.gameScore,
+            "sigmaChange" : self.sigmaChange
+        ]
+    }
 }
