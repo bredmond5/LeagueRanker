@@ -1,4 +1,5 @@
 PODS:
+  - CropViewController (2.5.4)
   - Firebase/Auth (6.22.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.5.1)
@@ -91,6 +92,7 @@ PODS:
   - PromisesObjC (1.2.8)
 
 DEPENDENCIES:
+  - CropViewController
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -98,6 +100,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - CropViewController
     - Firebase
     - FirebaseAnalytics
     - FirebaseAuth
@@ -118,6 +121,7 @@ SPEC REPOS:
     - PromisesObjC
 
 SPEC CHECKSUMS:
+  CropViewController: 980df34ffc499db89755b2f307f20eca00cd40c6
   Firebase: 32f9520684e87c7af3f0704f7f88042626d6b536
   FirebaseAnalytics: 83f822fd0d33a46f49f89b8c3ab16ab4d89df08a
   FirebaseAuth: a6da11d78dfd956b7f7af3222a0f0b1c93ef8fc9
@@ -137,6 +141,6 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
 
-PODFILE CHECKSUM: 5ecf13d80f7a78698d3b156cd586e89abb16767d
+PODFILE CHECKSUM: 19c4dea53fb148e00007918a907948eb36e62387
 
 COCOAPODS: 1.9.1

@@ -108,3 +108,53 @@ import Foundation
 //            s2 = tmp
 //        return s1, s2
     }
+
+//    func getImages() {
+//        let r = Storage.storage().reference().child("\(id)")
+//        let myGroup = DispatchGroup()
+//
+//        myGroup.enter()
+//        r.listAll(completion: { result, error in
+//            if let error = error {
+//                print(error.localizedDescription)
+//                return
+//            }
+//
+//            for _ in 0..<result.items.count {
+//                myGroup.enter()
+//            }
+//            myGroup.leave()
+//
+//            result.items.forEach({ imageRef in
+//                imageRef.getData(maxSize: 1 * 1024 * 1024, completion: { data, error in
+//                    if let error = error {
+//                        print("League folder image error: \(error.localizedDescription)")
+//                    } else {
+//                        let id = String(imageRef.name.split(separator: ".")[0])
+//
+//                        if let player = self.players[id] {
+//                            player.image =  UIImage(data: data!) ?? Constants.defaultPlayerPhoto
+//
+//                        } else if id == self.id.uuidString {
+//                            self.leagueImage = UIImage(data: data!) ?? Constants.defaultLeaguePhoto
+//
+//                        }
+//                    }
+//                    myGroup.leave()
+//                })
+//            })
+//        })
+//
+//        myGroup.notify(queue: .main) {
+//            for player in self.players.values {
+//                if player.image == nil {
+//                    player.image = Constants.defaultPlayerPhoto
+//                }
+//            }
+//            if self.leagueImage == nil {
+//                self.leagueImage = Constants.defaultLeaguePhoto
+//            }
+//        }
+//
+//    }
+//

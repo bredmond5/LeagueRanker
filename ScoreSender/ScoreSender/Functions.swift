@@ -10,14 +10,14 @@ import Foundation
 import SwiftUI
 
 class Functions {
-    static func getGameScores(players: [String], scores: [String], ratings: [Rating], gameDate: String = String(Int(Date.timeIntervalSinceReferenceDate * 1000)), inputter: String) -> (Game, [Rating]) {
+    static func getGameScores(players: [String], scores: [Int], ratings: [Rating], gameDate: Int = Int(Date.timeIntervalSinceReferenceDate * 1000), inputter: String) -> (Game, [Rating]) {
         
         let newRatings = getNewRatings(players: players, scores: scores, ratings: ratings)
         
-        return (Game(team1: [players[0], players[1]], team2: [players[2], players[3]], scores: [scores[0], scores[1]], gameScore: 0, sigmaChange: 0, date: gameDate, inputter: inputter), [newRatings[0], newRatings[1], newRatings[2], newRatings[3]])
+        return (Game(team1: [players[0], players[1]], team2: [players[2], players[3]], scores: [scores[0], scores[1]], date: gameDate, inputter: inputter), [newRatings[0], newRatings[1], newRatings[2], newRatings[3]])
     }
     
-    static func getNewRatings(players: [String], scores: [String], ratings: [Rating]) -> [Rating] {
+    static func getNewRatings(players: [String], scores: [Int], ratings: [Rating]) -> [Rating] {
        let gameInfo = GameInfo.DefaultGameInfo
 
        let player1 = Player(id: players[0])
@@ -31,7 +31,7 @@ class Functions {
        let teams = Teams.Concat(team1, team2)
        var newRatings: [Player<String>: Rating]
        
-       if Int(scores[0])! > Int(scores[1])! {
+       if scores[0] > scores[1] {
            newRatings = TrueSkillCalculator.CalculateNewRatings(gameInfo: gameInfo, teams: teams, teamRanks: 1,2)
        }else{
            newRatings = TrueSkillCalculator.CalculateNewRatings(gameInfo: gameInfo, teams: teams, teamRanks: 2,1)
