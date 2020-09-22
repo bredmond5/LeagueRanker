@@ -16,7 +16,7 @@ struct GameForm: View {
         
     @State private var keyboardHeight: CGFloat = 0
     
-    @ObservedObject var curLeague: League
+    var curLeague: League
     
     @State var showingAlert = false
     
@@ -28,7 +28,20 @@ struct GameForm: View {
         
     
     var datasource: [String: String] {
-        return curLeague.datasourceForAutocomplete()
+        let players = curLeague.returnPlayers()
+        var datasource: [String: String] = [:]
+        var duplicates: [String] = []
+        for player in players {
+            if datasource[player.realName] != nil { // If multiple people have the same real name dont want it autofinishing
+                datasource[player.realName] = nil
+                duplicates.append(player.realName)
+            } else if !duplicates.contains(player.realName) {
+                datasource[player.displayName] = player.displayName
+                datasource[player.realName] = player.displayName
+//                datasource[player.phoneNumber] = player.displayName
+            }
+        }
+        return datasource
     }
     
     func makeAutoCompleteTextField(text: Binding<String>, placeholder: String, isResponder: Binding<Bool?>, nextResponder: Binding<Bool?>) -> AutoCompleteTextFieldSwiftUI {
@@ -185,19 +198,63 @@ struct GameForm: View {
     }
     
     func addGame() {
-                    
+        if self.p1 == "" || self.p2 == "" || self.p3 == "" || self.p4 == "" {
+             self.errorTitle = "Please fill in all the player fields"
+             self.showingAlert = true
+             return
+        }
+         
+         let leagueName = self.curLeague.name
+         let displayNameToUserID = self.curLeague.displayNameToUserID
+         let uidToPlayer = self.curLeague.players
+         var players: [PlayerForm] = []
+         
+         if displayNameToUserID[self.p1] == nil {
+             self.errorTitle = "\(self.p1) is not a member of \(leagueName)"
+             self.showingAlert = true
+         
+         } else if displayNameToUserID[self.p2] == nil {
+             self.errorTitle = "\(self.p2) is not a member of \(leagueName)"
+             self.showingAlert = true
+             
+         }else if displayNameToUserID[self.p3] == nil {
+             self.errorTitle = "\(self.p3) is not a member of \(leagueName)"
+             self.showingAlert = true
+             
+         }else if displayNameToUserID[self.p4] == nil {
+             self.errorTitle = "\(self.p4) is not a member of \(leagueName)"
+             self.showingAlert = true
+             
+         }else {
+             if Set([self.p1, self.p2, self.p3, self.p4]).count != 4 {
+                 self.errorTitle = "Duplicate names input"
+                 self.showingAlert = true
+                 return
+             }
+             
+             players.append(uidToPlayer[displayNameToUserID[self.p1]!]!)
+             players.append(uidToPlayer[displayNameToUserID[self.p2]!]!)
+             players.append(uidToPlayer[displayNameToUserID[self.p3]!]!)
+             players.append(uidToPlayer[displayNameToUserID[self.p4]!]!)
+        
+             
+             if !self.score1.isInt || !self.score2.isInt {
+                 self.errorTitle = "Scores must be numbers"
+                 self.showingAlert = true
+                 return
+             }
              // pull rankings from online in case someone has entered a game
              // even though not getting images or games this still takes a lot of data
-        self.session.uploadGame(curLeague: self.curLeague, players: [self.p1, self.p2, self.p3, self.p4], scores: [score1, score2], inputter: self.inputter, completion: { error in
-            
-             if let error = error {
-                self.errorTitle = error.localizedDescription
-                self.shouldDismiss = false
-                self.showingAlert = true
-             } else {
-                self.finished(didUploadGame: true)
-            }
-         })
+             self.session.uploadGame(curLeague: self.curLeague, players: players, scores: [Int(score1)!, Int(score2)!], inputter: self.inputter, completion: { error in
+                 if let error = error {
+                    self.errorTitle = error.localizedDescription
+                    self.shouldDismiss = true
+                    self.showingAlert = true
+                 } else {
+                    self.finished(didUploadGame: true)
+                }
+             })
+         }
     }
     
     func finished(didUploadGame: Bool) {

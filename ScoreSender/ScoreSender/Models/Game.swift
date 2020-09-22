@@ -9,12 +9,12 @@
 import Foundation
 import FirebaseDatabase
 
-public class Game: Identifiable, Hashable, Comparable {
-    public static func < (lhs: Game, rhs: Game) -> Bool {
+class Game: Identifiable, Hashable, Comparable {
+    static func < (lhs: Game, rhs: Game) -> Bool {
         return lhs.date < rhs.date
     }
     
-    public static func == (lhs: Game, rhs: Game) -> Bool {
+    static func == (lhs: Game, rhs: Game) -> Bool {
         return lhs.id == rhs.id
     }
     
@@ -23,7 +23,7 @@ public class Game: Identifiable, Hashable, Comparable {
         hasher.combine(id)
     }
     
-    public let id: UUID
+    let id: UUID
     var team1: [String]
     var team2: [String]
     var scores: [Int]
@@ -77,16 +77,21 @@ public class Game: Identifiable, Hashable, Comparable {
     }
     
     func toAnyObject() -> Any {
+//        var gameDict = [String: AnyObject]()
+//        let team1Arr =
+//        let team2Arr =
+//
+//        gameDict[scores[0]] = team1Arr as AnyObject
+//        gameDict[scores[1]] = team2Arr as AnyObject
+//
+//        gameDict["inputter"] = inputter as AnyObject
+//        gameDict["date"] = date
         return [
             "\(scores[0])" : [team1[0], team1[1]],
             "\(scores[1])" : [team2[0], team2[1]],
             "inputter" : inputter,
             "date" : date
         ] as Any
-    }
-    
-    deinit {
-//        print("game deinit called")
     }
 
 }

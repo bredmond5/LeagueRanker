@@ -25,9 +25,17 @@ struct ContentView: View {
                }
             }
         }
+        .onAppear(perform: getUser)
         .padding()
+        }
+           
+   func getUser() {
+        session.tryLogIn(completion: { isLoggedIn, error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        })
     }
-
 }
 
 

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct UnblockPlayers: View {
-    @ObservedObject var curLeague: League
+    let curLeague: League
     
     var body: some View {
         VStack {

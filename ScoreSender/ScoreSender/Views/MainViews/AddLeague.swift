@@ -11,6 +11,7 @@ import SwiftUI
 struct AddLeague: View {
     @EnvironmentObject var session: FirebaseSession
 
+    @State var colors: [Color] = [.red, .yellow, .green, .blue, .purple]
     @State var showingSheet = false
     @State var isPresentingModal = false
 

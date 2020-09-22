@@ -11,12 +11,10 @@ import SwiftUI
 struct PlayerRow: View {
     
     @ObservedObject var player: PlayerForm
-    @ObservedObject var leagueSettings: LeagueSettings // for num placements
     var id: UUID
     
-    init(player: PlayerForm, leagueSettings: LeagueSettings) {
+    init(player: PlayerForm) {
         self.player = player
-        self.leagueSettings = leagueSettings
         id = UUID()
     }
     
@@ -24,7 +22,7 @@ struct PlayerRow: View {
         HStack {
             Text(String(player.rank))
                 .font(.system(size: 20))
-            Image(uiImage: player.dbImage.image)
+            Image(uiImage: player.image ?? UIImage())
                 .resizable()
                 .scaledToFill()
                 .frame(width: 60, height: 60)
@@ -33,15 +31,15 @@ struct PlayerRow: View {
                         .strokeBorder(style: StrokeStyle(lineWidth: 2))
                         .foregroundColor(Color.black))
                 .cornerRadius(60)
-
+            
             VStack (alignment: .leading) {
                 Text("\(player.displayName)")
                     .fontWeight(.bold)
-                if player.enoughGames(numPlacements: leagueSettings.numPlacements) {
+                if player.enoughGames() {
                     Text(String(format: "%.02f", player.rating.Mean))
                     .fontWeight(.light)
                 } else {
-                    Text("\(leagueSettings.numPlacements - player.wins - player.losses) games left")
+                    Text("\(player.numPlacementsRequired - player.wins - player.losses) games left")
                 }
             }.layoutPriority(1)
             

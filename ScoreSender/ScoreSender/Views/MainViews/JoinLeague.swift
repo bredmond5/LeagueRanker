@@ -17,7 +17,7 @@ struct JoinLeague: View {
     @State var creatorPhone: String = ""
         
     @State var isPresentingModal: Bool = false
-    @State var leagueID: String?
+    @State var league: League?
     
     @State var showingAlert = false
     @State var alertMessage = "" {
@@ -71,8 +71,8 @@ struct JoinLeague: View {
             }.alert(isPresented: self.$showingAlert, content: {
                 Alert(title: Text(self.alertMessage))
             }).sheet(isPresented: $isPresentingModal, content: {
-                DisplayNameAndPhoto(username: self.session.session!.realName!, image: self.session.session!.dbImage.image, isPresented: self.$isPresentingModal, title: self.leagueName, userFinished: { displayName, image, userFinished in
-                    self.session.joinLeague(leagueID: self.leagueID!, displayName: displayName, image: image, completion: {error in
+                DisplayNameAndPhoto(username: self.session.session!.realName!, image: self.session.session!.image, isPresented: self.$isPresentingModal, title: self.league!.name, userFinished: { displayName, image, userFinished in
+                    self.session.joinLeague(league: self.league!, displayName: displayName, image: image, completion: {error in
                         userFinished(error)
                         if error == nil {
                             self.isPresented = false
@@ -115,33 +115,31 @@ struct JoinLeague: View {
             return
         }
         
-        session.findLeague(leagueName: self.leagueName, phoneNumber: phoneNumber, completion: { error, id, rejoinRequired in
+        session.findLeague(leagueName: self.leagueName, phoneNumber: phoneNumber, completion: { error, league in
             if let error = error {
                 self.alertMessage = error.localizedDescription
                 return
             }
             
-            guard let id = id else {
-                self.alertMessage = "Error finding league"
-                return
-            }
-            
-            if rejoinRequired {
-                self.session.rejoinLeague(leagueID: id, completion: { error in
-                    if let error = error {
-                        self.alertMessage = error.localizedDescription
-                    }
-                })
+            if let league = league {
+                if league.players[self.session.session!.uid] != nil {
+                    self.session.rejoinLeague(league: league, completion: { error in
+                        if let error = error {
+                            self.alertMessage = error.localizedDescription
+                        }
+                    })
+                } else {
+                    self.getDisplayNameAndPhoto(league: league, creatorPhoneNumber: phoneNumber)
+                }
             } else {
-                self.leagueID = id
-                self.isPresentingModal = true
-                
+                self.alertMessage = "Could not find league"
             }
         })
     }
     
     func getDisplayNameAndPhoto(league: League, creatorPhoneNumber: String) {
 
+        self.isPresentingModal = true
         
 //        self.displayNameAndPhoto = DisplayNameAndPhoto(session: self._session, username: self.session.session!.realName!, image: self.session.session!.image, isPresented: self.$isPresentingModal, userFinished: { displayName, image, userFinished in
 //            self.session.joinLeague(league: league, displayName: displayName, image: image, completion: {error in

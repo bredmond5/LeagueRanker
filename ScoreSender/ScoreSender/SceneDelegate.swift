@@ -8,7 +8,6 @@
 
 import UIKit
 import SwiftUI
-import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -38,12 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          let contentView = ContentView()
          
          //Firebase
-        let session = FirebaseSession()
-        session.tryLogIn(completion: { isLoggedIn, error in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-        })
+         let session = FirebaseSession()
 
          // Use a UIHostingController as window root view controller.
          if let windowScene = scene as? UIWindowScene {
@@ -53,17 +47,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
              window.makeKeyAndVisible()
          }
     }
-    
-    static var persistentContainer: NSPersistentContainer = {
-      let container = NSPersistentContainer(name: "LeagueStats")
-      container.loadPersistentStores { _, error in
-        if let error = error as NSError? {
-          print(error.localizedDescription)
-          fatalError("Unresolved error \(error), \(error.userInfo)")
-        }
-      }
-      return container
-    }()
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
@@ -92,19 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-    
-    static func saveContext(context: NSManagedObjectContext) {
-        if context.hasChanges {
-          do {
-            try context.save()
-          } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-          }
-        } else {
-          print("no changes to save context")
-        }
-    }
+
 
 }
 

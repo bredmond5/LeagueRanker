@@ -12,7 +12,7 @@ struct ShowGames: View {
     @EnvironmentObject var session: FirebaseSession
     @ObservedObject var player: PlayerForm
     
-    @ObservedObject var curLeague: League
+    let curLeague: League
     var deleteGame: (Game, PlayerForm) -> ()
 
     var green = Color(.sRGB, red: 0.4, green: 1.0, blue: 0, opacity: 1.0)
@@ -60,10 +60,10 @@ struct ShowGames: View {
                 .padding(.leading, 12)
                 
                 ForEach(player.playerGames, id: \.self) { game in
-                    NavigationLink(destination: SingleGameView(game: game, player: self.player, canDelete: self.getCanDelete(gameInputter: game.inputter), shouldShowScore: self.player.enoughGames(numPlacements: self.curLeague.numPlacements), deleteGame: { game, player in
+                    NavigationLink(destination: SingleGameView(game: game, player: self.player, canDelete: self.getCanDelete(gameInputter: game.inputter), shouldShowScore: self.player.enoughGames(), deleteGame: { game, player in
                         self.deleteGame(game, player)
                     }, curLeague: self.curLeague)) {
-                        GameRow(game: game, playerName: self.player.displayName, players: self.curLeague.playersDict, shouldShowScore: self.player.enoughGames(numPlacements: self.curLeague.numPlacements))
+                        GameRow(game: game, playerName: self.player.displayName, players: self.curLeague.players, shouldShowScore: self.player.enoughGames())
                     }
                     .frame(height: 60)
                     .listRowBackground(game.gameScore > 0 ? self.green : self.red)
@@ -94,23 +94,23 @@ struct ShowGames: View {
         }.navigationBarTitle(Text("\(player.displayName)"))
         .navigationBarItems(trailing:
             Button(action: { self.isPresentingChangeProfileModal.toggle() }) {
-                if (self.player.id == self.player.phoneNumber && self.curLeague.ownsLeague(userID: self.session.session!.uid)) || (self.player.id == self.session.session!.uid) {
+                if (self.player.id == self.player.phoneNumber && self.session.session!.uid == self.self.curLeague.creatorUID) || self.player.id == self.session.session!.uid {
                     SpanningLabel(color: .blue, content: "Edit Profile")
                 }
             }.sheet(isPresented: $isPresentingChangeProfileModal, content: {
                 
-                DisplayNameAndPhoto(username: self.player.displayName, image: self.player.dbImage.image, isPresented: self.$isPresentingChangeProfileModal, title: "Edit Profile", userFinished: { displayName, image, userFinished in
-                        self.session.changePlayer(inLeague: self.curLeague, newDisplayName: displayName, newImage: image, forPlayer: self.player, completion: { error in
-                            userFinished(error)
-                        })
+                DisplayNameAndPhoto(username: self.player.displayName, image: self.player.image, isPresented: self.$isPresentingChangeProfileModal, title: "Edit Profile", userFinished: { displayName, image, userFinished in
+                    self.session.changePlayer(inLeague: self.curLeague, newDisplayName: displayName, newImage: image, forPlayer: self.player, completion: { error in
+                        userFinished(error)
                     })
+                })
                 }
             ))
     }
     
     func getCanDelete(gameInputter: String) -> Bool {
         let uid = self.session.session!.uid
-        return (curLeague.ownsLeague(userID: uid) || gameInputter == uid)
+        return (uid == curLeague.creatorUID || gameInputter == uid)
     }
 }
 

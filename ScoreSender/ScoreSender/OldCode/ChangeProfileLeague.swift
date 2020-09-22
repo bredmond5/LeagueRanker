@@ -12,7 +12,7 @@ import FirebaseDatabase
 struct ChangeProfileLeague: View {
     @EnvironmentObject var session: FirebaseSession
         
-    @ObservedObject var curLeague: League
+    let curLeague: League
     let player: PlayerForm
     
     @State var displayName: String = ""
@@ -37,7 +37,7 @@ struct ChangeProfileLeague: View {
         
         VStack (alignment: .leading, spacing: 16) {
             
-            GetImage(initialImage: self.player.dbImage.image, resizePercentage: 0.2, imageViewSize: 120, userChoseImage: { image in
+            GetImage(initialImage: self.player.image ?? Constants.defaultPlayerPhoto, resizePercentage: 0.2, imageViewSize: 120, userChoseImage: { image in
                 self.uploadedImage = image
             })
             

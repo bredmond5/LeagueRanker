@@ -21,7 +21,7 @@ struct SingleGameView: View {
     
     var deleteGame: (Game, PlayerForm) -> ()
     
-    @ObservedObject var curLeague: League
+    var curLeague: League
     
     @State var showingAlert = false
     let shouldShowScore: Bool
@@ -45,8 +45,8 @@ struct SingleGameView: View {
         VStack (alignment: .leading, spacing: 16) {
             
             Group {
-                if curLeague.player(atID: game.inputter) != nil{
-                    Text("Input by \(curLeague.player(atID: game.inputter)!.displayName) \(addExtra(forUID: game.inputter))on \(Date(timeIntervalSinceReferenceDate: TimeInterval(game.date / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
+                if curLeague.players[game.inputter]?.displayName != nil{
+                    Text("Input by \(curLeague.players[game.inputter]!.displayName) \(addExtra(forUID: game.inputter))on \(Date(timeIntervalSinceReferenceDate: TimeInterval(game.date / 1000)).toString())").fixedSize(horizontal: false, vertical: true).lineLimit(nil)
                 } else {
                     Text("Date: \(Date(timeIntervalSinceReferenceDate: TimeInterval(game.date / 1000)).toString())")
 
@@ -67,16 +67,16 @@ struct SingleGameView: View {
                 .font(.system(size: 24))
 //                Text("Player 1: \(curLeague.players[game.team1[0]]?.displayName ?? game.team1[0]) \(addExtra(forPhoneNumber: curLeague.players[game.team1[0]]?.phoneNumber ?? game.team1[0]))")
 //                    .fontWeight(.heavy)
-                if curLeague.player(atID: game.team1[0]) != nil {
-                    SingleGamePlayerRow(player: curLeague.player(atID: game.team1[0])!)
+                if curLeague.players[game.team1[0]] != nil {
+                    SingleGamePlayerRow(player: curLeague.players[game.team1[0]]!)
                 } else {
                     Text(game.team1[0])
                     .fontWeight(.heavy)
 
                 }
                 
-                if curLeague.player(atID: game.team1[1]) != nil {
-                    SingleGamePlayerRow(player: curLeague.player(atID: game.team1[1])!)
+                if curLeague.players[game.team1[1]] != nil {
+                    SingleGamePlayerRow(player: curLeague.players[game.team1[1]]!)
                 } else {
                     Text(game.team1[1])
                     .fontWeight(.heavy)
@@ -91,16 +91,16 @@ struct SingleGameView: View {
                     .fontWeight(.heavy)
                         .font(.system(size: 24))
 
-                if curLeague.player(atID: game.team2[0]) != nil {
-                    SingleGamePlayerRow(player: curLeague.player(atID: game.team2[0])!)
+                if curLeague.players[game.team2[0]] != nil {
+                    SingleGamePlayerRow(player: curLeague.players[game.team2[0]]!)
                 } else {
                     Text(game.team2[0])
                     .fontWeight(.heavy)
 
                 }
                 
-                if curLeague.player(atID: game.team2[1]) != nil {
-                    SingleGamePlayerRow(player: curLeague.player(atID: game.team2[1])!)
+                if curLeague.players[game.team2[1]] != nil {
+                    SingleGamePlayerRow(player: curLeague.players[game.team2[1]]!)
                 } else {
                     Text(game.team2[1])
                     .fontWeight(.heavy)
@@ -154,7 +154,7 @@ struct SingleGameView: View {
 //            return ""
 //        }
         
-        if let player = curLeague.player(atID: uid) {
+        if let player = curLeague.players[uid] {
             return player.realName == player.displayName ? "" : "(\(player.realName)) "
         } else {
             return ""
